@@ -66,12 +66,6 @@ setReplaceMethod("bigdata", "SLFN", function(x, value) { x@bigdata <- value; x})
 setMethod("show","SLFN",
           function(object) {
             summary(object)
-          }
-)
-
-
-model1=SFLN()
-show(model1)
-
+          })
 
 

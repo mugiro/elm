@@ -9,19 +9,28 @@
 # Class definition, accessor functions, print and summary methods
 #
 
-SFLN = setClass("SLFN",
-               slots = c(inputs = "numeric",
-                         activation = "character",
-                         type = "character",
-                         bigdata = "logical"))
+source("R/SLFNclass.R")
 
-elm2=elm()
-elm3=new("elm")
-getClass("elm")
-help("getClass")
+setClass("ELM",
+         slots = c(ID = "numeric"),
+         contains = "SLFN",
+         prototype = prototype(ID=0))
 
-# Testing the devtools
-elm1 = elm(inputs = 4,
-           activation = "sigmoid",
-           type = "I-ELM",
-           bigdata = FALSE)
+# Get/Set methods
+
+
+#
+# PRINT method
+#
+
+setMethod("show","ELM",
+          function(object) {
+            summary(object)
+          })
+
+
+model1=new("ELM")
+
+show(model1)
+
+showClass("ELM")

@@ -1,3 +1,14 @@
-# elm
+elm: Extreme Learning Machines in R
+====
 
-New project for Extrem Learning Machines
+
+## Recent/release notes
+
+
+
+## Features
+
+* Feature 1 
+* Otro
+
+## Installation
