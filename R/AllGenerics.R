@@ -4,18 +4,6 @@
 
 # General methods
 
-inputs = "integer",       # number of input features
-outputs = "integer",      # number of output features
-neurons = "ANY",          # list of all neurons
-beta = "ANY",             # weight vector outputs
-flist = "vector",         # neuron functions
-alpha = "numeric",        # normalization H'H solution
-batch = "integer",        # batch size of adaptive ELM
-classification= "character", # type of classification
-weights_wc = "ANY",      # weigths in weighted class.
-time = "numeric",         # time of calculation
-bigdata = "logical"),     # selection of acelerator
-
 
 # Get/Set methods
 setGeneric("inputs",function(object, ...) standardGeneric("inputs"))
@@ -23,10 +11,24 @@ setGeneric("outputs",function(object, ...) standardGeneric("outputs"))
 setGeneric("neurons",function(object, ...) standardGeneric("neurons"))
 setGeneric("beta",function(object, ...) standardGeneric("beta"))
 setGeneric("flist",function(object, ...) standardGeneric("flist"))
+setGeneric("alpha",function(object, ...) standardGeneric("alpha"))
+setGeneric("batch",function(object, ...) standardGeneric("batch"))
+setGeneric("classification",function(object, ...) standardGeneric("classification"))
+setGeneric("weights_wc",function(object, ...) standardGeneric("weights_wc"))
+setGeneric("time",function(object, ...) standardGeneric("time"))
+setGeneric("bigdata",function(object, ...) standardGeneric("bigdata"))
 
-
-setGeneric("type<-", function(x, value) standardGeneric("type<-"))
-
+setGeneric("inputs<-", function(x, value) standardGeneric("inputs<-"))
+setGeneric("outputs<-", function(x, value) standardGeneric("outputs<-"))
+setGeneric("neurons<-", function(x, value) standardGeneric("neurons<-"))
+setGeneric("beta<-", function(x, value) standardGeneric("beta<-"))
+setGeneric("flist<-", function(x, value) standardGeneric("flist<-"))
+setGeneric("alpha<-", function(x, value) standardGeneric("alpha<-"))
+setGeneric("batch<-", function(x, value) standardGeneric("batch<-"))
+setGeneric("classification<-", function(x, value) standardGeneric("classification<-"))
+setGeneric("weights_wc<-", function(x, value) standardGeneric("weights_wc<-"))
+setGeneric("time<-", function(x, value) standardGeneric("time<-"))
+setGeneric("bigdata<-", function(x, value) standardGeneric("bigdata<-"))
 
 # Other functions
 
