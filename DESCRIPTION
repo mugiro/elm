@@ -1,10 +1,13 @@
 Package: elm
 Type: Package
-Title: What the Package Does (Title Case)
+Title: Extreme Learning Machine library
 Version: 0.1
 Date: 2015-10-09
-Author: Who wrote it
-Maintainer: Who to complain to <yourfault@somewhere.net>
+Author: Ruben Urraca [aut],
+  Andres Sanz-Garcia [aut, cre],
+Maintainer: Andres Sanz <andres.sanz-garcia@helsinki.fi>
 Description: More about what it does (maybe more than one line)
-License: What license is it under?
+License: GPL (>= 2)
 LazyData: TRUE
+Imports: Rcpp (>= 0.12.1)
+LinkingTo: Rcpp
