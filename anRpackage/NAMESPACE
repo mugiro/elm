@@ -1,3 +1,0 @@
-useDynLib(anRpackage)
-exportPattern("^[[:alpha:]]+")
-importFrom(Rcpp, evalCpp)
