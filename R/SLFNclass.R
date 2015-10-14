@@ -65,7 +65,10 @@ setReplaceMethod("bigdata", "SLFN", function(x, value) { x@bigdata <- value; x})
 
 setMethod("show","SLFN",
           function(object) {
-            summary(object)
+            cat("SLFN \n")
+            cat("Inputs = ",object@inputs, "\n")
+            cat("Outputs = ", object@outputs, "\n")
+            cat("Hidden neurons = ", object@neurons, "\n")
           })
 
 
