@@ -29,9 +29,9 @@ setMethod("show","ELM",
           })
 
 
-model1=new("ELM")
-
-show(model1)
-
-showClass("ELM")
+# model1=new("ELM")
+#
+# show(model1)
+#
+# showClass("ELM")
 
