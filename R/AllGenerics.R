@@ -4,7 +4,6 @@
 
 # General methods
 
-
 # Get/Set methods
 setGeneric("inputs",function(object, ...) standardGeneric("inputs"))
 setGeneric("outputs",function(object, ...) standardGeneric("outputs"))

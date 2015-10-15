@@ -11,8 +11,8 @@
 
 source("R/AllGenerics.R")
 setClass("SLFN",
-         slots = c(inputs = "integer",       # number of input features
-                   outputs = "integer",      # number of output features
+         slots = c(inputs = "numeric",       # number of input features
+                   outputs = "numeric",      # number of output features
                    neurons = "ANY",          # list of all neurons
                    beta = "ANY",             # weight vector outputs
                    flist = "vector",         # neuron functions
@@ -63,7 +63,7 @@ setReplaceMethod("bigdata", "SLFN", function(x, value) { x@bigdata <- value; x})
 # PRINT method
 #
 
-setMethod("show","SLFN",
+setMethod("show", "SLFN",
           function(object) {
             cat("SLFN \n")
             cat("Inputs = ",object@inputs, "\n")
@@ -71,4 +71,87 @@ setMethod("show","SLFN",
             cat("Hidden neurons = ", object@neurons, "\n")
           })
 
+
+# TRAIN method
+
+setGeneric('train', function(object, ...) standardGeneric('train'))
+setMethod("train",
+          signature = 'SLFN',
+          def = function (object,
+                          X = NULL,
+                          Y = NULL,
+                          validation = "none",
+                          modelSelection = "none",
+                          classification = FALSE,
+                          classType = "single",
+                          ...) {
+
+          # 1 - split regression classification
+              # only affects error computation if data are introduced correctly (binary)
+              # Also affects the solving process in the case of weighted class.
+                # multi-class (mc) - n classes = n outputs. output with higher index (closer to 1) is selected
+                # multi-label (ml) - n classes = n outpus. output above a thershold are selected
+                # weighted (w) - uneven classes. they are weighted
+
+          # 2 - call project () - return H
+
+          # 3 obtain beta. split model selection vs just training.
+          # with model selection we have the option prunning P (aleatory rank of neurons), or OP (ranking based on LARS)
+            if (modelSelection == TRUE){# optimize number of neurons
+              if (validation == "V") {
+                # val. simple
+              } else if (validation == "CV"){
+                # CV
+              } else if (validation == "LOO"){
+                # LOO
+              }
+            } else if (modelSelection == FALSE) {
+            # just train once
+            }
+
+          # 4 return errors ??? training error slot ?
+
+          # return nothing. just update object@beta
+          })
+
+project <- function(object, X = NULL){
+  # compute matrix H from X
+  #     X [Nxd] - input matrix
+  #     B [Nx1] - input bias
+  #     W [dxL] - input weights
+  #     H [NxL] - matrix after transformation
+  #     H0 [NxL] - matrix before tranformation
+  # random part (input weights)
+  if (object@flist == 'rbf') {
+
+  } else {
+    W = matrix( rnorm (object@inputs * object@neurons, mean = 0, sd = 1), nrow = object@inputs, ncol = object@neurons)
+    B = rnorm (nrow(X), mean = 0, sd = 1)
+    H0 = X %*% W + B # could be implented in c++
+  }
+  # transformation
+  if (object@flist == "linear"){
+    H = H0
+  } else if (object@flist == "sigmoid"){
+    H = 1 / (1 + exp(-H0))
+  } else if (object@flist == "tanH"){
+    H = tan(H0)
+  } else if (object @flist == "rbf"){
+
+  }
+  return(H)
+}
+
+
+solve <- function(object, ...){
+  # obtain beta given H, Y, and training specifications (model selection, validation, etc)
+  #     H [NxL] - matrix after transformation
+  #     beta [Lxc] - output weights
+  #     T [Nxc] - output matrix (columns = nº variables or classes)
+
+  # we can do 1 solve with several ifs, or several solves (akusok option)
+  if (model)
+
+  return(beta)
+}
 
