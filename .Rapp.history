@@ -1,0 +1,1001 @@
+environment()
+environmentName
+environmentName()
+env.profile
+env.profile()
+plot(1,1)
+q)=
+q()
+plotPertDiffperDayVersion2 <- function(data=ABdifference,COATING=COATING,MATERIAL=MATERIAL,variable="sed",#
+		EXPRS=EXPRS,LWD=1.3,CEX=1.8,FACTOR=70,LIMIT=600)#
+{#
+	par(mfrow=c(1,1),mar=c(4,6,3,2),cex=CEX)#
+	plot(data$day,#
+			data$mean,#
+			ylab=EXPRS,#
+			xlab="days",#
+			xaxt="n",#
+			pch=20,#
+			ylim=c(0,LIMIT),#
+			col=c("blue","red","green")[as.numeric(data$coating)],#
+			main=paste("All the patients: mean and",variable),las=1)#
+	axis(1,at=data$day,labels=data$day)#
+	for (i in c(1:length(COATING))) {#
+		lines(data[data$coating==COATING[i],"day"],#
+				data[data$coating==COATING[i],"mean"],#
+				lty=3, col=COLORS[i],cex=0.5,lwd=2,)#
+		lines(data[data$coating==COATING[i],"day"],#
+				data[data$coating==COATING[i],"mean"],#
+				lty=1, col=COLORS[i],cex=0.5,lwd=2,)#
+	}#
+	legend("bottom",legend=c("CS","LM","No"),#
+			pch=19, col=c("blue","red","green"),#
+			ncol=3, bty="n", cex=0.9, text.col="black", inset=0.01)#
+}#
+plotPertDiffperDayLOG <- function(data=ABdifference,COATING=COATING,MATERIAL=MATERIAL,variable="sed",#
+		EXPRS=EXPRS,LWD=1.3,CEX=1.8,FACTOR=70,LIMIT=3)#
+{#
+	data$mean <- log10(data$mean)#
+	par(mfrow=c(1,1),mar=c(4,6,3,2),cex=CEX)#
+	plot(data$day,#
+			data$mean,#
+			ylab=EXPRS,#
+			xlab="days",#
+			xaxt="n",#
+			yaxt="n",#
+			pch=20,#
+			ylim=c(0,LIMIT),#
+			col=c("blue","red","green")[as.numeric(data$coating)],#
+			main=paste("All the patients: mean and",variable),las=1)#
+	minor.ticks.axis(2,9,t.ratio=1.0,mn=0,mx=4,las=1)#
+	axis(1,at=data$day,labels=data$day)#
+	for (i in c(1:length(COATING))) {#
+		lines(data[data$coating==COATING[i],"day"],#
+				data[data$coating==COATING[i],"mean"],#
+				lty=3, col=COLORS[i],cex=0.5,lwd=2,)#
+		lines(data[data$coating==COATING[i],"day"],#
+				data[data$coating==COATING[i],"mean"],#
+				lty=1, col=COLORS[i],cex=0.5,lwd=2,)#
+	}#
+	legend("bottom",legend=c("CS","LM","No"),#
+			pch=19, col=c("blue","red","green"),#
+			ncol=3, bty="n", cex=0.9, text.col="black", inset=0.01)#
+}
+ls()
+citation()
+q()
+install.packages("rj)")
+#TODO: Packages Installed#
+# install.packages("#
+#Author: mugiro#
+##
+#################################################################################
+##
+# install.packages("ALL")#
+#
+# install.packages("Cairo")#
+# install.packages("Category")#
+# install.packages("DBI")#
+#
+# install.packages("DEoptimR")#
+# install.packages("DynDoc")#
+# install.packages("FNN")#
+# install.packages("GO.db")#
+# install.packages("GOstats")#
+# install.packages("GSEABase")#
+# install.packages("GWmodel")#
+# install.packages("GenomicFeatures")#
+# install.packages("GenomicRanges")#
+# install.packages("Heatplus")#
+# install.packages("IDPmisc")#
+# install.packages("IRanges")#
+# install.packages("KEGG.db")#
+# install.packages("KernSmooth")#
+# install.packages("LearnBayes")#
+# install.packages("MAQCsubset")#
+# install.packages("MASS")#
+# install.packages("MCMCpack")#
+# install.packages("MLInterfaces")#
+# install.packages("Matrix")#
+# install.packages("Neve2006")#
+# install.packages("R.methodsS3")#
+# install.packages("R.oo")#
+# install.packages("R.utils")#
+# install.packages("RBGL")#
+# install.packages("RColorBrewer")#
+# install.packages("RCurl")#
+# install.packages("ROC")#
+# install.packages("RSQLite")#
+# install.packages("RUnit")#
+# install.packages("Rcpp")#
+# install.packages("RcppArmadillo")#
+# install.packages("Rgraphviz")#
+# install.packages("Rsamtools")#
+# install.packages("SamSPECTRAL")#
+# install.packages("VennDiagram")#
+# install.packages("XML")#
+# install.packages("XVector")#
+# install.packages("abind")#
+# install.packages("ada")#
+# install.packages("affy")#
+# install.packages("affyPLM")#
+# install.packages("affyQCReport")#
+# install.packages("affycomp")#
+# install.packages("affydata")#
+# install.packages("affyio")#
+# install.packages("annaffy")#
+# install.packages("annotate")#
+# install.packages("ape")#
+# install.packages("arules")#
+# install.packages("base")#
+# install.packages("base64")#
+# install.packages("beanplot")#
+# install.packages("bioDist")#
+# install.packages("biomaRt")#
+# install.packages("bitops")#
+# install.packages("boot")#
+# install.packages("bumphunter")#
+# install.packages("caTools")#
+# install.packages("car")#
+# install.packages("class")#
+# install.packages("clue")#
+# install.packages("cluster")#
+# install.packages("coda")#
+# install.packages("codetools")#
+# install.packages("colorspace")#
+# install.packages("compiler")#
+# install.packages("corpcor")#
+# install.packages("data.table")#
+# install.packages("datasets")#
+# install.packages("deldir")#
+# install.packages("dichromat")#
+# install.packages("digest")#
+# install.packages("doRNG")#
+# install.packages("e1071")#
+# install.packages("ellipse")#
+# install.packages("fda")#
+# install.packages("feature")#
+# install.packages("fields")#
+#
+# install.packages("foreach")#
+# install.packages("foreign")#
+# install.packages("gcrma")#
+# install.packages("gdata")#
+# install.packages("genefilter")#
+# install.packages("geneplotter")#
+# install.packages("ggplot2")#
+# install.packages("globaltest")#
+# install.packages("golubEsets")#
+# install.packages("gplots")#
+# install.packages("grDevices")#
+# install.packages("graph")#
+# install.packages("graphics")#
+# install.packages("grid")#
+# install.packages("gridExtra")#
+# install.packages("gstat")#
+# install.packages("gtable")#
+# install.packages("gtools")#
+# install.packages("gwrr")#
+# install.packages("hexbin")#
+#
+# install.packages("illuminaio")#
+# install.packages("intervals")#
+# install.packages("iterators")#
+# install.packages("itertools")#
+# install.packages("ks")#
+# install.packages("labeling")#
+# install.packages("lars")#
+# install.packages("lattice")#
+# install.packages("latticeExtra")#
+# install.packages("lhs")#
+# install.packages("locfit")#
+# install.packages("lumi")#
+# install.packages("makecdfenv")#
+# install.packages("manipulate")#
+# install.packages("maps")#
+# install.packages("maptools")#
+# install.packages("marray")#
+# install.packages("matrixStats")#
+# install.packages("mboost")#
+# install.packages("mclust")#
+# install.packages("methods")#
+# install.packages("methylumi")#
+# install.packages("mgcv")#
+# install.packages("minfi")#
+# install.packages("misc3d")#
+# install.packages("mnormt")#
+# install.packages("multicool")#
+# install.packages("multicore")#
+# install.packages("multtest")#
+# install.packages("munsell")#
+# install.packages("mvoutlier")#
+# install.packages("mvtnorm")#
+# install.packages("ncdfFlow")#
+# install.packages("nleqslv")#
+# install.packages("nlme")#
+# install.packages("nnet")#
+# install.packages("nor1mix")#
+# install.packages("openCyto")#
+# install.packages("org.Hs.eg.db")#
+# install.packages("outliers")#
+# install.packages("pamr")#
+# install.packages("parallel")#
+# install.packages("parody")#
+# install.packages("pasilla")#
+# install.packages("pcaPP")#
+# install.packages("pkgmaker")#
+# install.packages("plateCore")#
+# install.packages("plotrix")#
+# install.packages("pls")#
+# install.packages("plyr")#
+# install.packages("polyCub")#
+# install.packages("polyclip")#
+# install.packages("ppiData")#
+# install.packages("preprocessCore")#
+# install.packages("proto")#
+# install.packages("randomForest")#
+# install.packages("raster")#
+# install.packages("rda")#
+# install.packages("registry")#
+# install.packages("reshape")#
+# install.packages("reshape2")#
+# install.packages("rgdal")#
+# install.packages("rgeos")#
+# install.packages("rgl")#
+install.packages("rj")#
+# install.packages("rj.gd")#
+# install.packages("rngtools")#
+# install.packages("robCompositions")#
+# install.packages("robustbase")#
+# install.packages("rpart")#
+# install.packages("rrcov")#
+# install.packages("rstudio")#
+# install.packages("rtracklayer")#
+# install.packages("scales")#
+# install.packages("sfsmisc")#
+# install.packages("sgeostat")#
+# install.packages("siggenes")#
+# install.packages("simpleaffy")#
+# install.packages("snow")#
+# install.packages("snowfall")#
+# install.packages("sp")#
+# install.packages("spacetime")#
+# install.packages("spam")#
+# install.packages("spatial")#
+# install.packages("spatstat")#
+# install.packages("spdep")#
+# install.packages("spgwr")#
+# install.packages("splines")#
+# install.packages("statmod")#
+# install.packages("stats")#
+# install.packages("stats4")#
+# install.packages("stringr")#
+# install.packages("survival")#
+# install.packages("tcltk")#
+# install.packages("tensor")#
+# install.packages("tkWidgets")#
+# install.packages("tools")#
+# install.packages("translations")#
+# install.packages("utils")#
+# install.packages("vcd")#
+# install.packages("vsn")#
+# install.packages("widgetTools")#
+# install.packages("xtable")#
+# install.packages("xts")#
+# install.packages("yeastExpData")#
+# install.packages("zlibbioc")#
+# install.packages("zoo")#
+################################################################################
+source("http://bioconductor.org/biocLite.R")#
+# biocLite("AnnotationDbi")#
+# biocLite("AnnotationForge")#
+# biocLite("BSgenome")#
+# biocLite("Biobase")#
+# biocLite("BiocGenerics")#
+# biocLite("BiocInstaller")#
+# biocLite("Biostrings")#
+# biocLite("CCl4")#
+# biocLite("DESeq")#
+# biocLite("DESeq2")#
+# biocLite("limma")#
+#
+# biocLite("flowClust")#
+# biocLite("flowCore")#
+# biocLite("flowFP")#
+# biocLite("flowMeans")#
+# biocLite("flowMerge")#
+# biocLite("flowQ")#
+# biocLite("flowStats")#
+# biocLite("flowTrans")#
+# biocLite("flowUtils")#
+# biocLite("flowViz")#
+# biocLite("flowWorkspace")#
+# biocLite("hgu133a.db")#
+# biocLite("hgu133plus2cdf")#
+# biocLite("hgu133plus2hsensgcdf")#
+# biocLite("hgu133plus2hsensgprobe")#
+# biocLite("hgu95av2")#
+# biocLite("hgu95av2.db")#
+# biocLite("hgu95av2cdf")
+install.packages("rj")#
+install.packages("rj.gd")
+install.packages(c("rj", "rj.gd"), repos="http://download.walware.de/rj-1.1")
+install.packages("rJava")
+library()
+packageDescription("rj")
+#TODO: Packages Installed#
+# install.packages("#
+#Author: mugiro#
+##
+#################################################################################
+##
+# install.packages("ALL")#
+#
+# install.packages("Cairo")#
+# install.packages("Category")#
+# install.packages("DBI")#
+#
+# install.packages("DEoptimR")#
+# install.packages("DynDoc")#
+# install.packages("FNN")#
+# install.packages("GO.db")#
+# install.packages("GOstats")#
+# install.packages("GSEABase")#
+# install.packages("GWmodel")#
+# install.packages("GenomicFeatures")#
+# install.packages("GenomicRanges")#
+# install.packages("Heatplus")#
+# install.packages("IDPmisc")#
+# install.packages("IRanges")#
+# install.packages("KEGG.db")#
+# install.packages("KernSmooth")#
+# install.packages("LearnBayes")#
+# install.packages("MAQCsubset")#
+# install.packages("MASS")#
+# install.packages("MCMCpack")#
+# install.packages("MLInterfaces")#
+# install.packages("Matrix")#
+# install.packages("Neve2006")#
+# install.packages("R.methodsS3")#
+# install.packages("R.oo")#
+# install.packages("R.utils")#
+# install.packages("RBGL")#
+# install.packages("RColorBrewer")#
+# install.packages("RCurl")#
+# install.packages("ROC")#
+# install.packages("RSQLite")#
+# install.packages("RUnit")#
+# install.packages("Rcpp")#
+# install.packages("RcppArmadillo")#
+# install.packages("Rgraphviz")#
+# install.packages("Rsamtools")#
+# install.packages("SamSPECTRAL")#
+# install.packages("VennDiagram")#
+# install.packages("XML")#
+# install.packages("XVector")#
+# install.packages("abind")#
+# install.packages("ada")#
+# install.packages("affy")#
+# install.packages("affyPLM")#
+# install.packages("affyQCReport")#
+# install.packages("affycomp")#
+# install.packages("affydata")#
+# install.packages("affyio")#
+# install.packages("annaffy")#
+# install.packages("annotate")#
+# install.packages("ape")#
+# install.packages("arules")#
+# install.packages("base")#
+# install.packages("base64")#
+# install.packages("beanplot")#
+# install.packages("bioDist")#
+# install.packages("biomaRt")#
+# install.packages("bitops")#
+# install.packages("boot")#
+# install.packages("bumphunter")#
+# install.packages("caTools")#
+# install.packages("car")#
+# install.packages("class")#
+# install.packages("clue")#
+# install.packages("cluster")#
+# install.packages("coda")#
+# install.packages("codetools")#
+# install.packages("colorspace")#
+# install.packages("compiler")#
+# install.packages("corpcor")#
+# install.packages("data.table")#
+# install.packages("datasets")#
+# install.packages("deldir")#
+# install.packages("dichromat")#
+# install.packages("digest")#
+# install.packages("doRNG")#
+# install.packages("e1071")#
+# install.packages("ellipse")#
+# install.packages("fda")#
+# install.packages("feature")#
+# install.packages("fields")#
+#
+# install.packages("foreach")#
+# install.packages("foreign")#
+# install.packages("gcrma")#
+# install.packages("gdata")#
+# install.packages("genefilter")#
+# install.packages("geneplotter")#
+# install.packages("ggplot2")#
+# install.packages("globaltest")#
+# install.packages("golubEsets")#
+# install.packages("gplots")#
+# install.packages("grDevices")#
+# install.packages("graph")#
+# install.packages("graphics")#
+# install.packages("grid")#
+# install.packages("gridExtra")#
+# install.packages("gstat")#
+# install.packages("gtable")#
+# install.packages("gtools")#
+# install.packages("gwrr")#
+# install.packages("hexbin")#
+#
+# install.packages("illuminaio")#
+# install.packages("intervals")#
+# install.packages("iterators")#
+# install.packages("itertools")#
+# install.packages("ks")#
+# install.packages("labeling")#
+# install.packages("lars")#
+# install.packages("lattice")#
+# install.packages("latticeExtra")#
+# install.packages("lhs")#
+# install.packages("locfit")#
+# install.packages("lumi")#
+# install.packages("makecdfenv")#
+# install.packages("manipulate")#
+# install.packages("maps")#
+# install.packages("maptools")#
+# install.packages("marray")#
+# install.packages("matrixStats")#
+# install.packages("mboost")#
+# install.packages("mclust")#
+# install.packages("methods")#
+# install.packages("methylumi")#
+# install.packages("mgcv")#
+# install.packages("minfi")#
+# install.packages("misc3d")#
+# install.packages("mnormt")#
+# install.packages("multicool")#
+# install.packages("multicore")#
+# install.packages("multtest")#
+# install.packages("munsell")#
+# install.packages("mvoutlier")#
+# install.packages("mvtnorm")#
+# install.packages("ncdfFlow")#
+# install.packages("nleqslv")#
+# install.packages("nlme")#
+# install.packages("nnet")#
+# install.packages("nor1mix")#
+# install.packages("openCyto")#
+# install.packages("org.Hs.eg.db")#
+# install.packages("outliers")#
+# install.packages("pamr")#
+# install.packages("parallel")#
+# install.packages("parody")#
+# install.packages("pasilla")#
+# install.packages("pcaPP")#
+# install.packages("pkgmaker")#
+# install.packages("plateCore")#
+# install.packages("plotrix")#
+# install.packages("pls")#
+# install.packages("plyr")#
+# install.packages("polyCub")#
+# install.packages("polyclip")#
+# install.packages("ppiData")#
+# install.packages("preprocessCore")#
+# install.packages("proto")#
+# install.packages("randomForest")#
+# install.packages("raster")#
+# install.packages("rda")#
+# install.packages("registry")#
+# install.packages("reshape")#
+# install.packages("reshape2")#
+# install.packages("rgdal")#
+# install.packages("rgeos")#
+# install.packages("rgl")#
+#
+# install.packages("rj")   -> desde source http://www.walware.de/;jsessionid=688711d93c98732400a7a53431f3?page=/it/downloads/rj.html#
+# R CMD INSTALL --no-test-load rj_*.tgz  #
+# > packageDescription("rj")#
+#
+# install.packages("rj.gd")#
+#
+# install.packages("rngtools")#
+# install.packages("robCompositions")#
+# install.packages("robustbase")#
+# install.packages("rpart")#
+# install.packages("rrcov")#
+install.packages("rstudio")#
+# install.packages("rtracklayer")#
+# install.packages("scales")#
+# install.packages("sfsmisc")#
+# install.packages("sgeostat")#
+# install.packages("siggenes")#
+# install.packages("simpleaffy")#
+# install.packages("snow")#
+# install.packages("snowfall")#
+# install.packages("sp")#
+# install.packages("spacetime")#
+# install.packages("spam")#
+# install.packages("spatial")#
+# install.packages("spatstat")#
+# install.packages("spdep")#
+# install.packages("spgwr")#
+# install.packages("splines")#
+# install.packages("statmod")#
+# install.packages("stats")#
+# install.packages("stats4")#
+# install.packages("stringr")#
+# install.packages("survival")#
+# install.packages("tcltk")#
+# install.packages("tensor")#
+# install.packages("tkWidgets")#
+# install.packages("tools")#
+# install.packages("translations")#
+# install.packages("utils")#
+# install.packages("vcd")#
+# install.packages("vsn")#
+# install.packages("widgetTools")#
+# install.packages("xtable")#
+# install.packages("xts")#
+# install.packages("yeastExpData")#
+# install.packages("zlibbioc")#
+# install.packages("zoo")#
+################################################################################
+source("http://bioconductor.org/biocLite.R")#
+# biocLite("AnnotationDbi")#
+# biocLite("AnnotationForge")#
+# biocLite("BSgenome")#
+# biocLite("Biobase")#
+# biocLite("BiocGenerics")#
+# biocLite("BiocInstaller")#
+# biocLite("Biostrings")#
+# biocLite("CCl4")#
+# biocLite("DESeq")#
+# biocLite("DESeq2")#
+# biocLite("limma")#
+#
+# biocLite("flowClust")#
+# biocLite("flowCore")#
+# biocLite("flowFP")#
+# biocLite("flowMeans")#
+# biocLite("flowMerge")#
+# biocLite("flowQ")#
+# biocLite("flowStats")#
+# biocLite("flowTrans")#
+# biocLite("flowUtils")#
+# biocLite("flowViz")#
+# biocLite("flowWorkspace")#
+# biocLite("hgu133a.db")#
+# biocLite("hgu133plus2cdf")#
+# biocLite("hgu133plus2hsensgcdf")#
+# biocLite("hgu133plus2hsensgprobe")#
+# biocLite("hgu95av2")#
+# biocLite("hgu95av2.db")#
+# biocLite("hgu95av2cdf")
+biocLite()
+biocLite("AnnotationDbi")#
+biocLite("AnnotationForge")#
+biocLite("BSgenome")#
+biocLite("Biobase")#
+# biocLite("BiocGenerics")#
+biocLite("BiocInstaller")#
+biocLite("Biostrings")#
+biocLite("CCl4")#
+biocLite("DESeq")#
+biocLite("DESeq2")#
+biocLite("limma")
+biocLite("flowClust")#
+biocLite("flowCore")#
+biocLite("flowFP")#
+biocLite("flowMeans")#
+biocLite("flowMerge")#
+biocLite("flowQ")#
+biocLite("flowStats")#
+biocLite("flowTrans")#
+biocLite("flowUtils")#
+biocLite("flowViz")#
+biocLite("flowWorkspace")#
+biocLite("openCyto")#
+biocLite("healthyFlowData")#
+biocLite("QUALIFIER")#
+biocLite("flowType")
+biocLite("flowMatch")#
+biocLite("ncdfFlow")#
+#
+biocLite("spade")#
+biocLite("RchyOptimyx")#
+biocLite("flowQB")#
+biocLite("flowBin")#
+biocLite("flowBeads")#
+biocLite("flowFit")#
+biocLite("flowFitExampleData")
+#TODO: Packages Installed#
+# install.packages("#
+#Author: mugiro#
+##
+#################################################################################
+##
+# install.packages("ALL")#
+#
+install.packages("Cairo")#
+# install.packages("Category")#
+# install.packages("DBI")#
+#
+install.packages("DEoptimR")#
+# install.packages("DynDoc")#
+# install.packages("FNN")#
+# install.packages("GO.db")#
+# install.packages("GOstats")#
+# install.packages("GSEABase")#
+# install.packages("GWmodel")#
+# install.packages("GenomicFeatures")#
+# install.packages("GenomicRanges")#
+# install.packages("Heatplus")#
+# install.packages("IDPmisc")#
+# install.packages("IRanges")#
+# install.packages("KEGG.db")#
+# install.packages("KernSmooth")#
+# install.packages("LearnBayes")#
+# install.packages("MAQCsubset")#
+# install.packages("MCMCpack")#
+# install.packages("MLInterfaces")#
+# install.packages("Matrix")#
+# install.packages("Neve2006")#
+# install.packages("R.methodsS3")#
+# install.packages("R.oo")#
+install.packages("R.utils")#
+# install.packages("RBGL")#
+install.packages("RColorBrewer")#
+# install.packages("RCurl")#
+# install.packages("ROC")#
+# install.packages("RSQLite")#
+# install.packages("RUnit")#
+# install.packages("Rcpp")#
+# install.packages("RcppArmadillo")#
+# install.packages("Rgraphviz")#
+# install.packages("Rsamtools")#
+# install.packages("SamSPECTRAL")#
+# install.packages("VennDiagram")#
+# install.packages("XML")#
+# install.packages("XVector")#
+# install.packages("abind")#
+# install.packages("ada")#
+# install.packages("affy")#
+# install.packages("affyPLM")#
+# install.packages("affyQCReport")#
+# install.packages("affycomp")#
+# install.packages("affydata")#
+# install.packages("affyio")#
+# install.packages("annaffy")#
+# install.packages("annotate")#
+# install.packages("ape")#
+# install.packages("arules")#
+# install.packages("base")#
+# install.packages("base64")#
+# install.packages("beanplot")#
+# install.packages("bioDist")#
+# install.packages("biomaRt")#
+# install.packages("bitops")#
+# install.packages("boot")#
+# install.packages("bumphunter")#
+# install.packages("caTools")#
+# install.packages("car")#
+# install.packages("class")#
+# install.packages("clue")#
+# install.packages("cluster")#
+# install.packages("coda")#
+# install.packages("codetools")#
+# install.packages("colorspace")#
+# install.packages("compiler")#
+# install.packages("corpcor")#
+# install.packages("data.table")#
+# install.packages("datasets")#
+# install.packages("deldir")#
+# install.packages("dichromat")#
+# install.packages("digest")#
+# install.packages("doRNG")#
+install.packages("e1071")#
+# install.packages("ellipse")#
+# install.packages("fda")#
+# install.packages("feature")#
+# install.packages("fields")#
+#
+# install.packages("foreach")#
+install.packages("foreign")#
+# install.packages("gcrma")#
+# install.packages("gdata")#
+# install.packages("genefilter")#
+# install.packages("geneplotter")#
+install.packages("ggplot2")#
+# install.packages("globaltest")#
+# install.packages("golubEsets")#
+# install.packages("gplots")#
+install.packages("grDevices")#
+# install.packages("graph")#
+# install.packages("graphics")#
+# install.packages("grid")#
+# install.packages("gridExtra")#
+# install.packages("gstat")#
+# install.packages("gtable")#
+# install.packages("gtools")#
+# install.packages("gwrr")#
+# install.packages("hexbin")#
+#
+# install.packages("illuminaio")#
+# install.packages("intervals")#
+# install.packages("iterators")#
+# install.packages("itertools")#
+# install.packages("ks")#
+# install.packages("labeling")#
+# install.packages("lars")#
+install.packages("lattice")#
+install.packages("latticeExtra")#
+install.packages("lhs")#
+# install.packages("locfit")#
+# install.packages("lumi")#
+# install.packages("makecdfenv")#
+# install.packages("manipulate")#
+# install.packages("maps")#
+# install.packages("maptools")#
+# install.packages("marray")#
+# install.packages("matrixStats")#
+# install.packages("mboost")#
+# install.packages("mclust")#
+# install.packages("methods")#
+# install.packages("methylumi")#
+# install.packages("mgcv")#
+# install.packages("minfi")#
+# install.packages("misc3d")#
+# install.packages("mnormt")#
+# install.packages("multicool")#
+# install.packages("multicore")#
+# install.packages("multtest")#
+# install.packages("munsell")#
+# install.packages("mvoutlier")#
+# install.packages("mvtnorm")#
+# install.packages("ncdfFlow")#
+# install.packages("nleqslv")#
+install.packages("nlme")#
+# install.packages("nnet")#
+# install.packages("nor1mix")#
+# install.packages("outliers")#
+# install.packages("pamr")#
+# install.packages("parallel")#
+# install.packages("parody")#
+# install.packages("pasilla")#
+# install.packages("pcaPP")#
+# install.packages("pkgmaker")#
+# install.packages("plateCore")#
+# install.packages("plotrix")#
+# install.packages("pls")#
+# install.packages("plyr")#
+# install.packages("polyCub")#
+# install.packages("polyclip")#
+# install.packages("ppiData")#
+# install.packages("preprocessCore")#
+# install.packages("proto")#
+# install.packages("randomForest")#
+# install.packages("raster")#
+# install.packages("rda")#
+# install.packages("registry")#
+# install.packages("reshape")#
+# install.packages("reshape2")#
+# install.packages("rgdal")#
+# install.packages("rgeos")#
+# install.packages("rgl")#
+#
+# install.packages("rj")   -> desde source http://www.walware.de/;jsessionid=688711d93c98732400a7a53431f3?page=/it/downloads/rj.html#
+# R CMD INSTALL --no-test-load rj_*.tgz  #
+# > packageDescription("rj")#
+#
+# install.packages("rj.gd")#
+#
+# install.packages("rngtools")#
+# install.packages("robCompositions")#
+# install.packages("robustbase")#
+# install.packages("rpart")#
+# install.packages("rrcov")#
+# install.packages("rstudio")#
+# install.packages("rtracklayer")#
+# install.packages("scales")#
+# install.packages("sfsmisc")#
+# install.packages("sgeostat")#
+# install.packages("siggenes")#
+# install.packages("simpleaffy")#
+# install.packages("snow")#
+# install.packages("snowfall")#
+# install.packages("sp")#
+# install.packages("spacetime")#
+# install.packages("spam")#
+# install.packages("spatial")#
+# install.packages("spatstat")#
+# install.packages("spdep")#
+# install.packages("spgwr")#
+# install.packages("splines")#
+# install.packages("statmod")#
+# install.packages("stats")#
+# install.packages("stats4")#
+# install.packages("stringr")#
+# install.packages("survival")#
+# install.packages("tcltk")#
+# install.packages("tensor")#
+# install.packages("tkWidgets")#
+# install.packages("tools")#
+# install.packages("translations")#
+# install.packages("utils")#
+# install.packages("vcd")#
+# install.packages("vsn")#
+# install.packages("widgetTools")#
+install.packages("xtable")#
+# install.packages("xts")#
+# install.packages("yeastExpData")#
+# install.packages("zlibbioc")#
+# install.packages("zoo")
+library(gmodels)
+ci()
+ci(c(2,3,4,5))
+sd(c(2,3,4,5))/sqrt(4)
+help.start
+help.start()
+help(ci)
+help(reshape)
+library(lattice)
+help(dotplot)
+help(t.test)
+help(legend)
+help(gplot)
+help(ggplot)
+library(ggplot2)
+??ggplot
+help(ggplot)
+library(grid) # needed for arrow function#
+p <- ggplot(seals, aes(x = long, y = lat))#
+(p <- p + geom_segment(aes(xend = long + delta_long, yend = lat + delta_lat),#
+  arrow = arrow(length = unit(0.1,"cm"))))#
+#
+if (require("maps")) {#
+#
+xlim <- range(seals$long)#
+ylim <- range(seals$lat)#
+usamap <- data.frame(map("world", xlim = xlim, ylim = ylim, plot =#
+FALSE)[c("x","y")])#
+usamap <- rbind(usamap, NA, data.frame(map('state', xlim = xlim, ylim#
+= ylim, plot = FALSE)[c("x","y")]))#
+names(usamap) <- c("long", "lat")#
+#
+p + geom_path(data = usamap) + scale_x_continuous(limits = xlim)#
+}#
+#
+# You can also use geom_segment to recreate plot(type = "h") :#
+counts <- as.data.frame(table(x = rpois(100,5)))#
+counts$x <- as.numeric(as.character(counts$x))#
+with(counts, plot(x, Freq, type = "h", lwd = 10))#
+#
+qplot(x, Freq, data = counts, geom = "segment",#
+  yend = 0, xend = x, size = I(10))#
+#
+# Adding line segments#
+library(grid) # needed for arrow function#
+b <- ggplot(mtcars, aes(wt, mpg)) + geom_point()#
+b + geom_segment(aes(x = 2, y = 15, xend = 2, yend = 25))#
+b + geom_segment(aes(x = 2, y = 15, xend = 3, yend = 15))#
+b + geom_segment(aes(x = 5, y = 30, xend = 3.5, yend = 25),#
+   arrow = arrow(length = unit(0.5, "cm")))
+rgb()
+rgb("red")
+rgb("#000000")
+??rgb
+help(rgb)
+help(geom_jitter)
+a <- gtable(unit(1:3, c("cm")), unit(5, "cm"))#
+a#
+gtable_show_layout(a)#
+# Add a grob:#
+rect <- rectGrob(gp = gpar(fill = "black"))#
+a <- gtable_add_grob(a, rect, 1, 1)#
+a#
+plot(a)#
+# gtables behave like matrices:#
+dim(a)#
+t(a)#
+plot(t(a))#
+# when subsetting, grobs are retained if their extents lie in the#
+# rows/columns that retained.#
+b <- gtable(unit(c(2, 2, 2), "cm"), unit(c(2, 2, 2), "cm"))#
+b <- gtable_add_grob(b, rect, 2, 2)#
+b[1, ]#
+b[, 1]#
+b[2, 2]#
+# gtable have row and column names#
+rownames(b) <- 1:3#
+rownames(b)[2] <- 200#
+colnames(b) <- letters[1:3]#
+dimnames(b)
+library(gtable)
+a <- gtable(unit(1:3, c("cm")), unit(5, "cm"))#
+a#
+gtable_show_layout(a)
+ect <- rectGrob(gp = gpar(fill = "black"))#
+a <- gtable_add_grob(a, rect, 1, 1)#
+a#
+plot(a)
+a <- gtable(unit(1:3, c("cm")), unit(5, "cm"))#
+a#
+gtable_show_layout(a)#
+# Add a grob:#
+rect <- rectGrob(gp = gpar(fill = "black"))#
+a <- gtable_add_grob(a, rect, 1, 1)#
+a#
+plot(a)#
+# gtables behave like matrices:#
+dim(a)#
+t(a)#
+plot(t(a))
+when subsetting, grobs are retained if their extents lie in the#
+# rows/columns that retained.#
+b <- gtable(unit(c(2, 2, 2), "cm"), unit(c(2, 2, 2), "cm"))#
+b <- gtable_add_grob(b, rect, 2, 2)#
+b[1, ]#
+b[, 1]#
+b[2, 2]#
+# gtable have row and column names#
+rownames(b) <- 1:3#
+rownames(b)[2] <- 200#
+colnames(b) <- letters[1:3]#
+dimnames(b)
+library(MASS)
+??MASS
+??lda
+??qda
+source("/Users/mugiro/00biowork/Membrane/cytometry/exp06.140519.R")
+install.packages("plotrix")
+1 -  (sum((prediction-real)^2)/sum((real-mean(real))^2))
+installed.packages()
+install.packages(c("rj", "rj.gd"), repos="http://download.walware.de/rj-2.0")
+rj()
+library(rj)
+rj::statet.help.start()
+install.packages(c("rj", "rj.gd"), repos="http://download.walware.de/rj-2.0")
+packageDescription("rj")
+packageDescription("rj.gd")
+remove.packages("rj")
+packageDescription("rj")
+remove.packages("rj.gd")
+packageDescription("rj.gd")
+installed.packages()
+packageDescription("rj")
+packageDescription("rj.gd")
+install.packages("devtools")
+data.frame(1,1,1)
+a<- data.frame(1,1,1)
+a
+class(a)
+a <- 1
+a
+class(a)
+f2 <- function(x) invisible(x)
+f1 <- function(x)
+x
+f1(e)
+f1("e")
+f2("e")
+library(utils)
+utils::?
+installed.packages()
+pwd
+getwd()
+setwd("./01work/")
+setwd("./elm/")
+ls
+ls()
+dir()
+devtools::load_all()
+q()
