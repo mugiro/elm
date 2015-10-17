@@ -15,7 +15,7 @@ setClass("SLFN",
                    outputs = "numeric",      # number of output features
                    neurons = "ANY",          # list of all neurons
                    beta = "ANY",             # weight vector outputs
-                   flist = "vector",         # neuron functions
+                   flist = "vector",         # neuron functions. (de momento character,)
                    alpha = "numeric",        # normalization H'H solution
                    batch = "integer",        # batch size of adaptive ELM
                    classification= "character", # type of classification
@@ -65,10 +65,11 @@ setReplaceMethod("bigdata", "SLFN", function(x, value) { x@bigdata <- value; x})
 
 setMethod("show", "SLFN",
           function(object) {
-            cat("SLFN \n")
-            cat("Inputs = ",object@inputs, "\n")
-            cat("Outputs = ", object@outputs, "\n")
-            cat("Hidden neurons = ", object@neurons, "\n")
+            cat("A SLFN with: \n")
+            cat("      ",object@inputs, " inputs - ", object@neurons, " ", object@flist, "hidden neurons -",
+                object@outputs, "outputs", "\n")
+            cat("Training error: \n")
+            cat("Validation error: \n")
           })
 
 
@@ -80,8 +81,8 @@ setMethod("train",
           def = function (object,
                           X = NULL,
                           Y = NULL,
-                          validation = "none",
-                          modelSelection = "none",
+                          validation = "V",
+                          modelSelection = FALSE,
                           classification = FALSE,
                           classType = "single",
                           ...) {
@@ -97,22 +98,40 @@ setMethod("train",
 
           # 3 obtain beta. split model selection vs just training.
           # with model selection we have the option prunning P (aleatory rank of neurons), or OP (ranking based on LARS)
-            if (modelSelection == TRUE){# optimize number of neurons
-              if (validation == "V") {
-                # val. simple
-              } else if (validation == "CV"){
-                # CV
-              } else if (validation == "LOO"){
-                # LOO
-              }
-            } else if (modelSelection == FALSE) {
-            # just train once
+          if (modelSelection == TRUE){# optimize number of neurons
+            if (validation == "V") {
+              # val. simple
+            } else if (validation == "CV"){
+              # CV
+            } else if (validation == "LOO"){
+              # LOO
             }
-
+          } else if (modelSelection == FALSE) {
+            object@beta = algorithm (object, X = X, Y = Y, getBeta = TRUE)
+          }
+          return(object)
           # 4 return errors ??? training error slot ?
+  })
 
-          # return nothing. just update object@beta
-          })
+setGeneric('predict', function(object, ...) standardGeneric('predict'))
+setMethod("predict",
+          signature = 'SLFN',
+          def = function (object,
+                          X = NULL) {
+            H = project(object, X=X)
+            Y = H %*% object@beta
+            return(Y)
+          }
+)
+
+
+
+
+algorithm <- function(object, X, Y, getBeta){
+  H = project(object, X = X)
+  beta = solveSystem(H = H, Y = Y, getBeta = TRUE)$beta
+  return(beta)
+}
 
 project <- function(object, X = NULL){
   # compute matrix H from X
@@ -143,15 +162,29 @@ project <- function(object, X = NULL){
 }
 
 
-solve <- function(object, ...){
-  # obtain beta given H, Y, and training specifications (model selection, validation, etc)
+solveSystem <- function(H, Y, getBeta = TRUE, ...){
+  # solve the linear system H*beta = Y
   #     H [NxL] - matrix after transformation
   #     beta [Lxc] - output weights
   #     T [Nxc] - output matrix (columns = nº variables or classes)
+  #     HH [LxL]
+  #     HT [Lxc]
 
-  # we can do 1 solve with several ifs, or several solves (akusok option)
-  if (model)
+  # solve the system with otrhogonal projection - correlation matrices HH*beta=HT
+  # similar to .proj_cpu (akusok)
 
-  return(beta)
+  HH = t(H) %*% H
+  HT = t(H) %*% Y
+  if (getBeta == TRUE) {
+    beta = solve (HH, HT) # base package
+    return(list("HH" = HH, "HT" = HT, "beta" = beta))
+  } else {
+    return(list("HH" = HH, "HT" = HT))
+  }
 }
+
+
+
+
+
 
