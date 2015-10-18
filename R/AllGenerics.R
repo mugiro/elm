@@ -31,7 +31,8 @@ setGeneric("bigdata<-", function(x, value) standardGeneric("bigdata<-"))
 
 # Other functions
 
-
+setGeneric("train", function(object, ...) standardGeneric("train"))
+setGeneric("predict", function(object, ...) standardGeneric("predict"))
 
 # From other packages ...
 

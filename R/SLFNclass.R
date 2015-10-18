@@ -1,15 +1,12 @@
-#
-#  Urraca-Valle, Ruben & Sanz-Garcia, Andres (12-10-2015)
-#
-#
-# SLFN Class
-# Single-hidden Layer Feed-forward Network
+### SFLN Class definition, accessor functions, print and summary methods
+### #  Urraca-Valle, Ruben & Sanz-Garcia, Andres (12-10-2015)
 
-#
-# Class definition, accessor functions, print and summary methods
-#
-
-source("R/AllGenerics.R")
+##' Class "SFLN" of Single-hidden Layer Feed-forward Network
+##'  --> ../man/SLFN-class.Rd
+##'      ~~~~~~~~~~~~~~~~~~~~~~~
+##' @keywords classes
+##' @importFrom methods setClass
+##' @export
 setClass("SLFN",
          slots = c(inputs = "numeric",       # number of input features
                    outputs = "numeric",      # number of output features
@@ -59,15 +56,23 @@ setReplaceMethod("weights_wc", "SLFN", function(x, value) { x@weights_wc <- valu
 setReplaceMethod("time", "SLFN", function(x, value) { x@time <- value; x})
 setReplaceMethod("bigdata", "SLFN", function(x, value) { x@bigdata <- value; x})
 
-#
-# PRINT method
-#
 
+#### Show ####
+
+#' Display a SLFN object
+#'
+#' @rdname show.SFLN
+#' @name show.SFLN
+#' @param object The SFLN object to be displayed
+#' @importFrom methods setMethod
+#' @exportMethod show
 setMethod("show", "SLFN",
           function(object) {
             cat("A SLFN with: \n")
-            cat("      ",object@inputs, " inputs - ", object@neurons, " ", object@flist, "hidden neurons -",
-                object@outputs, "outputs", "\n")
+            cat("      ",object@inputs, " inputs - ",
+                         object@neurons, " ",
+                         object@flist, "hidden neurons -",
+                         object@outputs, "outputs", "\n")
             cat("Training error: \n")
             cat("Validation error: \n")
           })
@@ -75,7 +80,7 @@ setMethod("show", "SLFN",
 
 # TRAIN method
 
-setGeneric('train', function(object, ...) standardGeneric('train'))
+##' @export
 setMethod("train",
           signature = 'SLFN',
           def = function (object,
@@ -113,7 +118,7 @@ setMethod("train",
           # 4 return errors ??? training error slot ?
   })
 
-setGeneric('predict', function(object, ...) standardGeneric('predict'))
+##' @export
 setMethod("predict",
           signature = 'SLFN',
           def = function (object,
@@ -124,31 +129,31 @@ setMethod("predict",
           }
 )
 
-
-
-
+##' @export
 algorithm <- function(object, X, Y, getBeta){
   H = project(object, X = X)
   beta = solveSystem(H = H, Y = Y, getBeta = TRUE)$beta
   return(beta)
 }
 
-project <- function(object, X = NULL){
-  # compute matrix H from X
-  #     X [Nxd] - input matrix
-  #     B [Nx1] - input bias
-  #     W [dxL] - input weights
-  #     H [NxL] - matrix after transformation
-  #     H0 [NxL] - matrix before tranformation
+##' Compute the matrix H from X
+##' @param object
+##' @param X a matrix of dimensions [Nxd]; input matrix
+##' @return H a matrix of dimensions [NxL]; matrix after transformation
+##' @export
+project <- function(object, X=NULL){
   # random part (input weights)
   if (object@flist == 'rbf') {
-
+    print("object@flist == 'rbf'")
   } else {
+    # W a matrix of dimensions [dxL]; input weights
     W = matrix( rnorm (object@inputs * object@neurons, mean = 0, sd = 1), nrow = object@inputs, ncol = object@neurons)
+    # B a matrix of dimensions [Nx1]; input bias
     B = rnorm (nrow(X), mean = 0, sd = 1)
+    # H0 a matrix of dimensions [NxL]; matrix before tranformation
     H0 = X %*% W + B # could be implented in c++
   }
-  # transformation
+  # Transformation step:
   if (object@flist == "linear"){
     H = H0
   } else if (object@flist == "sigmoid"){
@@ -161,20 +166,17 @@ project <- function(object, X = NULL){
   return(H)
 }
 
-
-solveSystem <- function(H, Y, getBeta = TRUE, ...){
-  # solve the linear system H*beta = Y
-  #     H [NxL] - matrix after transformation
-  #     beta [Lxc] - output weights
-  #     T [Nxc] - output matrix (columns = nº variables or classes)
-  #     HH [LxL]
-  #     HT [Lxc]
-
-  # solve the system with otrhogonal projection - correlation matrices HH*beta=HT
-  # similar to .proj_cpu (akusok)
-
-  HH = t(H) %*% H
-  HT = t(H) %*% Y
+##' Solve the linear system H*beta = Y. Solve the system with otrhogonal
+##' projection - correlation matrices HH*beta=HT similar to .proj_cpu (akusok).
+##' May be it should be an S3 method...   params(object) <- newvalue
+##' @param H a matrix of dimensions [NxL] after transformation
+##' @param getBeta logical; needs to be true to return beta value
+##' @param Y a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)
+##' @return beta a matrix of dimensions [Lxc] with the output weights
+##' @export
+solveSystem <- function(H, Y, getBeta = TRUE){
+  HH = t(H) %*% H  #     HH [LxL]
+  HT = t(H) %*% Y  #     HT [Lxc]
   if (getBeta == TRUE) {
     beta = solve (HH, HT) # base package
     return(list("HH" = HH, "HT" = HT, "beta" = beta))

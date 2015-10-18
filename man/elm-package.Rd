@@ -2,12 +2,9 @@
 \alias{elm-package}
 \alias{elm}
 \docType{package}
-\title{
-What the package does (short line)
-}
+\title{What the package does (short line)}
 \description{
-More about what it does (maybe more than one line)
-~~ A concise (1-5 lines) description of the package ~~
+More about what it does (maybe more than one line) A concise (1-5 lines) description of the package
 }
 \details{
 \tabular{ll}{

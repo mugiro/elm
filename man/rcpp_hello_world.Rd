@@ -1,6 +1,5 @@
 \name{rcpp_hello_world}
 \alias{rcpp_hello_world}
-\docType{package}
 \title{
 Simple function using Rcpp
 }
@@ -8,7 +7,7 @@ Simple function using Rcpp
 Simple function using Rcpp
 }
 \usage{
-rcpp_hello_world()	
+rcpp_hello_world()
 }
 \examples{
 \dontrun{
