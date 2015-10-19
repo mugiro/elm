@@ -30,7 +30,7 @@ setGeneric("time<-", function(x, value) standardGeneric("time<-"))
 setGeneric("bigdata<-", function(x, value) standardGeneric("bigdata<-"))
 
 # Other functions
-
+setGeneric("checkData", function(object, ...) standardGeneric("checkData"))
 setGeneric("train", function(object, ...) standardGeneric("train"))
 setGeneric("predict", function(object, ...) standardGeneric("predict"))
 

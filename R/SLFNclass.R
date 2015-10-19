@@ -70,12 +70,30 @@ setMethod("show", "SLFN",
           function(object) {
             cat("A SLFN with: \n")
             cat("      ",object@inputs, " inputs - ",
-                         object@neurons, " ",
-                         object@flist, "hidden neurons -",
-                         object@outputs, "outputs", "\n")
+                object@neurons, " ",
+                object@flist, "hidden neurons -",
+                object@outputs, "outputs", "\n")
             cat("Training error: \n")
             cat("Validation error: \n")
           })
+
+
+#' Check that the input and output data and dimensions are correct
+##' See _checkdata in original code
+setMethod("checkData", "SLFN",
+          function(object,X,T) {
+            if (!is.null(X)){
+              # Check dimensions
+            }
+
+            if (!is.null(T)){
+              # Check dimensions
+            }
+            return (X,T)
+
+          })
+
+## Cargar y guardas una red ELM
 
 
 # TRAIN method
@@ -92,31 +110,31 @@ setMethod("train",
                           classType = "single",
                           ...) {
 
-          # 1 - split regression classification
-              # only affects error computation if data are introduced correctly (binary)
-              # Also affects the solving process in the case of weighted class.
-                # multi-class (mc) - n classes = n outputs. output with higher index (closer to 1) is selected
-                # multi-label (ml) - n classes = n outpus. output above a thershold are selected
-                # weighted (w) - uneven classes. they are weighted
+            # 1 - split regression classification
+            # only affects error computation if data are introduced correctly (binary)
+            # Also affects the solving process in the case of weighted class.
+            # multi-class (mc) - n classes = n outputs. output with higher index (closer to 1) is selected
+            # multi-label (ml) - n classes = n outpus. output above a thershold are selected
+            # weighted (w) - uneven classes. they are weighted
 
-          # 2 - call project () - return H
+            # 2 - call project () - return H
 
-          # 3 obtain beta. split model selection vs just training.
-          # with model selection we have the option prunning P (aleatory rank of neurons), or OP (ranking based on LARS)
-          if (modelSelection == TRUE){# optimize number of neurons
-            if (validation == "V") {
-              # val. simple
-            } else if (validation == "CV"){
-              # CV
-            } else if (validation == "LOO"){
-              # LOO
+            # 3 obtain beta. split model selection vs just training.
+            # with model selection we have the option prunning P (aleatory rank of neurons), or OP (ranking based on LARS)
+            if (modelSelection == TRUE){# optimize number of neurons
+              if (validation == "V") {
+                # val. simple
+              } else if (validation == "CV"){
+                # CV
+              } else if (validation == "LOO"){
+                # LOO
+              }
+            } else if (modelSelection == FALSE) {
+              object@beta = algorithm (object, X = X, Y = Y, getBeta = TRUE)
             }
-          } else if (modelSelection == FALSE) {
-            object@beta = algorithm (object, X = X, Y = Y, getBeta = TRUE)
-          }
-          return(object)
-          # 4 return errors ??? training error slot ?
-  })
+            return(object)
+            # 4 return errors ??? training error slot ?
+          })
 
 ##' @export
 setMethod("predict",
@@ -185,7 +203,7 @@ solveSystem <- function(H, Y, getBeta = TRUE){
   }
 }
 
-
+#
 
 
 
