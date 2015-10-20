@@ -5,21 +5,23 @@
 ##'  --> ../man/SLFN-class.Rd
 ##'      ~~~~~~~~~~~~~~~~~~~~~~~
 ##' @keywords classes
-##' @importFrom methods setClass
+##' @import methods
 ##' @export
+##' @examples
+##' print(new("SLFN"))
 setClass("SLFN",
          slots = c(inputs = "numeric",       # number of input features
                    outputs = "numeric",      # number of output features
                    neurons = "ANY",          # list of all neurons
                    beta = "ANY",             # weight vector outputs
-                   flist = "vector",         # neuron functions. (de momento character,)
+                   flist = "ANY",            # neuron functions - character,
                    alpha = "numeric",        # normalization H'H solution
                    batch = "integer",        # batch size of adaptive ELM
                    classification= "character", # type of classification
                    weights_wc = "ANY",      # weigths in weighted class.
                    time = "numeric",         # time of calculation
                    bigdata = "logical"),     # selection of acelerator
-         prototype = prototype(inputs = integer(1),
+         prototype = prototype(inputs = integer(1),  # Initialize the SLFN
                                outputs = integer(1),
                                neurons = NULL,
                                beta = NULL,
@@ -31,50 +33,59 @@ setClass("SLFN",
                                time = 0 ,
                                bigdata = FALSE))
 
-# Get/Set methods
+# Getter and setter methods (Remove the ones that should be private)
+##' @exportMethod inputs
 setMethod("inputs","SLFN",function(object) return(object@inputs))
+##' @exportMethod outputs
 setMethod("outputs","SLFN",function(object) return(object@outputs))
+##' @exportMethod neurons
 setMethod("neurons","SLFN",function(object) return(object@neurons))
+##' @exportMethod beta
 setMethod("beta","SLFN",function(object) return(object@beta))
+##' @exportMethod flist
 setMethod("flist","SLFN",function(object) return(object@flist))
+##' @exportMethod alpha
 setMethod("alpha","SLFN",function(object) return(object@alpha))
+##' @exportMethod batch
 setMethod("batch","SLFN",function(object) return(object@batch))
+##' @exportMethod classification
 setMethod("classification","SLFN",function(object) return(object@classification))
+##' @exportMethod weights_wc
 setMethod("weights_wc","SLFN",function(object) return(object@weights_wc))
+##' @exportMethod time
 setMethod("time","SLFN",function(object) return(object@time))
+##' @exportMethod bigdata
 setMethod("bigdata","SLFN",function(object) return(object@bigdata))
 
-setReplaceMethod("inputs", "SLFN", function(x, value) { x@inputs <- value; x})
-setReplaceMethod("outputs", "SLFN", function(x, value) { x@outputs <- value; x})
-setReplaceMethod("neurons", "SLFN", function(x, value) { x@neurons <- value; x})
-setReplaceMethod("beta", "SLFN", function(x, value) { x@beta <- value; x})
-setReplaceMethod("flist", "SLFN", function(x, value) { x@flist <- value; x})
-setReplaceMethod("alpha", "SLFN", function(x, value) { x@alpha <- value; x})
-setReplaceMethod("batch", "SLFN", function(x, value) { x@batch <- value; x})
-setReplaceMethod("classification", "SLFN", function(x, value) {x@classification <- value; x})
-setReplaceMethod("weights_wc", "SLFN", function(x, value) { x@weights_wc <- value; x})
-setReplaceMethod("time", "SLFN", function(x, value) { x@time <- value; x})
-setReplaceMethod("bigdata", "SLFN", function(x, value) { x@bigdata <- value; x})
+setMethod("inputs<-", "SLFN", function(x, value) { x@inputs = value; x})
+setMethod("outputs<-", "SLFN", function(x, value) { x@outputs = value; x})
+setMethod("neurons<-", "SLFN", function(x, value) { x@neurons = value; x})
+setMethod("beta<-", "SLFN", function(x, value) { x@beta = value; x})
+setMethod("flist<-", "SLFN", function(x, value) { x@flist = value; x})
+setMethod("alpha<-", "SLFN", function(x, value) { x@alpha = value; x})
+setMethod("batch<-", "SLFN", function(x, value) { x@batch = value; x})
+setMethod("classification<-", "SLFN", function(x, value) {x@classification = value; x})
+setMethod("weights_wc<-", "SLFN", function(x, value) { x@weights_wc = value; x})
+setMethod("time<-", "SLFN", function(x, value) { x@time = value; x})
+setMethod("bigdata<-", "SLFN", function(x, value) { x@bigdata = value; x})
 
 
 #### Show ####
 
 #' Display a SLFN object
 #'
-#' @rdname show.SFLN
-#' @name show.SFLN
-#' @param object The SFLN object to be displayed
-#' @importFrom methods setMethod
+#' @rdname show.SLFN
+#' @name show.SLFN
+#' @param object The SLFN object to be displayed
+#' @import methods
 #' @exportMethod show
 setMethod("show", "SLFN",
           function(object) {
             cat("A SLFN with: \n")
-            cat("      ",object@inputs, " inputs - ",
-                object@neurons, " ",
-                object@flist, "hidden neurons -",
-                object@outputs, "outputs", "\n")
-            cat("Training error: \n")
-            cat("Validation error: \n")
+            cat("      ",object@inputs, " inputs - ", object@neurons, " ",
+              object@flist, "hidden neurons -", object@outputs, "outputs", "\n")
+            cat("The hidden layer neurons: \n")
+            cat("FALTA EXTRAER ESTOS OBJETOS CREADOS CON add_neurons \n")
           })
 
 
@@ -93,7 +104,20 @@ setMethod("checkData", "SLFN",
 
           })
 
-## Cargar y guardas una red ELM
+
+##' Save a SLFN
+setMethod("saveSLFN", "SLFN",
+          function(object,X,T) {
+            print("function saveSLFN")
+
+          })
+
+##' Load a SLFN
+setMethod("loadSLFN", "SLFN",
+          function(object,X,T) {
+            print("function loadSLFN")
+
+          })
 
 
 # TRAIN method
@@ -184,9 +208,10 @@ project <- function(object, X=NULL){
   return(H)
 }
 
-##' Solve the linear system H*beta = Y. Solve the system with otrhogonal
-##' projection - correlation matrices HH*beta=HT similar to .proj_cpu (akusok).
-##' May be it should be an S3 method...   params(object) <- newvalue
+
+##' Solve the linear system H %*% beta = Y - [NxL] %*% [Lxc] = [Nxc]
+##' Solve the system with orthogonal projection - correlation matrices
+##' HH * beta = HT similar to .proj_cpu (akusok).
 ##' @param H a matrix of dimensions [NxL] after transformation
 ##' @param getBeta logical; needs to be true to return beta value
 ##' @param Y a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)
@@ -196,15 +221,12 @@ solveSystem <- function(H, Y, getBeta = TRUE){
   HH = t(H) %*% H  #     HH [LxL]
   HT = t(H) %*% Y  #     HT [Lxc]
   if (getBeta == TRUE) {
-    beta = solve (HH, HT) # base package
-    return(list("HH" = HH, "HT" = HT, "beta" = beta))
+    # WE SHOULD USE MATRIX PACKAGE: solve-methods {Matrix}
+    beta = solve (HH, HT) # base package. Interface to the LAPACK routine DGESV
   } else {
-    return(list("HH" = HH, "HT" = HT))
+    beta = NULL
   }
+  return(list("HH" = HH, "HT" = HT, "beta" = beta))
 }
-
-#
-
-
-
+print(beta)
 
