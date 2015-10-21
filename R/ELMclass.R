@@ -1,19 +1,19 @@
+### ELM Class definition, accessor functions, print and summary methods
+### #  Urraca-Valle, Ruben & Sanz-Garcia, Andres (12-10-2015)
+
 ##' Class "ELM"
-##' ELM Class definition, accessor functions, print and summary methods.
-##' This is the main class for training the extreme learning machine.
-##' Urraca-Valle, Ruben & Sanz-Garcia, Andres (12-10-2015)
 ##'  --> ../man/ELM-class.Rd
 ##'      ~~~~~~~~~~~~~~~~~~~~~~~
 ##' @include SLFNclass.R
 ##' @keywords classes
-##' @import methods
+##' @importFrom methods setClass
 ##' @export
 setClass("ELM",
          slots = c(ID = "numeric"),
          contains = "SLFN",
          prototype = prototype(ID=0))
 
-# Getter and setter methods (Remove the ones that should be private)
+# Get/Set methods
 
 
 #### Show ####
