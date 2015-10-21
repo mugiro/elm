@@ -54,6 +54,8 @@ setGeneric("bigdata<-", function(x, value) standardGeneric("bigdata<-"))
 
 # Other functions
 setGeneric("checkData", function(object, ...) standardGeneric("checkData"))
+setGeneric("saveSLFN", function(object, ...) standardGeneric("saveSLFN"))
+setGeneric("loadSLFN", function(object, ...) standardGeneric("loadSLFN"))
 setGeneric("train", function(object, ...) standardGeneric("train"))
 setGeneric("predict", function(object, ...) standardGeneric("predict"))
 setGeneric("project", function(object, ...) standardGeneric("project"))
@@ -61,7 +63,6 @@ setGeneric("solveSystem", function(object, ...) standardGeneric("solveSystem"))
 setGeneric("rankNeurons", function(object, ...) standardGeneric("rankNeurons"))
 setGeneric("error", function(object, ...) standardGeneric("error"))
 setGeneric("trainV", function(object, ...) standardGeneric("trainV"))
-
 
 # From other packages ...
 
