@@ -5,8 +5,10 @@
 ##'  --> ../man/SLFN-class.Rd
 ##'      ~~~~~~~~~~~~~~~~~~~~~~~
 ##' @keywords classes
-##' @importFrom methods setClass
+##' @import methods
 ##' @export
+##' @examples
+##' print(new("SLFN"))
 setClass("SLFN",
          slots = c(inputs = "numeric",       # number of input features
                    outputs = "numeric",      # number of output features
@@ -23,7 +25,7 @@ setClass("SLFN",
                    weights.wc = "ANY",      # weigths in weighted class.
                    time = "numeric",         # time of calculation
                    bigdata = "logical"),     # selection of acelerator
-         prototype = prototype(inputs = integer(1),
+         prototype = prototype(inputs = integer(1),  # Initialize the SLFN
                                outputs = integer(1),
                                neurons = NULL,
                                beta = NULL,
@@ -39,54 +41,67 @@ setClass("SLFN",
                                time = 0 ,
                                bigdata = FALSE))
 
-# Get/Set methods
+# Getter and setter methods (Remove the ones that should be private)
+##' @exportMethod inputs
 setMethod("inputs","SLFN",function(object) return(object@inputs))
+##' @exportMethod outputs
 setMethod("outputs","SLFN",function(object) return(object@outputs))
+##' @exportMethod neurons
 setMethod("neurons","SLFN",function(object) return(object@neurons))
+##' @exportMethod beta
 setMethod("beta","SLFN",function(object) return(object@beta))
+##' @exportMethod act
 setMethod("act","SLFN",function(object) return(object@act))
+##' @exportMethod alpha
 setMethod("alpha","SLFN",function(object) return(object@alpha))
+##' @exportMethod structureSelection
 setMethod("structureSelection","SLFN",function(object) return(object@structureSelection))
+##' @exportMethod ranking
 setMethod("ranking","SLFN",function(object) return(object@ranking))
+##' @exportMethod validation
 setMethod("validation","SLFN",function(object) return(object@validation))
+##' @exportMethod batch
 setMethod("batch","SLFN",function(object) return(object@batch))
+##' @exportMethod classification
 setMethod("classification","SLFN",function(object) return(object@classification))
+##' @exportMethod weights_wc
 setMethod("weights_wc","SLFN",function(object) return(object@weights_wc))
+##' @exportMethod time
 setMethod("time","SLFN",function(object) return(object@time))
+##' @exportMethod bigdata
 setMethod("bigdata","SLFN",function(object) return(object@bigdata))
 
-setReplaceMethod("inputs", "SLFN", function(x, value) { x@inputs <- value; x})
-setReplaceMethod("outputs", "SLFN", function(x, value) { x@outputs <- value; x})
-setReplaceMethod("neurons", "SLFN", function(x, value) { x@neurons <- value; x})
-setReplaceMethod("beta", "SLFN", function(x, value) { x@beta <- value; x})
-setReplaceMethod("act", "SLFN", function(x, value) { x@act <- value; x})
-setReplaceMethod("alpha", "SLFN", function(x, value) { x@alpha <- value; x})
-setReplaceMethod("structureSelection","SLFN",function(x, value) { x@structureSelection <- value; x})
-setReplaceMethod("ranking","SLFN",function(x, value) { x@ranking <- value; x})
-setReplaceMethod("validation","SLFN",function(x, value) { x@validation <- value; x})
-setReplaceMethod("batch", "SLFN", function(x, value) { x@batch <- value; x})
-setReplaceMethod("classification", "SLFN", function(x, value) {x@classification <- value; x})
-setReplaceMethod("weights_wc", "SLFN", function(x, value) { x@weights_wc <- value; x})
-setReplaceMethod("time", "SLFN", function(x, value) { x@time <- value; x})
-setReplaceMethod("bigdata", "SLFN", function(x, value) { x@bigdata <- value; x})
+setMethod("inputs<-", "SLFN", function(x, value) { x@inputs = value; x})
+setMethod("outputs<-", "SLFN", function(x, value) { x@outputs = value; x})
+setMethod("neurons<-", "SLFN", function(x, value) { x@neurons = value; x})
+setMethod("beta<-", "SLFN", function(x, value) { x@beta = value; x})
+setMethod("act<-", "SLFN", function(x, value) { x@act <- value; x})
+setMethod("alpha<-", "SLFN", function(x, value) { x@alpha = value; x})
+setMethod("structureSelection<-","SLFN",function(x, value) { x@structureSelection <- value; x})
+setMethod("ranking<-","SLFN",function(x, value) { x@ranking <- value; x})
+setMethod("validation<-","SLFN",function(x, value) { x@validation <- value; x})
+setMethod("batch<-", "SLFN", function(x, value) { x@batch = value; x})
+setMethod("classification<-", "SLFN", function(x, value) {x@classification = value; x})
+setMethod("weights_wc<-", "SLFN", function(x, value) { x@weights_wc = value; x})
+setMethod("time<-", "SLFN", function(x, value) { x@time = value; x})
+setMethod("bigdata<-", "SLFN", function(x, value) { x@bigdata = value; x})
 
 
 #### Show ####
 
 #' Display a SLFN object
 #'
-#' @rdname show.SFLN
-#' @name show.SFLN
-#' @param object The SFLN object to be displayed
-#' @importFrom methods setMethod
+#' @rdname show.SLFN
+#' @name show.SLFN
+#' @param object The SLFN object to be displayed
+#' @import methods
 #' @exportMethod show
 setMethod("show", "SLFN",
           function(object) {
             cat("A SLFN with: \n")
-            cat("      ",inputs(object), " inputs - ",
-                neurons(object), " ",
-                act(object), "hidden neurons -",
-                outputs(object), "outputs", "\n")
+            cat("      ",inputs(object), " inputs - ", neurons(object), " ",
+                act(object), "hidden neurons -", outputs(object), "outputs", "\n")
+            cat("FALTA EXTRAER EL DETALLE DE LOS OBJETOS CREADOS CON add_neurons \n")
             cat("Training scheme: \n")
             if (structureSelection(object)){
               cat("    Prunning = TRUE ")
@@ -112,7 +127,6 @@ setMethod("checkData", "SLFN",
             if (!is.null(X)){
               # Check dimensions
             }
-
             if (!is.null(T)){
               # Check dimensions
             }
@@ -120,7 +134,20 @@ setMethod("checkData", "SLFN",
 
           })
 
-## Cargar y guardas una red ELM
+
+##' Save a SLFN
+setMethod("saveSLFN", "SLFN",
+          function(object,X,T) {
+            print("function saveSLFN")
+
+          })
+
+##' Load a SLFN
+setMethod("loadSLFN", "SLFN",
+          function(object,X,T) {
+            print("function loadSLFN")
+
+          })
 
 
 # TRAIN method
@@ -153,7 +180,7 @@ setMethod("train",
               ranking(object) = ranking
               validation(object) = valdiation
               if (validation == "CV")
-                  folds(object) = folds
+                folds(object) = folds
             }
 
             # 3 obtain beta. split model selection vs just training.
@@ -184,25 +211,24 @@ setMethod("predict",
           }
 )
 
+##' Compute the matrix H from X
+##' @param object
+##' @param X a matrix of dimensions [Nxd]; input matrix
+##' @return H a matrix of dimensions [NxL]; matrix after transformation
 ##' @export
 setMethod("project",
           signature = "SLFN",
           def = function(object, X = NULL){
-            ##' Compute the matrix H from X
-            ##' @param object
-            ##' @param X a matrix of dimensions [Nxd]; input matrix
-            ##' @return H a matrix of dimensions [NxL]; matrix after transformation
-            ##' @export
             # random part (input weights)
             if (act(object) == 'rbf') {
               print("object@flist == 'rbf'")
             } else {
               # W a matrix of dimensions [dxL]; input weights
-              W = matrix( rnorm (inputs(object) * neurons(object), mean = 0, sd = 1), nrow = inputs(object), ncol = neurons(object))
+              W = matrix(rnorm(inputs(object) * neurons(object), mean = 0, sd = 1), nrow = inputs(object), ncol = neurons(object))
               # B a matrix of dimensions [Nx1]; input bias
               B = rnorm (nrow(X), mean = 0, sd = 1)
               # H0 a matrix of dimensions [NxL]; matrix before tranformation
-              H0 = X %*% W + B # could be implented in c++
+              H0 = X %*% W + B # could be implented in C++ (should be!!!)
             }
             # Transformation step:
             if (act(object) == "linear"){
@@ -215,32 +241,29 @@ setMethod("project",
 
             }
             return(H)
-          }
+          })
 
-)
-
+##' Solve the linear system H %*% beta = Y - [NxL] %*% [Lxc] = [Nxc]
+##' Solve the system with orthogonal projection - correlation matrices
+##' HH * beta = HT similar to .proj_cpu (akusok).
+##' @param H a matrix of dimensions [NxL] after transformation
+##' @param getBeta logical; needs to be true to return beta value
+##' @param Y a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)
+##' @return beta a matrix of dimensions [Lxc] with the output weights
+##' @export
 setMethod(f = "solveSystem",
           signature = "SLFN",
           def = function (object, H, Y, getBeta = TRUE){
-            ##' Solve the linear system H*beta = Y. Solve the system with otrhogonal
-            ##' projection - correlation matrices HH*beta=HT similar to .proj_cpu (akusok).
-            ##' May be it should be an S3 method...   params(object) <- newvalue
-            ##' @param H a matrix of dimensions [NxL] after transformation
-            ##' @param getBeta logical; needs to be true to return beta value
-            ##' @param Y a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)
-            ##' @return beta a matrix of dimensions [Lxc] with the output weights
-            ##' @export
-
-            HH = (t(H) %*% H) + diag(neurons(object)) * alpha(object) #     HH [LxL]
-            HT = t(H) %*% Y  #     HT [Lxc]
+            HH = (t(H) %*% H) + diag(neurons(object)) * alpha(object) # HH [LxL]
+            HT = t(H) %*% Y  # HT [Lxc]
             if (getBeta == TRUE) {
-              beta = solve (HH, HT) # base package
-              return(list("HH" = HH, "HT" = HT, "beta" = beta))
+              # WE SHOULD USE MATRIX PACKAGE: solve-methods {Matrix}
+              beta = solve (HH, HT) # base package. Interface to the LAPACK routine DGESV
             } else {
-              return(list("HH" = HH, "HT" = HT))
+              beta = NULL
             }
-          }
-)
+            return(list("HH" = HH, "HT" = HT, "beta" = beta)) # one return only
+          })
 
 
 setMethod(f = "rankNeurons",
@@ -253,15 +276,14 @@ setMethod(f = "rankNeurons",
               rank = sample(1:neurons(object))
             }
             return(rank)
-          }
-)
+          })
 
 # MSE error
 setMethod(f = "error",
           signature = "SLFN",
           def = function(object, Y = NULL, Yp = NULL){
             if (classification){
-            # classification case
+              # classification case
             } else {
               if (validation(object) == "LOO"){
                 # LOO error
@@ -269,9 +291,8 @@ setMethod(f = "error",
                 error = (sum ((Y - Yp)^2)) / length(y) # when dimension Y > 1 ????
               }
             }
-          return(error)
-          }
-)
+            return(error)
+          })
 
 
 setMethod(f = "trainV",
@@ -339,6 +360,5 @@ setMethod(f = "trainV",
             H = H[,nRank[1:nnOpt]]
             beta(object) = solveSystem(object, H = H, Y = Y, getBeta = TRUE)$beta
             return (object)
-          }
-)
+          })
 

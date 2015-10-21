@@ -4,21 +4,36 @@
 
 # General methods
 
-# Get/Set methods
+# Getter and setter methods (Remove the ones that should be private)
+##' @export inputs
 setGeneric("inputs",function(object, ...) standardGeneric("inputs"))
+##' @export outputs
 setGeneric("outputs",function(object, ...) standardGeneric("outputs"))
+##' @export neurons
 setGeneric("neurons",function(object, ...) standardGeneric("neurons"))
+##' @export beta
 setGeneric("beta",function(object, ...) standardGeneric("beta"))
+##' @export act
 setGeneric("act",function(object, ...) standardGeneric("act"))
+##' @export alpha
 setGeneric("alpha",function(object, ...) standardGeneric("alpha"))
+##' @export structureSelection
 setGeneric("structureSelection",function(object, ...) standardGeneric("structureSelection"))
+##' @export validation
 setGeneric("validation",function(object, ...) standardGeneric("validation"))
+##' @export folds
 setGeneric("folds",function(object, ...) standardGeneric("folds"))
+##' @export ranking
 setGeneric("ranking",function(object, ...) standardGeneric("ranking"))
+##' @export batch
 setGeneric("batch",function(object, ...) standardGeneric("batch"))
+##' @export classification
 setGeneric("classification",function(object, ...) standardGeneric("classification"))
+##' @export weights_wc
 setGeneric("weights_wc",function(object, ...) standardGeneric("weights_wc"))
+##' @export time
 setGeneric("time",function(object, ...) standardGeneric("time"))
+##' @export bigdata
 setGeneric("bigdata",function(object, ...) standardGeneric("bigdata"))
 
 setGeneric("inputs<-", function(x, value) standardGeneric("inputs<-"))
