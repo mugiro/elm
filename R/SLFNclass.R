@@ -137,7 +137,7 @@ algorithm <- function(object, X, Y, getBeta){
 }
 
 ##' Compute the matrix H from X
-##' @param object
+##' @param object an instance to the SLFN class
 ##' @param X a matrix of dimensions [Nxd]; input matrix
 ##' @return H a matrix of dimensions [NxL]; matrix after transformation
 ##' @export
