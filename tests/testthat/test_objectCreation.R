@@ -27,5 +27,3 @@ test_that("Creation of an SLFN object",{
   expect_equal(length("a"),1)
 
 })
-
-
