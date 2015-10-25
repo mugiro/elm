@@ -224,9 +224,11 @@ setMethod("project",
               print("object@flist == 'rbf'")
             } else {
               # W a matrix of dimensions [dxL]; input weights
-              W = matrix(rnorm(inputs(object) * neurons(object), mean = 0, sd = 1), nrow = inputs(object), ncol = neurons(object))
-              # B a matrix of dimensions [Nx1]; input bias
-              B = rnorm (nrow(X), mean = 0, sd = 1)
+              W = matrix(rnorm(inputs(object)*neurons(object), mean=0, sd=1),
+                         nrow=inputs(object), ncol=neurons(object))
+              # B the input bias, a matrix of dimensions N x [1xL]
+              B = rnorm(n=neurons(object), mean=0, sd=1)
+              B = matrix(rep(B,nrow(X)),ncol=neurons,byrow=TRUE)
               # H0 a matrix of dimensions [NxL]; matrix before tranformation
               H0 = X %*% W + B # could be implented in C++ (should be!!!)
             }
@@ -242,6 +244,7 @@ setMethod("project",
             }
             return(H)
           })
+
 
 ##' Solve the linear system H %*% beta = Y - [NxL] %*% [Lxc] = [Nxc]
 ##' Solve the system with orthogonal projection - correlation matrices
