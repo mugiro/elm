@@ -53,7 +53,7 @@ setGeneric("time<-", function(x, value) standardGeneric("time<-"))
 setGeneric("bigdata<-", function(x, value) standardGeneric("bigdata<-"))
 
 # Other functions
-setGeneric("checkData", function(object, ...) standardGeneric("checkData"))
+setGeneric("chekingDataModel", function(object, ...) standardGeneric("chekingDataModel"))
 setGeneric("saveSLFN", function(object, ...) standardGeneric("saveSLFN"))
 setGeneric("loadSLFN", function(object, ...) standardGeneric("loadSLFN"))
 setGeneric("train", function(object, ...) standardGeneric("train"))
