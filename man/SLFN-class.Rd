@@ -11,5 +11,8 @@ Class "SFLN" of Single-hidden Layer Feed-forward Network
  --> ../man/SLFN-class.Rd
      ~~~~~~~~~~~~~~~~~~~~~~~
 }
+\examples{
+print(new("SLFN"))
+}
 \keyword{classes}
 
