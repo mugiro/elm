@@ -9,17 +9,17 @@ Maintainer: Andres Sanz <andres.sanz-garcia@helsinki.fi>
 Description: More about what it does (maybe more than one line)
 License: GPL (>= 2)
 LazyData: TRUE
-Depends: 
+Depends:
     R(>= 3.0),
     methods
-Imports: 
+Imports:
     Rcpp (>= 0.12.1)
 LinkingTo: Rcpp
-Suggests: 
+Suggests:
     testthat,
     knitr,
     rmarkdown
-Collate: 
+Collate:
     'AllClasses.R'
     'AllGenerics.R'
     'SLFNclass.R'
