@@ -233,7 +233,7 @@ setMethod("project",
               H0 = X %*% W + B # could be implented in C++ (should be!!!)
             }
             # Transformation step:
-            if (act(object) == "linear"){
+            if (act(object) == "lin"){
               H = H0
             } else if (act(object) == "sigmoid"){
               H = 1 / (1 + exp(-H0))
