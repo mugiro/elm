@@ -271,23 +271,9 @@ setMethod("train",
             # 4 return errors ??? training error slot ?
           })
 
-<<<<<<< HEAD
-##' @export
-setMethod("predict",
-          signature = 'SLFN',
-          def = function (object, X = NULL) {
-            H = project(object, X = X)
-            Yp = H %*% beta(object)
-            return(Yp)
-          }
-)
 
-##' Compute the matrix H from X
-##' @param object an instance to the SLFN class
-=======
 ##' Compute the projection of the matrix H for a particular X
 ##' @param object the instance to SLFN class
->>>>>>> 43fb8f1701beea35481f106cdf2dc59e065da638
 ##' @param X a matrix of dimensions [Nxd]; input matrix
 ##' @return H a matrix of dimensions [NxL]; matrix after transformation
 ##' @export
@@ -309,16 +295,6 @@ setMethod("project",
               H0 = X %*% W + B # could be implented in C++ (should be!!!)
             }
             # Transformation step:
-<<<<<<< HEAD
-            if (act(object) == "lin"){
-              H = H0
-            } else if (act(object) == "sigmoid"){
-              H = 1 / (1 + exp(-H0))
-            } else if (act(object) == "tanH"){
-              H = tan(H0)
-            } else if (act(object) == "rbf"){
-
-=======
             if (act(object) == "sigmoid"){
               H0 = 1 / (1+exp(-H0))
             }else if (act(object) == "tanH"){
@@ -328,7 +304,6 @@ setMethod("project",
 #=============== RBF neurons==============================
             } else {# act(object) == "lin"
               print(act(object))
->>>>>>> 43fb8f1701beea35481f106cdf2dc59e065da638
             }
             return(H0)
           })
