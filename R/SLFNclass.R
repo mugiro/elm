@@ -271,6 +271,7 @@ setMethod("train",
             # 4 return errors ??? training error slot ?
           })
 
+
 ##' Compute the projection of the matrix H for a particular X
 ##' @param object the instance to SLFN class
 ##' @param X a matrix of dimensions [Nxd]; input matrix
