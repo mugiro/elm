@@ -16,10 +16,13 @@ Imports:
     Rcpp (>= 0.12.1)
 LinkingTo: Rcpp
 Suggests:
-    testthat
+    testthat,
+    knitr,
+    rmarkdown
 Collate:
     'AllClasses.R'
     'AllGenerics.R'
     'SLFNclass.R'
     'ELMclass.R'
     'RcppExports.R'
+VignetteBuilder: knitr

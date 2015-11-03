@@ -12,8 +12,10 @@
 setClass("SLFN",
          slots = c(inputs = "numeric",       # number of input features
                    outputs = "numeric",      # number of output features
-                   neurons = "ANY",          # list of all neurons
+                   neurons = "list",         # list of all neurons
+#=============== neurons debe ser una lista y no un integer============================================================
                    beta = "ANY",             # weight vector outputs
+#=============== act no debiera existir, sino ser leida de neurons ============================================================
                    act = "character",        # neuron functions. (de momento character,)
                    alpha = "numeric",        # normalization H'H solution (ridge parameter)
                    structureSelection = "logical", # tune number of neurons
@@ -22,12 +24,12 @@ setClass("SLFN",
                    folds = "numeric", # CV folds
                    batch = "integer",        # batch size of adaptive ELM
                    classification= "logical", # type of classification
-                   weights.wc = "ANY",      # weigths in weighted class.
+                   weights_wc = "ANY",      # weigths in weighted class.
                    time = "numeric",         # time of calculation
                    bigdata = "logical"),     # selection of acelerator
          prototype = prototype(inputs = integer(1),  # Initialize the SLFN
                                outputs = integer(1),
-                               neurons = NULL,
+                               neurons = list("lin","lin","lin","lin"),
                                beta = NULL,
                                act = c("lin"),
                                alpha = 1E-9,
@@ -37,7 +39,7 @@ setClass("SLFN",
                                folds = 10,
                                batch = integer(10),
                                classification= FALSE,
-                               weights.wc = NULL,
+                               weights_wc = NA,
                                time = 0 ,
                                bigdata = FALSE))
 
@@ -71,20 +73,20 @@ setMethod("time","SLFN",function(object) return(object@time))
 ##' @exportMethod bigdata
 setMethod("bigdata","SLFN",function(object) return(object@bigdata))
 
-setMethod("inputs<-", "SLFN", function(x, value) { x@inputs = value; x})
-setMethod("outputs<-", "SLFN", function(x, value) { x@outputs = value; x})
-setMethod("neurons<-", "SLFN", function(x, value) { x@neurons = value; x})
-setMethod("beta<-", "SLFN", function(x, value) { x@beta = value; x})
-setMethod("act<-", "SLFN", function(x, value) { x@act <- value; x})
-setMethod("alpha<-", "SLFN", function(x, value) { x@alpha = value; x})
-setMethod("structureSelection<-","SLFN",function(x, value) { x@structureSelection <- value; x})
-setMethod("ranking<-","SLFN",function(x, value) { x@ranking <- value; x})
-setMethod("validation<-","SLFN",function(x, value) { x@validation <- value; x})
-setMethod("batch<-", "SLFN", function(x, value) { x@batch = value; x})
-setMethod("classification<-", "SLFN", function(x, value) {x@classification = value; x})
-setMethod("weights_wc<-", "SLFN", function(x, value) { x@weights_wc = value; x})
-setMethod("time<-", "SLFN", function(x, value) { x@time = value; x})
-setMethod("bigdata<-", "SLFN", function(x, value) { x@bigdata = value; x})
+setMethod("inputs<-", "SLFN", function(object, value) { object@inputs = value; object})
+setMethod("outputs<-", "SLFN", function(object, value) { object@outputs = value; object})
+setMethod("neurons<-", "SLFN", function(object, value) { object@neurons = value; object})
+setMethod("beta<-", "SLFN", function(object, value) { object@beta = value; object})
+setMethod("act<-", "SLFN", function(object, value) { object@act <- value; object})
+setMethod("alpha<-", "SLFN", function(object, value) { object@alpha = value; object})
+setMethod("structureSelection<-","SLFN",function(object, value) { object@structureSelection <- value; object})
+setMethod("ranking<-","SLFN",function(object, value) { object@ranking <- value; object})
+setMethod("validation<-","SLFN",function(object, value) { object@validation <- value; object})
+setMethod("batch<-", "SLFN", function(object, value) { object@batch = value; object})
+setMethod("classification<-", "SLFN", function(object, value) { object@classification = value; object})
+setMethod("weights_wc<-", "SLFN", function(object, value) { object@weights_wc = value; object})
+setMethod("time<-", "SLFN", function(object, value) { object@time = value; object})
+setMethod("bigdata<-", "SLFN", function(object, value) { object@bigdata = value; object})
 
 
 #### Show ####
@@ -95,63 +97,131 @@ setMethod("bigdata<-", "SLFN", function(x, value) { x@bigdata = value; x})
 #' @name show.SLFN
 #' @param object The SLFN object to be displayed
 #' @import methods
-#' @exportMethod show
+#' @export
 setMethod("show", "SLFN",
           function(object) {
-            cat("A SLFN with: \n")
-            cat("      ",inputs(object), " inputs - ", neurons(object), " ",
-                act(object), "hidden neurons -", outputs(object), "outputs", "\n")
-            cat("FALTA EXTRAER EL DETALLE DE LOS OBJETOS CREADOS CON add_neurons \n")
+            cat("SLFN structure: \n")
+            cat("Number of inputs: ", inputs(object), "\n",
+                "Number of hidden neurons: ", length(neurons(object)), "\n",
+                "Activation function: ", unlist(neurons(object)), "\n",
+                "Number of outputs: ", outputs(object), "\n")
             cat("Training scheme: \n")
             if (structureSelection(object)){
-              cat("    Prunning = TRUE ")
+              cat("    + Prunning = TRUE ")
               if (ranking(object) == "random"){
-                cat ("Random ranking of neurons \n")
+                cat ("        * Random ranking of neurons \n")
               }else{
-                cat ("Ranking of neurons from LASSO \n")
+                cat ("        * Ranking of neurons from LASSO \n")
               }
             }else{
-              cat("    Prunning = FALSE \n")
+              cat("    + Prunning = FALSE \n")
             }
             cat("    Validation =", validation(object), "\n")
             cat("Errors: \n")
-            cat("    Training error: \n")
-            cat("    Validation error: \n")
+            cat("    + Training error: \n")
+            cat("    + Validation error: \n")
           })
-
 
 #' Check that the input and output data and dimensions are correct
-##' See _checkdata in original code
-setMethod("checkData", "SLFN",
-          function(object,X,T) {
-            if (!is.null(X)){
-              # Check dimensions
+#' Only checks the data if the variables is not NULL
+##' @param object SLFN object to compare the matrices X and Y
+##' @param X a input matrix of dimensions [Nxd]
+##' @param Y a output matrix of dimensions [Nxc]
+##' @return X a input matrix of dimensions [Nxd]
+##' @return Y a output matrix of dimensions [Nxc]
+##' @export
+setMethod("chekingDataModel", "SLFN",
+          function(object,X,Y,...) {
+            if (!is.null(X)) {
+              if (bigdata(object)) {
+                print("BIGDATA checking")
+                stop("No bigdata implementation for X")
+              }else {
+                if (is.matrix(X)) {
+                  if(length(dim(X))==1) {
+                    stop("Input matrix 'X' must have 2 dimensions")
+                  } else if(dim(X)[2]!=inputs(object)) {
+                    stop("Input matrix 'X' must have num_cols = num_inputs.")
+                  }
+                }else {
+                  stop("Input 'X' must be a matrix")
+                }
+              }
             }
-            if (!is.null(T)){
-              # Check dimensions
-            }
-            return (X,T)
 
+            if (!is.null(Y)) {
+              if (bigdata(object)) {
+                print("BIGDATA checking")
+                stop("No bigdata implementation for Y")
+              }else {
+                if (is.matrix(T)) {
+                  if(length(dim(X))==1) {
+                    stop("Input matrix 'Y' must have 2 dimensions")
+                  } else if(dim(X)[2]!=outputs(object)) {
+                    stop("Input matrix 'Y' must have num_cols = num_outputs.")
+                  }
+                }else {
+                  stop("Input 'X' must be a matrix")
+                }
+              }
+            }
+
+            if (!is.null(X) & !is.null(Y)) {
+              if (nrow(X) != nrow(Y))
+                stop("Input matrix 'X' and output matrix 'Y' must have the same number of samples")
+            }
+            return (list(X,Y))
           })
 
-
 ##' Save a SLFN
+##' Compute the projection of the matrix H for a particular X
+##' @param object SLFN object to serialize
+##' @param filename name of the file where the SLFN object is read from
+##' @param path a character string with the path name to a directory
+##' @export
 setMethod("saveSLFN", "SLFN",
-          function(object,X,T) {
+          function(object, filename, path="") {
             print("function saveSLFN")
-
+            if(path)
+              res <- tryCatch({saveRDS(object, file=paste0(path,filename,".rda"))},
+                              error=function(e) return(e))
+            if (inherits(res, "error")) {
+              print("Error in function saveSLFN.\n")
+              print(res)
+            }else {
+              print("ok, function saveSLFN works well!!!\n")
+            }
           })
 
 ##' Load a SLFN
+##' Compute the projection of the matrix H for a particular X
+##' @param object SLFN object to serialize
+##' @param filename name of the file where the SLFN object is read from
+##' @param path a character string with the path name to a directory
+##' @export
 setMethod("loadSLFN", "SLFN",
-          function(object,X,T) {
-            print("function loadSLFN")
-
+          function(object, filename="", path="") {
+            res <- tryCatch({object=readRDS(file=paste0(path,filename,".rda"))},
+                            error=function(e) return(e))
+            if (inherits(res, "error")) {
+              print("Error in function loadSLFN.\n")
+              print(res)
+            }else {
+              print("ok, function loadSLFN works well!!!\n")
+            }
           })
 
-
-# TRAIN method
-
+##' Training method
+##' @param object SLFN object to serialize
+##' @param X
+##' @param Y
+##' @param structureSelection
+##' @param ranking
+##' @param validation
+##' @param classification
+##' @param folds
+##' @param classType
+##' @param ...
 ##' @export
 setMethod("train",
           signature = 'SLFN',
@@ -201,6 +271,7 @@ setMethod("train",
             # 4 return errors ??? training error slot ?
           })
 
+<<<<<<< HEAD
 ##' @export
 setMethod("predict",
           signature = 'SLFN',
@@ -213,6 +284,10 @@ setMethod("predict",
 
 ##' Compute the matrix H from X
 ##' @param object an instance to the SLFN class
+=======
+##' Compute the projection of the matrix H for a particular X
+##' @param object the instance to SLFN class
+>>>>>>> 43fb8f1701beea35481f106cdf2dc59e065da638
 ##' @param X a matrix of dimensions [Nxd]; input matrix
 ##' @return H a matrix of dimensions [NxL]; matrix after transformation
 ##' @export
@@ -221,18 +296,20 @@ setMethod("project",
           def = function(object, X = NULL){
             # random part (input weights)
             if (act(object) == 'rbf') {
-              print("object@flist == 'rbf'")
+              print("object@flist = rbf")
+#=============== RBF neurons==============================
             } else {
               # W a matrix of dimensions [dxL]; input weights
-              W = matrix(rnorm(inputs(object)*neurons(object), mean=0, sd=1),
-                         nrow=inputs(object), ncol=neurons(object))
+              W = matrix(rnorm(inputs(object)*length(neurons(object)), mean=0, sd=1),
+                         nrow=inputs(object), ncol=length(neurons(object)))
               # B the input bias, a matrix of dimensions N x [1xL]
-              B = rnorm(n=neurons(object), mean=0, sd=1)
-              B = matrix(rep(B,nrow(X)),ncol=neurons,byrow=TRUE)
+              B = rnorm(n=length(neurons(object)), mean=0, sd=1)
+              B = matrix(rep(B,nrow(X)),ncol=length(neurons(object)),byrow=TRUE)
               # H0 a matrix of dimensions [NxL]; matrix before tranformation
               H0 = X %*% W + B # could be implented in C++ (should be!!!)
             }
             # Transformation step:
+<<<<<<< HEAD
             if (act(object) == "lin"){
               H = H0
             } else if (act(object) == "sigmoid"){
@@ -241,10 +318,38 @@ setMethod("project",
               H = tan(H0)
             } else if (act(object) == "rbf"){
 
+=======
+            if (act(object) == "sigmoid"){
+              H0 = 1 / (1+exp(-H0))
+            }else if (act(object) == "tanH"){
+              H0 = tanh(H0)
+            }else if (act(object) == "rbf"){
+              print("object@flist = rbf")
+#=============== RBF neurons==============================
+            } else {# act(object) == "lin"
+              print(act(object))
+>>>>>>> 43fb8f1701beea35481f106cdf2dc59e065da638
             }
-            return(H)
+            return(H0)
           })
 
+##' Predict targets for the given inputs X
+##' @param object the instance to SLFN class
+##' @param X a matrix of dimensions [Nxd]; input matrix
+##' @return Yp a matrix of dimensions [Nxc]; output matrix
+##' @export
+setMethod("predict",
+          signature = 'SLFN',
+          def = function (object, X=NULL) {
+            if(is.null(beta(object))) {
+              print("beta is NULL. Train before the SLFN model.")
+              Yp = NULL
+            } else{
+              H = project(object, X)
+              Yp = H %*% beta(object)
+            }
+            return(Yp)
+          })
 
 ##' Solve the linear system H %*% beta = Y - [NxL] %*% [Lxc] = [Nxc]
 ##' Solve the system with orthogonal projection - correlation matrices
@@ -256,37 +361,51 @@ setMethod("project",
 ##' @export
 setMethod(f = "solveSystem",
           signature = "SLFN",
-          def = function (object, H, Y, getBeta = TRUE){
-            HH = (t(H) %*% H) + diag(neurons(object)) * alpha(object) # HH [LxL]
+          def = function (object, H, Y, getBeta=TRUE){
+            HH = (t(H) %*% H) + diag(length(neurons(object))) * alpha(object) # HH [LxL]
             HT = t(H) %*% Y  # HT [Lxc]
             if (getBeta == TRUE) {
-              # WE SHOULD USE MATRIX PACKAGE: solve-methods {Matrix}
+#=============== WE SHOULD USE MATRIX PACKAGE: solve-methods {Matrix}==============================
               beta = solve (HH, HT) # base package. Interface to the LAPACK routine DGESV
             } else {
               beta = NULL
             }
-            return(list("HH" = HH, "HT" = HT, "beta" = beta)) # one return only
+            return(list("HH"=HH, "HT"=HT, "beta"=beta)) # one return only
           })
 
 
+##' Return ranking of hidden neurons: random or OP.
+##' L1 regularization
+##' @param object the instance to SLFN class
+##' @param H a matrix of dimensions [NxL] after transformation
+##' @param Y a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)
+##' @return rank an array with the order of the neurons
+##' @import lars
+##' @export
 setMethod(f = "rankNeurons",
-          # require lars package
           signature = "SLFN",
-          def = function (object, H = NULL, Y = NULL){
-            if (ranking(object) == "LASSO"){
-              rank = unlist(lars(x = H, y = Y, type = "lar")$actions)
+          def = function (object, nn, H=NULL, Y=NULL){
+            if (ranking(object) == "LASSO") { # Use lars {lars} package
+#=========== QUE PASA SI HAY MENOS neuronas o se quieres dejar menos. Falta el nn ?? ========
+              rank = unlist(lars(x=H, y=Y, type="lar")$actions)
+#=========== Rank$actions puede dar valores negativos. Notar...  ========
             } else {
               rank = sample(1:neurons(object))
             }
             return(rank)
           })
 
-# MSE error
+##' Error calculation
+##' @param object the instance to SLFN class
+##' @param Y a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)
+##' @param Yp a matrix of dimensions [Nxc]; output matrix
+##' @return error the value of the model error
+##' @export
 setMethod(f = "error",
           signature = "SLFN",
-          def = function(object, Y = NULL, Yp = NULL){
+          def = function(object, Y=NULL, Yp=NULL){
             if (classification){
-              # classification case
+#=========== Falta el tratamiento de clasificacion ========
             } else {
               if (validation(object) == "LOO"){
                 # LOO error
@@ -297,7 +416,8 @@ setMethod(f = "error",
             return(error)
           })
 
-
+##' Training
+##' @export
 setMethod(f = "trainV",
           signature = "SLFN",
           def = function (object, X = NULL, Y = NULL, Xv = NULL, Yv =NULL) {
