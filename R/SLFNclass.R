@@ -377,12 +377,12 @@ setMethod("predict",
 ##' @export
 setMethod(f = "solveSystem",
           signature = "SLFN",
-          def = function (object, H, Y, getBeta=TRUE){
+          def = function (object, H, Y, getBeta = TRUE){
             HH = (t(H) %*% H) + diag(ncol(H)) * alpha(object) # HH [LxL]
             HT = t(H) %*% Y  # HT [Lxc]
             if (getBeta == TRUE) {
 #=============== WE SHOULD USE MATRIX PACKAGE: solve-methods {Matrix}==============================
-              beta = solve (HH, HT) # base package. Interface to the LAPACK routine DGESV
+              beta = solve(HH, HT) # base package. Interface to the LAPACK routine DGESV
             } else {
               beta = NULL
             }
