@@ -3,16 +3,35 @@
 \docType{class}
 \name{SLFN-class}
 \alias{SLFN-class}
-\title{Class "SFLN" of Single-hidden Layer Feed-forward Network
- --> ../man/SLFN-class.Rd
-     ~~~~~~~~~~~~~~~~~~~~~~~}
+\alias{addNeurons,SLFN-method}
+\alias{project,SLFN-method}
+\title{Class "SFLN" of Single-hidden Layer Feed-forward Network}
+\usage{
+\S4method{addNeurons}{SLFN}(object, type, number, W = NULL, B = NULL)
+
+\S4method{project}{SLFN}(object, X = NULL)
+}
 \description{
-Class "SFLN" of Single-hidden Layer Feed-forward Network
- --> ../man/SLFN-class.Rd
-     ~~~~~~~~~~~~~~~~~~~~~~~
+Description
 }
-\examples{
-print(new("SLFN"))
+\details{
+Details
 }
-\keyword{classes}
+\section{Methods (by generic)}{
+\itemize{
+\item \code{addNeurons}: Add Neurons to SLFN
+
+\item \code{project}: Project from the features space to neurons space
+}}
+\section{Slots}{
+
+\describe{
+\item{\code{inputs}}{number of inputs}
+
+\item{\code{outputs}}{number of outputs}
+
+\item{\code{neurons}}{list with the description of hidden neurons.}
+
+\item{\code{beta}}{weight outuput vector}
+}}
 

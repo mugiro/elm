@@ -3,34 +3,34 @@
 \docType{methods}
 \name{train,SLFN-method}
 \alias{train,SLFN-method}
-\title{Training method}
+\title{Train a SLFN}
 \usage{
-\S4method{train}{SLFN}(object, X = NULL, Y = NULL,
-  structureSelection = FALSE, ranking = "random", validation = "none",
-  classification = "none", folds = "10", classType = "single", ...)
+\S4method{train}{SLFN}(object, X, Y, Xv, Yv, structureSelection = FALSE,
+  ranking = "random", validation = "none", folds = "10",
+  classification = "none", ...)
 }
 \arguments{
 \item{object}{SLFN object to serialize}
 
-\item{X}{}
+\item{X}{a data matrix of dimensions [Nxd] with input data}
 
-\item{Y}{}
+\item{Y}{vector/matrix of outputs [Nx1c]}
 
-\item{structureSelection}{}
+\item{structureSelection}{logical}
 
-\item{ranking}{}
+\item{ranking}{type of neurons ranking \code{random} or \code{LASSO}}
 
 \item{validation}{}
 
-\item{classification}{}
-
 \item{folds}{}
 
-\item{classType}{}
+\item{classification}{}
 
 \item{...}{}
+
+\item{classType}{}
 }
 \description{
-Training method
+Training a SLFN given a set of input data (X, Y) and a training scheme
 }
 
