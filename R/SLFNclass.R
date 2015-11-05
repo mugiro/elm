@@ -315,7 +315,11 @@ setMethod("train",
             # 4 return errors ??? training error slot ?
           })
 
-#' @describeIn SLFN Project from the features space to neurons space
+##' Compute the projection of the matrix H for a particular X
+##' @param object the instance to SLFN class
+##' @param X a matrix of dimensions [Nxd]; input matrix
+##' @return H a matrix of dimensions [NxL]; matrix after transformation
+##' @export
 setMethod("project",
           signature = "SLFN",
           def = function(object, X = NULL) {
