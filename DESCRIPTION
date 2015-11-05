@@ -25,4 +25,6 @@ Collate:
     'SLFNclass.R'
     'ELMclass.R'
     'RcppExports.R'
+    'distance.R'
+    'wrapper.R'
 VignetteBuilder: knitr

@@ -58,11 +58,46 @@ setGeneric("saveSLFN", function(object, ...) standardGeneric("saveSLFN"))
 setGeneric("loadSLFN", function(object, ...) standardGeneric("loadSLFN"))
 setGeneric("train", function(object, ...) standardGeneric("train"))
 setGeneric("predict", function(object, ...) standardGeneric("predict"))
-setGeneric("project", function(object, ...) standardGeneric("project"))
 setGeneric("solveSystem", function(object, ...) standardGeneric("solveSystem"))
 setGeneric("rankNeurons", function(object, ...) standardGeneric("rankNeurons"))
 setGeneric("error", function(object, ...) standardGeneric("error"))
 setGeneric("trainV", function(object, ...) standardGeneric("trainV"))
+setGeneric("trainV", function(object, ...) standardGeneric("trainV"))
+
+#' Compute the projection of the matrix H for a particular X
+#'
+#' @param object the instance to SLFN class
+#' @param X a matrix of dimensions [Nxd]; input matrix
+#' @return H a matrix of dimensions [NxL]; matrix after transformation
+#' @export
+setGeneric("project", function(object, ...) standardGeneric("project"))
+
+##' Add hidden neurons to the SLFN
+##'
+##' addNeurons adds a specific number of hidden neurons to the SLFN being all of them of the same type of activation function.
+##' @param object SLFN type model
+##' @param number the number of hidden neurons added to the network
+##' @param type activation function of the added neurons ("linear", "sigmoid", "tan", "rbf").
+##' @param W input weight matrix of dimension [dxL]. List of centroids for rbf activation functions.
+##' @param B input bias vector of dimension [1xL]. Vector of sigmas for rbf activation functions.
+##' @param ...
+##' @return object SLFN with new neurons added and W and B matrices updated.
+##'
+##' It is called by the training wrapper when a new SLFN object is created. It is called sequentially
+##' based on the different type of activation functions.
+##'
+##' When addNeurons is called explicitly, the SLFN should be re-trained
+##'
+##' For linear activation functions, the number of neurons added cannot be superior to the number of features (L=<d).
+##' This case entails a linear projection of datato a higher dimensional, which yields a multicorrelated new space.
+##' @export
+setGeneric("addNeurons", function(object, ...) standardGeneric("addNeurons"))
+
+
+
+setGeneric("prune", function(object, ...) standardGeneric("prune"))
+
+
 
 # From other packages ...
 
