@@ -331,7 +331,7 @@ setMethod("project",
             nType = neurons(object)[[i]]$type
             number = neurons(object)[[i]]$number
             if (nType == 'rbf') { # not project. Compute distance from centroids. IMPROVE....
-              H0 = apply(W, 2, function(x) {distance(matrix = X, refVector = x, type = "euclidean")})
+              H0 = apply(W, 2, function(x) {distance(X=X, ref=x, type="euclidean")})
             } else { # project
               H0 = X %*% W # [NxL] matrix. could be implented in C++ (should be!!!)
               H0 = t(apply(H0, 1, "+", B)) # add bias
