@@ -95,28 +95,32 @@ setMethod("bigdata<-", "SLFN", function(object, value) { object@bigdata = value;
 #' @export
 setMethod("show", "SLFN",
           function(object) {
+            cat("\n")
             cat("SLFN structure: \n")
-            cat("Number of inputs: ", inputs(object), "\n")
-            if (length(neurons(object)) == 0){
-              cat("0 hidden neurons")
+            cat("    + ", inputs(object), " inputs \n")
+            if (length(neurons(object)) == 0) {
+              cat("    + 0 hidden neurons: \n")
             } else {
-              for (i in 1:length(neurons(object))){
-                cat(neurons(object)[[i]]$number, neurons(object)[[i]]$type, "hidden neurons \n")
+              cat('    + ', sum(sapply(neurons(object), function(x) {x$number})), 'hidden neurons \n')
+              for (i in 1:length(neurons(object))) {
+                cat("          - ",neurons(object)[[i]]$number, names(neurons(object))[i], " \n")
               }
             }
-            cat("Number of outputs: ", outputs(object), "\n")
+            cat("    + ", outputs(object), "outputs \n")
+            cat("\n")
             cat("Training scheme: \n")
-            if (structureSelection(object)){
+            if (structureSelection(object)) {
               cat("    + Prunning = TRUE ")
-              if (ranking(object) == "random"){
+              if (ranking(object) == "random") {
                 cat ("        * Random ranking of neurons \n")
-              }else{
+              } else {
                 cat ("        * Ranking of neurons from LASSO \n")
               }
-            }else{
+            } else {
               cat("    + Prunning = FALSE \n")
             }
             cat("    + Validation =", validation(object), "\n")
+            cat("\n")
             cat("Errors: \n")
             cat("    + Training error: \n")
             cat("    + Validation error: \n")
@@ -216,54 +220,72 @@ setMethod("loadSLFN", "SLFN",
 setMethod("addNeurons",
          signature = "SLFN",
          def = function(object, type, number, W = NULL, B = NULL){
-           # W a matrix of dimensions [dxL]; input weights
-           if (is.null(W)){
-             if (type == 'linear') { # cannot have more linear neurons than featrues
-               number = min(number, inputs(object))
+           if (type == 'linear') {# cannot have more linear neurons than featrues
+             number_prev = 0
+             if (length(neurons(object)) > 0) {
+               if ('linear' %in% (names(neurons(object))) ) { #TRUE/FALSE/logical(0)
+                 number_prev = neurons(object)[['linear']]$number
+               }
+             }
+             if ((number_prev + number) > inputs(object)) {
+               cat("Cannot have more linear neurons than features: \n")
+               number = inputs(object) - number_prev
+             }
+             if (number == 0) {
+               stop("Cannot add more linear neurons")
+             }
+           }
+           # W input weight matrix [dxL]
+           if (is.null(W)) {
+             if (type == 'linear') { # linear - diagonal matrix, W just copies features to neurons.
                W = diag(x = 1, nrow = inputs(object), ncol = number)
              } else { # general case
                W = matrix(data = rnorm(inputs(object) * number, mean = 0, sd = 1),
                           nrow = inputs(object), ncol = number)
+               if (type == 'rbf') { # rbf - high dimensionalty correction
+                 W = W * (3 / sqrt(inputs(object)))
+               }
              }
+           } else { # check W dimensions
+             # 1 - check W dimensions
+             # 2 - case when no all linear neurons can be added
+             # 3 - rbf - if W = vector, it means the same centroid for all neurons
            }
-           # B the input bias vector, a matrix of dimensions N x [1xL]
-           if (is.null(B)){ #[1xL]
-             if (type == 'linear') { # for linear, vector of 0
+           # B input bias vector [1xL]
+           if (is.null(B)) {
+             if (type == 'linear') { # linear - no bias (vector of 0s)
                B = rep(0, number)
-             } else if (type == 'rbf'){ # vector of sigmas
-               B = rnorm(n = number, mean = 0, sd = 1)
-               B = abs(B) * inputs(object) # Why????????????????????????????????
              } else { # general case
                B = rnorm(n = number, mean = 0, sd = 1)
+               if (type == 'rbf') { # rbf - high dimensionalty correction
+                 B = abs(B) * inputs(object)
+               }
              }
-             B = t(B)
-           #  B = matrix(rep(B, inputs(object)), ncol = number, byrow = TRUE) # repat bias to be summed in matrix form
+           } else {
+             # 1 - check B dimensions
+             # 2 - case when no all linear neurons can be added
+             # 3 - rbf - if B = number, it means the same gamma for all neurons
            }
-#=============== review how to initialize list(list()) ....
-           if (length(neurons(object)) == 0){ # adding neurons for the first time
-             neurons(object) = list(list(type = type, number = number, W = W, B = B))
-#===============  (review this part....) list of lists ... no me gusta mucho esta forma de organización
-           } else{ # update neurons slot
-             nTypes = vector()
-             nTypes = lapply(1:length(neurons(object)), function(i){nTypes[i] = neurons(object)[[i]]$type})
-             nTypes = unlist(nTypes)
-             if (nTypes %in% type){ #type of neuron added already exists
-               index = which(nTypes %in% type)
-               neurons(object)[[index]]$number = neurons(object)[[index]]$number + number
-               neurons(object)[[index]]$W = cbind(neurons(object)[[index]]$W, W)
-               neurons(object)[[index]]$B = cbind(neurons(object)[[index]]$B, B)
-             } else { #type of neuron added does not exist
-               neurons(object)[[length(neurons(object))+1]] = list(type = type, number = number, W = W, B = B)
+           #=============== review how to initialize list(list()) ....
+           if (length(neurons(object)) > 0) { #any type of neuron already exists
+             if (type %in% names(neurons(object))) { #type of neuron added already exists
+               neurons(object)[[type]]$number = neurons(object)[[type]]$number + number
+               neurons(object)[[type]]$W = cbind(neurons(object)[[type]]$W, W)
+               neurons(object)[[type]]$B = cbind(neurons(object)[[type]]$B, B)
+             } else {
+               neurons(object)[[type]] = list(number = number, W = W, B = B)
              }
+           } else { #there were no neurons
+             neurons(object)[[type]] = list(number = number, W = W, B = B)
            }
-           cat("Adding", number, type, "hidden neurons \n")
-           if (is.null(beta(object)) == FALSE){
+
+           cat(" Adding", number, type, "hidden neurons \n")
+           if (!is.null(beta(object))) {
              cat ("WARNING - The SLFN needs to be re-trained")
            }
            return(object)
          }
 )
-
 
 ##' Train a SLFN
 ##'
@@ -282,13 +304,19 @@ setMethod("addNeurons",
 ##' @export
 setMethod("train",
           signature = 'SLFN',
-          def = function (object, X, Y, Xv, Yv,
-                          structureSelection = FALSE,
-                          ranking = "random",
-                          validation = "none", #redundante. Tanto aquí como en el prototitpo
-                          folds = "10",
+          def = function (object, X, Y, Xv = NULL, Yv = NULL,
+                          structureSelection = FALSE, ranking = "random",
+                          validation = "none", folds = "10",
                           classification = "none",
+                          # redundante. Aquí o en el prototipo ???
                           ...) {
+            # coerce input and output data to matrix (for the case of 1 input or 1 output)
+            X = as.matrix(X)
+            Y = as.matrix(Y)
+            if (!is.null(Xv)) {
+              Xv = as.matrix(Xv)
+              Yv = as.matrix(Yv)
+            }
             # read training conditions
             if (structureSelection) {
               structureSelection(object) = structureSelection
@@ -299,12 +327,12 @@ setMethod("train",
             }
             # obtain beta. First project, then solve.
             # with model selection we have the option prunning P (aleatory rank of neurons), or OP (ranking based on LARS)
-            if (structureSelection(object)){# optimize number of neurons
+            if (structureSelection(object)) {# optimize number of neurons
               if (validation(object) == "V") {
-                trainV(object, X = X, Y = Y, X.v = X.v, Y.v = Y.v)
-              } else if (validation(object) == "CV"){
+                trainV(object, X = X, Y = Y, Xv = Xv, Yv = Yv)
+              } else if (validation(object) == "CV") {
                 # CV algorithm
-              } else if (validation(object) == "LOO"){
+              } else if (validation(object) == "LOO") {
                 # LOO algorithm
               }
             } else { #here no validation make sense. just for computing errors...
@@ -315,61 +343,50 @@ setMethod("train",
             # 4 return errors ??? training error slot ?
           })
 
-#' @describeIn SLFN Project from the features space to neurons space
+#' @describeIn SLFN Project from the features space to neurons space. Build H [N x L]
 setMethod("project",
-          signature = "SLFN",
-          def = function(object, X = NULL) {
-          H = NULL
+          signature = 'SLFN',
+          def = function(object, X) {
+          H = NULL # initialize H
           for (i in 1:length(neurons(object))) { # all diff. types of neurons
             # projection
+            nType = names(neurons(object))[i]
             W = neurons(object)[[i]]$W
             B = neurons(object)[[i]]$B
-            nType = neurons(object)[[i]]$type
             number = neurons(object)[[i]]$number
-            if (nType == 'rbf') { # not project. Compute distance from centroids. IMPROVE....
-              H0 = apply(W, 2, function(x) {distance(matrix = X, refVector = x, type = "euclidean")})
+            if (nType == 'rbf') { # distances from centroids
+              H0 = matrix(nrow = nrow(X), ncol = ncol(W))
+              for (neuronIndex in 1:number) {
+                H0[,neuronIndex] = distMatVect(matrix = X, refVector = W[,neuronIndex], type = "euclidean")
+              }
+              # muy mejorable el loop for, pero es para esquivar los problemas del apply momentaneamte... Soluciones???
             } else { # project
               H0 = X %*% W # [NxL] matrix. could be implented in C++ (should be!!!)
-              H0 = t(apply(H0, 1, "+", B)) # add bias
+              H0 = H0 + matrix(rep(B, nrow(H0)), nrow = nrow(H0), byrow = TRUE)
+              #H00 = t(apply(H0, 1, function(rowsH0) {rowsH0 + B} )) # add Bias vector (by row)
+              # problem when having 1 neuron. apply returns a vector, and then making the transpose
+              # gives us just the opposite H we want.
             }
             # transformation
             if (nType == "sigmoid"){
               H0 = 1 / (1 + exp(-H0))
-            } else if (nType == "tanH") {
+            } else if (nType == 'tanH') {
               H0 = tanh(H0)
-            } else if (nType == "rbf") {
-              H0 = exp((H0^2)/B)
-            } else if (nType == "linear") {
-              # do nothing
+            } else if (nType == 'rbf') {
+              H0 = exp( - (H0 ^ 2) / matrix(rep(B, nrow(H0)), nrow = nrow(H0), byrow = TRUE) )
             } else {
               # add new activation functions
+              # linear: do nothing
             }
-          }
           H = cbind (H, H0)
+          }
           return(H)
           })
 
-##' Predict targets for the given inputs X
-##' @param object the instance to SLFN class
-##' @param X a matrix of dimensions [Nxd]; input matrix
-##' @return Yp a matrix of dimensions [Nxc]; output matrix
-##' @export
-setMethod("predict",
-          signature = 'SLFN',
-          def = function (object, X=NULL) {
-            if(is.null(beta(object))) {
-              print("beta is NULL. Train before the SLFN model.")
-              Yp = NULL
-            } else{
-              H = project(object, X)
-              Yp = H %*% beta(object)
-            }
-            return(Yp)
-          })
-
 ##' Solve the linear system H %*% beta = Y - [NxL] %*% [Lxc] = [Nxc]
-##' Solve the system with orthogonal projection - correlation matrices
-##' HH * beta = HT similar to .proj_cpu (akusok).
+##'   Use orthogonal projection - correlation matrices
+##' Solve the linear system HH * beta = HT - [LxL] %*% [Lxc] = [Lxc]
+##' similar to .proj_cpu (akusok).
 ##' @param H a matrix of dimensions [NxL] after transformation
 ##' @param getBeta logical; needs to be true to return beta value
 ##' @param Y a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)
@@ -386,7 +403,26 @@ setMethod(f = "solveSystem",
             } else {
               beta = NULL
             }
-            return(list("HH"=HH, "HT"=HT, "beta"=beta)) # one return only
+            return(list('HH' = HH, 'HT' = HT, 'beta' = beta)) # one return only
+          })
+
+##' Predict targets for the given inputs X
+##' @param object the instance to SLFN class
+##' @param X a matrix of dimensions [Nxd]; input matrix
+##' @return Yp a matrix of dimensions [Nxc]; output matrix
+##' @export
+setMethod("predict",
+          signature = 'SLFN',
+          def = function (object, X=NULL) {
+            X = as.matrix(X)
+            if(is.null(beta(object))) {
+              print("beta is NULL. Train before the SLFN model.")
+              Yp = NULL
+            } else{
+              H = project(object, X)
+              Yp = H %*% beta(object)
+            }
+            return(Yp)
           })
 
 

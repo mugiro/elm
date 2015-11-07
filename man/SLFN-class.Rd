@@ -9,7 +9,7 @@
 \usage{
 \S4method{addNeurons}{SLFN}(object, type, number, W = NULL, B = NULL)
 
-\S4method{project}{SLFN}(object, X = NULL)
+\S4method{project}{SLFN}(object, X)
 }
 \description{
 Description
@@ -21,7 +21,7 @@ Details
 \itemize{
 \item \code{addNeurons}: Add Neurons to SLFN
 
-\item \code{project}: Project from the features space to neurons space
+\item \code{project}: Project from the features space to neurons space. Build H [N x L]
 }}
 \section{Slots}{
 
