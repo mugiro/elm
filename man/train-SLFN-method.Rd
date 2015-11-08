@@ -5,9 +5,9 @@
 \alias{train,SLFN-method}
 \title{Train a SLFN}
 \usage{
-\S4method{train}{SLFN}(object, X, Y, Xv, Yv, structureSelection = FALSE,
-  ranking = "random", validation = "none", folds = "10",
-  classification = "none", ...)
+\S4method{train}{SLFN}(object, X, Y, Xv = NULL, Yv = NULL,
+  structureSelection = FALSE, ranking = "random", validation = "none",
+  folds = "10", classification = "none", ...)
 }
 \arguments{
 \item{object}{SLFN object to serialize}
@@ -20,7 +20,7 @@
 
 \item{ranking}{type of neurons ranking \code{random} or \code{LASSO}}
 
-\item{validation}{}
+\item{validation}{t}
 
 \item{folds}{}
 

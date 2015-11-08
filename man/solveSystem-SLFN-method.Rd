@@ -4,8 +4,9 @@
 \name{solveSystem,SLFN-method}
 \alias{solveSystem,SLFN-method}
 \title{Solve the linear system H %*% beta = Y - [NxL] %*% [Lxc] = [Nxc]
-Solve the system with orthogonal projection - correlation matrices
-HH * beta = HT similar to .proj_cpu (akusok).}
+  Use orthogonal projection - correlation matrices
+Solve the linear system HH * beta = HT - [LxL] %*% [Lxc] = [Lxc]
+similar to .proj_cpu (akusok).}
 \usage{
 \S4method{solveSystem}{SLFN}(object, H, Y, getBeta = TRUE)
 }
@@ -21,7 +22,8 @@ beta a matrix of dimensions [Lxc] with the output weights
 }
 \description{
 Solve the linear system H %*% beta = Y - [NxL] %*% [Lxc] = [Nxc]
-Solve the system with orthogonal projection - correlation matrices
-HH * beta = HT similar to .proj_cpu (akusok).
+  Use orthogonal projection - correlation matrices
+Solve the linear system HH * beta = HT - [LxL] %*% [Lxc] = [Lxc]
+similar to .proj_cpu (akusok).
 }
 
