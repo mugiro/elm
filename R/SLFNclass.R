@@ -362,7 +362,7 @@ setMethod("project",
             if (nType == 'rbf') { # distances from centroids
               H0 = matrix(nrow = nrow(X), ncol = ncol(W))
               for (neuronIndex in 1:number) {
-                H0[,neuronIndex] = distMatVect(matrix = X, refVector = W[,neuronIndex], type = "euclidean")
+                H0[,neuronIndex] = distMatVect(X = X, ref = W[,neuronIndex], type = "euclidean")
               }
               # muy mejorable el loop for, pero es para esquivar los problemas del apply momentaneamte... Soluciones???
               # H0 = apply(W, 2, function(x) {distance(X=X, ref=x, type="euclidean")})
