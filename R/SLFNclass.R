@@ -343,7 +343,12 @@ setMethod("train",
             # 4 return errors ??? training error slot ?
           })
 
+#' Compute the projection of the matrix H for a particular X
 #' @describeIn SLFN Project from the features space to neurons space. Build H [N x L]
+#' @param object the instance to SLFN class
+#' @param X a matrix of dimensions [Nxd]; input matrix
+#' @return H a matrix of dimensions [NxL]; matrix after transformation
+#' @export
 setMethod("project",
           signature = 'SLFN',
           def = function(object, X) {
@@ -360,6 +365,7 @@ setMethod("project",
                 H0[,neuronIndex] = distMatVect(matrix = X, refVector = W[,neuronIndex], type = "euclidean")
               }
               # muy mejorable el loop for, pero es para esquivar los problemas del apply momentaneamte... Soluciones???
+              # H0 = apply(W, 2, function(x) {distance(X=X, ref=x, type="euclidean")})
             } else { # project
               H0 = X %*% W # [NxL] matrix. could be implented in C++ (should be!!!)
               H0 = H0 + matrix(rep(B, nrow(H0)), nrow = nrow(H0), byrow = TRUE)

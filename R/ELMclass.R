@@ -1,6 +1,10 @@
 ### ELM Class definition, accessor functions, print and summary methods
 ### #  Urraca-Valle, Ruben & Sanz-Garcia, Andres (12-10-2015)
 
+
+
+
+
 ##' Class "ELM"
 ##'  --> ../man/ELM-class.Rd
 ##'      ~~~~~~~~~~~~~~~~~~~~~~~

@@ -93,8 +93,6 @@ setGeneric("project", function(object, ...) standardGeneric("project"))
 ##' @export
 setGeneric("addNeurons", function(object, ...) standardGeneric("addNeurons"))
 
-
-
 setGeneric("prune", function(object, ...) standardGeneric("prune"))
 
 
