@@ -4,14 +4,14 @@
 \alias{distMatVect}
 \title{Distance matrix - vector}
 \usage{
-distMatVect(matrix, refVector, type = "euclidean")
+distMatVect(X, ref, type = "euclidean")
 }
 \arguments{
-\item{matrix}{a matrix with \emph{N} samples from \emph{d}-space}
+\item{X}{a matrix with \emph{N} samples/points from \emph{d}-space}
 
-\item{refVector}{a vector from \emph{d}-space}
+\item{ref}{a vector, a sample/poing from \emph{d}-space}
 
-\item{type}{method used to compute the distance between points
+\item{type}{method used to compute the distance
 \itemize{
 \item \emph{euclidean}
 \item \emph{...}
@@ -21,9 +21,7 @@ distMatVect(matrix, refVector, type = "euclidean")
 A vector of length \emph{N} with all distances
 }
 \description{
-Compute the distance between each sample of matrix row-wise and a reference vector
-}
-\details{
-Details
+Compute the distance between each sample of matrix (row-wise)
+and a reference vector. More details:
 }
 

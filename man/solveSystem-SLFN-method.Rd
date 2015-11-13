@@ -3,27 +3,27 @@
 \docType{methods}
 \name{solveSystem,SLFN-method}
 \alias{solveSystem,SLFN-method}
-\title{Solve the linear system H %*% beta = Y - [NxL] %*% [Lxc] = [Nxc]
+\title{Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] = [Nxc]
   Use orthogonal projection - correlation matrices
-Solve the linear system HH * beta = HT - [LxL] %*% [Lxc] = [Lxc]
+Solve the linear system HH * Wout = HT - [LxL] %*% [Lxc] = [Lxc]
 similar to .proj_cpu (akusok).}
 \usage{
-\S4method{solveSystem}{SLFN}(object, H, Y, getBeta = TRUE)
+\S4method{solveSystem}{SLFN}(object, H, Y, getWout = TRUE)
 }
 \arguments{
 \item{H}{a matrix of dimensions [NxL] after transformation}
 
 \item{Y}{a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)}
 
-\item{getBeta}{logical; needs to be true to return beta value}
+\item{getWout}{logical; needs to be true to return Wout value}
 }
 \value{
-beta a matrix of dimensions [Lxc] with the output weights
+Wout a matrix of dimensions [Lxc] with the output weights
 }
 \description{
-Solve the linear system H %*% beta = Y - [NxL] %*% [Lxc] = [Nxc]
+Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] = [Nxc]
   Use orthogonal projection - correlation matrices
-Solve the linear system HH * beta = HT - [LxL] %*% [Lxc] = [Lxc]
+Solve the linear system HH * Wout = HT - [LxL] %*% [Lxc] = [Lxc]
 similar to .proj_cpu (akusok).
 }
 

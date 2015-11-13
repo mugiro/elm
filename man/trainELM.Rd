@@ -2,18 +2,50 @@
 % Please edit documentation in R/wrapper.R
 \name{trainELM}
 \alias{trainELM}
-\title{Create and train an ELM object}
+\title{train ELM}
 \usage{
-trainELM(X = NULL, Y = NULL, Xv = NULL, Yv = NULL, neurons,
+trainELM(X, Y, Xv = NULL, Yv = NULL, nType, nNumber, W = NULL, B = NULL,
   structureSelection = FALSE, validation = "none", ranking = "random",
   alpha, bigdata = FALSE)
 }
 \arguments{
-\item{a}{numeric vector with the number of hidden neurons added. Each element of the vector corresponds to}
+\item{X}{a data matrix, a vector with input data}
 
-\item{a}{character vector indicating the different type of activation functions in the hidden neurons added.}
+\item{Y}{a data matrix, a vector with output data}
+
+\item{Xv}{a data matrix, a vector with input data for the simple validation procedure}
+
+\item{Yv}{a data matrix, a vector with output data for the simple validation procedure}
+
+\item{nType}{a vector with the types of activation functions used}
+
+\item{W}{a list of matrices, with the input weight vectors or centroids (rbf) for each type of activation function}
+
+\item{B}{a list of vectors, with the input biases or sigmas (rbf) for each tye of activation function}
+
+\item{structureSelection}{a numeric vector with the number of hidden neurons added.}
+
+\item{nNeurons}{a vector, with the number of hidden neurons for each type of activation function}
+}
+\value{
+An object of class \code{"SLFN"} with the fitted model
 }
 \description{
-Create and train an ELM object
+train ELM is used to create an object of class SLFN and trained it given X and Y
+}
+\details{
+train ELM is a wrapper method/function that:
+\itemize{
+\item 1 - Creates the SLFN object by calling \code{new()}.
+\item 2 - Adds the different hidden neurons by making sequential calls to \code{addNeurons()},
+ one call per each type of activation function defined.
+\item 3 - Trains the SLFN and obtaines the output weigth vector by calling \code{train()}.
+}
+}
+\examples{
+X = seq(0, 7, 0.01)
+Y = sin(X)
+a = trainELM(X = X, Y = Y, nType = "sigmoid", nNumber = 20)
+a = trainELM(X = X, Y = Y, nType = c("sigmoid", "tanH"), nNumber = c(20, 10))
 }
 
