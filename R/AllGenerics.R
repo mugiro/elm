@@ -63,6 +63,7 @@ setGeneric("mse", function(object, ...) standardGeneric("mse"))
 setGeneric("trainV", function(object, ...) standardGeneric("trainV"))
 setGeneric("trainCV", function(object, ...) standardGeneric("trainCV"))
 setGeneric("trainPrunning", function(object, ...) standardGeneric("trainPrunning"))
+setGeneric("computeError", function(object, ...) standardGeneric("computeError"))
 
 #' Compute the projection of the matrix H for a particular X
 #'

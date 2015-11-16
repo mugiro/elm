@@ -5,7 +5,7 @@
 \alias{mse,SLFN-method}
 \title{Error calculation}
 \usage{
-\S4method{mse}{SLFN}(object, Y = NULL, Yp = NULL)
+\S4method{mse}{SLFN}(object, Y, Yp, H = NULL)
 }
 \arguments{
 \item{object}{the instance to SLFN class}

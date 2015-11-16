@@ -3,7 +3,7 @@
 \docType{methods}
 \name{solveSystem,SLFN-method}
 \alias{solveSystem,SLFN-method}
-\title{Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] = [Nxc]
+\title{Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] x= [Nxc]
   Use orthogonal projection - correlation matrices
 Solve the linear system HH * Wout = HT - [LxL] %*% [Lxc] = [Lxc]
 similar to .proj_cpu (akusok).}
@@ -21,7 +21,7 @@ similar to .proj_cpu (akusok).}
 Wout a matrix of dimensions [Lxc] with the output weights
 }
 \description{
-Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] = [Nxc]
+Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] x= [Nxc]
   Use orthogonal projection - correlation matrices
 Solve the linear system HH * Wout = HT - [LxL] %*% [Lxc] = [Lxc]
 similar to .proj_cpu (akusok).

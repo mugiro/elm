@@ -47,7 +47,7 @@ setClass("SLFN",
                    outputs = "numeric",      # number of output features
                    neurons = "list",         # list different type of neurons.
                    # Each element of the list contains the number of neurons, activation fucntion, B and W.
-                   Wout = "ANY",             # weight vector outputs
+                   Wout =  "matrix",             # output weights - vector (1 output) / matrix (n outputs)
                    err = "numeric",        # mse c(mse_train, mse_val)
                    alpha = "numeric",        # normalization H'H solution (ridge parameter)
                    modelStrSel = "character", # c("none", "prunning")
@@ -62,7 +62,7 @@ setClass("SLFN",
          prototype = prototype(inputs = integer(1),  # Initialize the SLFN
                                outputs = integer(1),
                                neurons = list(),
-                               Wout = NULL,
+                               Wout = matrix(NA),
                                err = NaN,
                                alpha = 1E-9,
                                modelStrSel = "none", #defaults when calling train function
@@ -148,12 +148,8 @@ setMethod("show", "SLFN",
             cat("\n")
             cat("Training scheme: \n")
             if (modelStrSel(object) == "prunning") {
-              cat("    + Model structure selection = prunning ")
-              if (ranking(object) == "random") {
-                cat ("        * Random ranking of neurons \n")
-              } else {
-                cat ("        * Ranking of neurons from LASSO \n")
-              }
+              cat("    + Model structure selection = prunning \n ")
+              cat("        * Ranking of neurons:", ranking(object), " \n")
             } else {
               cat("    + Model Structure Selection = none \n")
             }
@@ -357,6 +353,7 @@ setMethod(f = "train",
               Xv = as.matrix(Xv)
               Yv = as.matrix(Yv)
             }
+
             # read training conditions
             modelStrSel(object) = modelStrSel
             ranking(object) = ranking
@@ -364,24 +361,25 @@ setMethod(f = "train",
             if (validation(object) == "CV") {
               folds(object) = folds
             }
-            # obtain Wout First project, then solve.
-            # with model selection we have the option prunning P (aleatory rank of neurons), or OP (ranking based on LARS)
-            if (modelStrSel(object) == "prunning") {# optimize number of neurons
-              if (validation(object) == "V") {
-                object = trainPrunning(object, X = X, Y = Y, Xv = Xv, Yv = Yv)
+
+            # Solve
+            H = project(object, X = X)
+            if (modelStrSel(object) == "prunning") { # optimize number of neurons
+              if (validation(object) == "V") { # enter val. set
+                Hv = project(object, X = Xv)
+                object = trainPrunning(object, H = H, Y = Y, Hv = Hv, Yv = Yv)
               } else if (validation(object) == "CV") {
-                object = trainPrunning(object, X = X, Y = Y)
-              } else if (validation(object) == "LOO") {
-                # LOO algorithm
+                # folds division (CV case)
+                index = createFolds(X[,1], folds(object)) # require caret !!!
+                object = trainPrunning(object, H = H, Y = Y, index = index)
+              } else if (validation(object) == "LOO")  { # no val. set
+                object = trainPrunning(object, H = H, Y = Y)
               }
-            } else if (modelStrSel(object) == "none") {  #here no validation make sense. just for computing errors...
-              H = project(object, X = X)
+            } else if (modelStrSel(object) == "none") {  # validation for computing errors ???
               Wout(object) = solveSystem(object, H = H, Y = Y, getWout = TRUE)$Wout
               err(object) = mse(object, Y = Y, Yp = predict(object, X = X)) #training error
             }
-
             return(object)
-            # 4 return errors ??? training error slot ?
           })
 
 #' @describeIn SLFN
@@ -425,7 +423,7 @@ setMethod("project",
           return(H)
           })
 
-##' Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] = [Nxc]
+##' Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] x= [Nxc]
 ##'   Use orthogonal projection - correlation matrices
 ##' Solve the linear system HH * Wout = HT - [LxL] %*% [Lxc] = [Lxc]
 ##' similar to .proj_cpu (akusok).
@@ -467,7 +465,6 @@ setMethod(f = "predict",
             return(Yp)
           })
 
-
 ##' Return ranking of hidden neurons: random or OP.
 ##' L1 regularization
 ##' @param object the instance to SLFN class
@@ -483,6 +480,7 @@ setMethod(f = "rankNeurons",
 #=========== QUE PASA SI HAY MENOS neuronas o se quieres dejar menos. Falta el nn ?? ========
               rank = unlist(lars(x = H, y = Y, type = "lar")$actions)
 #=========== Rank$actions puede dar valores negativos. Notar...  ========
+              # llevas razón... lo tengo que mirar....
             } else {
               nnMax = sum(sapply(neurons(object), function (x) {x$number})) # number of neurons (nn) max
               rank = sample(1:nnMax)
@@ -498,14 +496,21 @@ setMethod(f = "rankNeurons",
 ##' @export
 setMethod(f = "mse",
           signature = "SLFN",
-          def = function(object, Y = NULL, Yp = NULL){
+          def = function(object, Y, Yp, H = NULL){
             if (classification(object) != "none"){
 #=========== Falta el tratamiento de clasificacion ========
             } else {
-              if (validation(object) == "LOO"){
-                # LOO error
+              if (validation(object) == "LOO"){ #improve....
+                num = Y - Yp # numerator
+                den = 0 # denomitator
+                HH = t(H) %*% H + diag(dim(H)[2]) * alpha(object)
+                invHH = solve(HH)
+                for (i in 1:dim(Y)[1]) {
+                  den[i] = 1 - (H[i,,drop = FALSE] %*% invHH %*% t(H[i,,drop = FALSE]))
+                }
+                mse_error = sum((num/den) ^ 2) / dim(Y)[1]
               } else {
-                mse_error = (sum ((Y - Yp)^2)) / length(Y) # when dimension Y > 1 ????
+                mse_error = sum((Y - Yp) ^ 2) / dim(Y)[1] # when dimension Y > 1 ????
               }
             }
             return(mse_error)
@@ -514,7 +519,7 @@ setMethod(f = "mse",
 
 setMethod(f = "prune",
           signature = "SLFN",
-          def = function (object, nIndex) {
+          def = function (object, nSelected) {
 
             nn_type = sapply(neurons(object), function (x) {x$number}) # number of neurons per type
             index = 1:sum(nn_type) # index of all neurons
@@ -522,39 +527,38 @@ setMethod(f = "prune",
 
             for (i in 1:length(neurons(object))) {
               # indexes of these type of neurons
-              remove = which(index_type[[i]] %in% nIndex)
-              neurons(object)[[i]]$number = neurons(object)[[i]]$number - length(remove)
-              neurons(object)[[i]]$W = neurons(object)[[i]]$W[,-remove, drop = FALSE]
-              neurons(object)[[i]]$B = neurons(object)[[i]]$B[-remove]
+              nKeep = which(index_type[[i]] %in% nSelected)
+              neurons(object)[[i]]$number = length(nKeep)
+              neurons(object)[[i]]$W = neurons(object)[[i]]$W[,nKeep, drop = FALSE]
+              neurons(object)[[i]]$B = neurons(object)[[i]]$B[nKeep]
             }
             # case when no neurons are left of one type !!!!
             return(object)
           })
 
-##' Training
-##' @export
+
+#' @export
 setMethod(f = "trainPrunning",
           signature = "SLFN",
-          def = function (object, X, Y, Xv = NULL, Yv = NULL) {
-            # structure selection = TRUE, validation = V
+          def = function (object, H, Y, Hv = NULL, Yv = NULL, index = NULL) {
 
-            # rows of each fold
-            index = createFolds(X[,1], folds(object)) # require caret !!!
-            # ranking of neurons - with all available training data
-            H = project(object, X = X)
-            nRank = rankNeurons(object, H = H, Y = Y)
-            # error at nn = nnMax. Compute penalty and initialize error vector
+            # ranking of neurons - with all available training data (akusok does it with val-fold in CV and V)
+            nRank = rankNeurons(object, H = H, Y = Y) # neuron rank
+
+            # error at nn = nnMax
             nnMax = sum(sapply(neurons(object), function (x) {x$number})) # number of neurons (nn) max
-            nnError = computeError(object, nn = nnMax, H = H, Y = Y, nRank = nRank, index = index)
-            penalty = (nnError * 0.01) / nnMax # 1% of error at max nn
+            error_nn = computeError(object, nn = nnMax, nRank = nRank, H = H, Y = Y, Hv = Hv, Yv = Yv, index = index)
+            # compute penalty (constant) - 1% of error at nnMax
+            penalty = (error_nn * 0.01) / nnMax
+
             # initialize error vector
             e = rep(-1, nnMax) # error vector for different number of neurons. initially filled with (-1)
-            e[nnMax] = nnError + nnMax * penalty
+            e[nnMax] = error_nn + nnMax * penalty
 
             # minimization algorithm (MYOPT of aksuok)
             A = 1 # min
             E = nnMax # max
-            l = E- A # initial search interval
+            l = E- A # initial range - search interval
 
             B = as.integer(A + l/4)
             C = as.integer(A + l/2)
@@ -562,8 +566,8 @@ setMethod(f = "trainPrunning",
             while (l > 2) {
               for (nn in c(A, B, C, D, E)) {
                 if (e[nn] == -1) {
-                  nnError = computeError(object, nn = nn, H = H, Y = Y, nRank = nRank, index = index)
-                  e[nn] = nnError + penalty
+                  error_nn = computeError(object, nn = nn, nRank = nRank, H = H, Y = Y, Hv = Hv, Yv = Yv, index = index)
+                  e[nn] = error_nn + nn * penalty
                 }
               }
               # find minimum
@@ -585,46 +589,57 @@ setMethod(f = "trainPrunning",
             }
 
             nnOpt = unique(c(A,B,C,D,E)[which(c(e[A], e[B], e[C], e[D], e[E]) %in% m)]) #  optimum number of neurons
+
             # update model
-            object = prune(object, nIndex = nRank[(nnOpt+1):length(nRank)]) #update object - delete neurons
-            cat ("Removing", length((nnOpt+1):length(nRank)), "hidden neurons \n") # maybe add something related do mse...
+            object = prune(object, nSelected = nRank[1:nnOpt]) #update object - delete neurons
+            cat ("Removing", nnMax - nnOpt, "hidden neurons \n")
             cat("   MSE_val with", nnMax, "hidden neurons = ", e[nnMax],"\n" )
             cat("   MSE_val with", nnOpt, "hidden neurons = ", e[nnOpt],"\n" )
             H = H[,nRank[1:nnOpt], drop = FALSE] # new H
             Wout(object) = solveSystem(object, H = H, Y = Y, getWout = TRUE)$Wout
+
             # errors
-            err(object) = mse(object, Y = Y, Yp = predict(object, X = X)) # train MSE
+            err(object) = mse(object, Y = Y, Yp = predict(object, X = X), H = H) # train MSE
             err(object) = c(err(object), m) # val MSE
             return (object)
           })
 
+# function to compute error with differen number of neurons (nn)
+setMethod(f = "computeError",
+          signature = "SLFN",
+          def = function (object, nn, nRank, H, Y, Hv = NULL, Yv = NULL, index = NULL) {
+            if (validation(object) == "CV") {
+              error = 0
+              for (i in 1:folds(object)) {
+                # define train - val sets
+                Ht = H[-index[[i]],nRank[1:nn], drop = FALSE]
+                Yt = Y[-index[[i]], , drop = FALSE]
+                Hv = H[index[[i]], nRank[1:nn], drop = FALSE]
+                Yv = Y[index[[i]], , drop = FALSE]
+                # compute error
+                Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
+                Yv_p = Hv %*% Wout
+                error = error + mse(object, Y = Yv, Yp = Yv_p) / folds(object)
+              }
+            } else if (validation(object) == "V") {
+              # define train - val sets
+              Ht = H[,nRank[1:nn], drop = FALSE]
+              Yt = Y
+              Hv = Hv[,nRank[1:nn], drop = FALSE]
+              Yv = Yv
+              # compute error
+              Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
+              Yv_p = Hv %*% Wout
+              error = mse(object, Y = Yv, Yp = Yv_p)
+            } else if (validation(object) == "LOO") {
+              # define train set
+              Ht = H[,nRank[1:nn], drop = FALSE]
+              Yt = Y
+              # compute error
+              Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
+              Yp = Ht %*% Wout
+              error = mse(object, Y = Y, Yp = Yp, H = Ht)
+            }
+            return(error)
+         })
 
-
-
-computeError = function(object, nn, H, Y, Hv, Yv, nRank, index) {
-  if (validation(object) == "CV") {
-    error = 0
-    for (i in 1:folds(object)) {
-      Ht = H[-index[[i]],nRank[1:nn], drop = FALSE]
-      Yt = Y[-index[[i]], drop = FALSE]
-      Hv = H[index[[i]], nRank[1:nn], drop = FALSE]
-      Xv = X[index[[i]], drop = FALSE]
-      Yv = Y[index[[i]], drop = FALSE]
-      error = error + errorV(object, nn = nn, H = Ht, Yt = Yt, Hv = Hv, Yv = Yv) / folds(object)
-    }
-  } else if (validation(object) == "V") {
-    Ht = H[,nRank[1:nn], drop = FALSE]
-    Hv = Hv[,nRank[1:nn], drop = FALSE]
-    error =errorV(object, nn = nn, H = Ht, Yt = Y, Hv = Hv, Yv = Yv) / folds(object)
-  }
-  return(error)
-}
-
-
-errorV = function(object, nn, Ht, Yt, Hv, Yv){
-  # validation error for nn neurons (nn<nnmax)
-  Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
-  Yv_pred = Hv %*% Wout
-  error = mse(object, Y = Yv, Yp = Yv_pred)
-  return(error)
-}
