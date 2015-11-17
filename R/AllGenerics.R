@@ -11,14 +11,13 @@ setGeneric("inputs",function(object, ...) standardGeneric("inputs"))
 setGeneric("outputs",function(object, ...) standardGeneric("outputs"))
 ##' @export neurons
 setGeneric("neurons",function(object, ...) standardGeneric("neurons"))
-##' @export beta
-setGeneric("beta",function(object, ...) standardGeneric("beta"))
-##' @export act
-setGeneric("act",function(object, ...) standardGeneric("act"))
+##' @export Wout
+setGeneric("Wout",function(object, ...) standardGeneric("Wout"))
+setGeneric("err",function(object, ...) standardGeneric("err"))
 ##' @export alpha
 setGeneric("alpha",function(object, ...) standardGeneric("alpha"))
-##' @export structureSelection
-setGeneric("structureSelection",function(object, ...) standardGeneric("structureSelection"))
+##' @export modelStrSel
+setGeneric("modelStrSel",function(object, ...) standardGeneric("modelStrSel"))
 ##' @export validation
 setGeneric("validation",function(object, ...) standardGeneric("validation"))
 ##' @export folds
@@ -39,10 +38,10 @@ setGeneric("bigdata",function(object, ...) standardGeneric("bigdata"))
 setGeneric("inputs<-", function(object, value) standardGeneric("inputs<-"))
 setGeneric("outputs<-", function(object, value) standardGeneric("outputs<-"))
 setGeneric("neurons<-", function(object, value) standardGeneric("neurons<-"))
-setGeneric("beta<-", function(object, value) standardGeneric("beta<-"))
-setGeneric("act<-", function(object, value) standardGeneric("act<-"))
+setGeneric("Wout<-", function(object, value) standardGeneric("Wout<-"))
+setGeneric("err<-", function(object, value) standardGeneric("err<-"))
 setGeneric("alpha<-", function(object, value) standardGeneric("alpha<-"))
-setGeneric("structureSelection<-",function(object, value) standardGeneric("structureSelection<-"))
+setGeneric("modelStrSel<-",function(object, value) standardGeneric("modelStrSel<-"))
 setGeneric("validation<-",function(object, value) standardGeneric("validation<-"))
 setGeneric("folds<-",function(object, value) standardGeneric("folds<-"))
 setGeneric("ranking<-",function(object, value) standardGeneric("ranking<-"))
@@ -60,9 +59,11 @@ setGeneric("train", function(object, ...) standardGeneric("train"))
 setGeneric("predict", function(object, ...) standardGeneric("predict"))
 setGeneric("solveSystem", function(object, ...) standardGeneric("solveSystem"))
 setGeneric("rankNeurons", function(object, ...) standardGeneric("rankNeurons"))
-setGeneric("error", function(object, ...) standardGeneric("error"))
+setGeneric("mse", function(object, ...) standardGeneric("mse"))
 setGeneric("trainV", function(object, ...) standardGeneric("trainV"))
-setGeneric("trainV", function(object, ...) standardGeneric("trainV"))
+setGeneric("trainCV", function(object, ...) standardGeneric("trainCV"))
+setGeneric("trainPrunning", function(object, ...) standardGeneric("trainPrunning"))
+setGeneric("computeError", function(object, ...) standardGeneric("computeError"))
 
 #' Compute the projection of the matrix H for a particular X
 #'
@@ -92,7 +93,6 @@ setGeneric("project", function(object, ...) standardGeneric("project"))
 ##' This case entails a linear projection of datato a higher dimensional, which yields a multicorrelated new space.
 ##' @export
 setGeneric("addNeurons", function(object, ...) standardGeneric("addNeurons"))
-
 setGeneric("prune", function(object, ...) standardGeneric("prune"))
 
 
