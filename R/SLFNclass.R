@@ -543,13 +543,12 @@ setMethod(f = "trainPruning",
           def = function (object, H, Y, Hv = NULL, Yv = NULL, index = NULL) {
 
             # ranking of neurons - with all available training data (akusok does it with val-fold in CV and V)
-            nRank = sort(rankNeurons(object, H = H, Y = Y)) # neuron rank
-              # sort: 1) to easy the pruning proces
-              #       2) to maintain
+            nRank = rankNeurons(object, H = H, Y = Y) # neuron rank
 
             # error at nn = nnMax
             nnMax = sum(sapply(neurons(object), function (x) {x$number})) # number of neurons (nn) max
-            error_nn = computeError(object, nn = nnMax, nRank = nRank, H = H, Y = Y, Hv = Hv, Yv = Yv, index = index)
+            nSelected = sort(nRank[1:nnMax]) # selected neurons = all
+            error_nn = computeError(object, nSelected = nSelected, H = H, Y = Y, Hv = Hv, Yv = Yv, index = index)
             # compute penalty (constant) - 1% of error at nnMax
             penalty = (error_nn * 0.01) / nnMax
 
@@ -568,7 +567,8 @@ setMethod(f = "trainPruning",
             while (l > 2) {
               for (nn in c(A, B, C, D, E)) {
                 if (e[nn] == -1) {
-                  error_nn = computeError(object, nn = nn, nRank = nRank, H = H, Y = Y, Hv = Hv, Yv = Yv, index = index)
+                  nSelected = sort(nRank[1:nn])
+                  error_nn = computeError(object, nSelected = nSelected, H = H, Y = Y, Hv = Hv, Yv = Yv, index = index)
                   e[nn] = error_nn + nn * penalty
                 }
               }
@@ -593,11 +593,12 @@ setMethod(f = "trainPruning",
             nnOpt = unique(c(A,B,C,D,E)[which(c(e[A], e[B], e[C], e[D], e[E]) %in% m)]) #  optimum number of neurons
 
             # update model
-            object = prune(object, nSelected = nRank[1:nnOpt]) #update object - delete neurons
+            nSelected = sort(nRank[1:nnOpt])
+            object = prune(object, nSelected = nSelected) #update object - delete neurons
             cat ("Removing", nnMax - nnOpt, "hidden neurons \n")
             cat("   MSE_val with", nnMax, "hidden neurons = ", e[nnMax],"\n" )
             cat("   MSE_val with", nnOpt, "hidden neurons = ", e[nnOpt],"\n" )
-            H = H[,nRank[1:nnOpt], drop = FALSE] # new H
+            H = H[,nSelected, drop = FALSE] # new H
             Wout(object) = solveSystem(object, H = H, Y = Y, getWout = TRUE)$Wout
 
             # errors
@@ -609,14 +610,14 @@ setMethod(f = "trainPruning",
 # function to compute error with differen number of neurons (nn)
 setMethod(f = "computeError",
           signature = "SLFN",
-          def = function (object, nn, nRank, H, Y, Hv = NULL, Yv = NULL, index = NULL) {
+          def = function (object, nSelected, H, Y, Hv = NULL, Yv = NULL, index = NULL) {
             if (validation(object) == "CV") {
               error = 0
               for (i in 1:folds(object)) {
                 # define train - val sets
-                Ht = H[-index[[i]],nRank[1:nn], drop = FALSE]
+                Ht = H[-index[[i]],nSelected, drop = FALSE]
                 Yt = Y[-index[[i]], , drop = FALSE]
-                Hv = H[index[[i]], nRank[1:nn], drop = FALSE]
+                Hv = H[index[[i]], nSelected, drop = FALSE]
                 Yv = Y[index[[i]], , drop = FALSE]
                 # compute error
                 Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
@@ -625,9 +626,9 @@ setMethod(f = "computeError",
               }
             } else if (validation(object) == "V") {
               # define train - val sets
-              Ht = H[,nRank[1:nn], drop = FALSE]
+              Ht = H[,nSelected, drop = FALSE]
               Yt = Y
-              Hv = Hv[,nRank[1:nn], drop = FALSE]
+              Hv = Hv[,nSelected, drop = FALSE]
               Yv = Yv
               # compute error
               Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
@@ -635,7 +636,7 @@ setMethod(f = "computeError",
               error = mse(object, Y = Yv, Yp = Yv_p)
             } else if (validation(object) == "LOO") {
               # define train set
-              Ht = H[,nRank[1:nn], drop = FALSE]
+              Ht = H[,nSelected, drop = FALSE]
               Yt = Y
               # compute error
               Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
