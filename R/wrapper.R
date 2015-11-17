@@ -9,17 +9,17 @@
 #'  one call per each type of activation function defined.
 #' \item 3 - Trains the SLFN and obtaines the output weigth vector by calling \code{train()}.
 #' }
-#' @param X a data matrix, a vector with input data
-#' @param Y a data matrix, a vector with output data
-#' @param Xv a data matrix, a vector with input data for the simple validation procedure
-#' @param Yv  a data matrix, a vector with output data for the simple validation procedure
-#' @param nType a vector with the types of activation functions used
-#' @param nNeurons a vector, with the number of hidden neurons for each type of activation function
-#' @param W a list of matrices, with the input weight vectors or centroids (rbf) for each type of activation function
-#' @param B a list of vectors, with the input biases or sigmas (rbf) for each tye of activation function
+#' @param X input data values in a matrix or vector
+#' @param Y output data values in a matrix or vector
+#' @param Xv input data values in a matrix or vector for performing a simple validation procedure
+#' @param Yv output data values in a matrix or vector for performing a simple validation procedure
+#' @param nType the types of activation functions used in a vector
+#' @param nNeurons a vector containing the number of hidden neurons per type of activation function
+#' @param W a list of suitable matrix with the input weight vectors or centroids (rbf) per type of activation function
+#' @param B a list of suitable vector with the input biases or sigmas (rbf) per tye of activation function
 #' @param structureSelection a numeric vector with the number of hidden neurons added.
 #'
-#' @return An object of class \code{"SLFN"} with the fitted model
+#' @return An object of class \code{"SLFN"} with the model developed
 #'
 #' @examples
 #' X = seq(0, 7, 0.01)
