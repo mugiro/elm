@@ -19,14 +19,9 @@ License: \tab GPL (>= 2)\cr
 }
 \author{
 Ruben Urraca-Valle, Andres Sanz-Garcia
-
 Maintainer: Andres Sanz Garcia <andres.sanz-garcia@helsinki.fi>
 }
-\references{
-~~ Literature or other references for background information ~~
-}
-~~ Optionally other standard keywords, one per line, from file KEYWORDS ~~
-~~ in the R documentation directory ~~
+\references{Package source is in the help file for package.skeleton}
 \keyword{ package }
 \seealso{
 ~~ Optional links to other man pages, e.g. ~~

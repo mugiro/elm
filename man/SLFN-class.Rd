@@ -5,33 +5,87 @@
 \alias{SLFN-class}
 \alias{addNeurons,SLFN-method}
 \alias{project,SLFN-method}
-\title{Class "SFLN" of Single-hidden Layer Feed-forward Network}
+\title{Class "SFLN"}
 \usage{
 \S4method{addNeurons}{SLFN}(object, type, number, W = NULL, B = NULL)
 
 \S4method{project}{SLFN}(object, X)
 }
 \description{
-Description
+Class "SFLN" of Single-hidden Layer Feed-forward Network
 }
 \details{
-Details
+Include here more details <<<<<<ANDRES<<<<<<
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{addNeurons}: Add Neurons to SLFN
+\item \code{addNeurons}: Add Neurons to a SLFN object
 
-\item \code{project}: Project from the features space to neurons space. Build H [N x L]
+\item \code{project}: 
 }}
 \section{Slots}{
 
 \describe{
-\item{\code{inputs}}{number of inputs}
+\item{\code{inputs}}{The number of input features.}
 
-\item{\code{outputs}}{number of outputs}
+\item{\code{outputs}}{The number of outputs.}
 
-\item{\code{neurons}}{list with the description of hidden neurons.}
+\item{\code{neurons}}{A list with the description of thehidden layer. The hidden layer
+can be composed by neurons with different activation functions. Each element
+of the list includes neurons with the same activation function. The element
+is labelled with the type of activation function and contains the following
+information: number of neurons (number), input weight vector (W) and biases
+(B) associated to all the neurons included.}
 
-\item{\code{beta}}{weight outuput vector}
+\item{\code{Wout}}{The weight output vector that includes the computed weights between
+the hidden and the output layer.
+      output weights - vector (1 output) / matrix (n outputs)}
+
+\item{\code{err}}{The error used to evaluate model performance.
+mse c(mse_train, mse_val)}
+
+\item{\code{alpha}}{The regularization parameter of the network.
+normalization H'H solution (ridge parameter)}
+
+\item{\code{modelStrSel}}{A character to define the selection of model's structure.
+#' \itemize{
+\item "none"
+\item "prunning"
+}}
+
+\item{\code{ranking}}{A character to select the type of ranking implemented when
+ prunning option is selected.
+\itemize{
+\item "random" - random ranking
+\item "lasso" - ranking based on LASSO - L1 penalty
+}}
+
+\item{\code{validation}}{The validation procedure used for developing the model.
+#' \itemize{
+\item "none" - no validation process  <<<<<<ANDRES<<<<<<
+\item "V" - validation. Xv and Yv are required
+\item "CV" - cross validation. The number of folds is required
+\item "LOO" - leave one out based on the PRESS statistic
+}}
+
+\item{\code{folds}}{The number number of folds for the cross-validation procedure.}
+
+\item{\code{classification}}{The type of classification required:
+\itemize{
+\item "none": regression problem.
+\item "sc": single class: binary classification problem.
+\item "mc": multi-class: the sample belongs to 1 class out of n.
+\item "ml": multi-label: the sample can belong to m classes out of n (m<n).
+\item "w":  weigted.
+}}
+
+\item{\code{weights_wc}}{The weigths in the weighted classification problem.}
+
+\item{\code{batch}}{The size of the bacth in an adaptative ELM.}
+
+\item{\code{time}}{The time of calculation.}
+
+\item{\code{bigdata}}{An logical parameter to select the kind of acceleration used in
+case of solving big data problems.}
 }}
 

@@ -3,12 +3,12 @@ Type: Package
 Title: Extreme Learning Machine library
 Version: 0.1
 Date: 2015-10-09
-Author: Ruben Urraca [aut],
+Author: Ruben Urraca [aut, cre],
     Andres Sanz-Garcia [aut, cre],
 Maintainer: Andres Sanz <andres.sanz-garcia@helsinki.fi>
 Description: More about what it does (maybe more than one line)
 License: GPL (>= 2)
-LazyData: TRUE
+LazyLoad: TRUE
 Depends:
     R(>= 3.0),
     methods

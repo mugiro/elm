@@ -6,7 +6,7 @@
 \title{Train a SLFN}
 \usage{
 \S4method{train}{SLFN}(object, X, Y, Xv = NULL, Yv = NULL,
-  structureSelection = FALSE, ranking = "random", validation = "none",
+  modelStrSel = "none", ranking = "random", validation = "none",
   folds = "10", classification = "none", ...)
 }
 \arguments{
@@ -16,7 +16,7 @@
 
 \item{Y}{vector/matrix of outputs [Nx1c]}
 
-\item{structureSelection}{logical}
+\item{modelStrSel}{logical}
 
 \item{ranking}{type of neurons ranking \code{random} or \code{LASSO}}
 

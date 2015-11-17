@@ -7,15 +7,22 @@
 addNeurons(object, ...)
 }
 \arguments{
-\item{object}{SLFN type model}
+\item{object}{An instance to the SLFN class.}
 
 \item{...}{}
 
-\item{number}{the number of hidden neurons added to the network}
+\item{number}{The number of hidden neurons to add to the network.}
 
-\item{type}{activation function of the added neurons ("linear", "sigmoid", "tan", "rbf").}
+\item{type}{The activation function of the added neurons. Several types:
+#' \itemize{
+\item "linear" A standard linear function.
+\item "sigmoid" A mathematical function having an "S" shape.
+\item "tan"
+\item "rbf"
+}}
 
-\item{W}{input weight matrix of dimension [dxL]. List of centroids for rbf activation functions.}
+\item{W}{An input weight matrix of dimension [dxL]. List of centroids for
+rbf activation functions.}
 
 \item{B}{input bias vector of dimension [1xL]. Vector of sigmas for rbf activation functions.}
 }
@@ -31,6 +38,7 @@ For linear activation functions, the number of neurons added cannot be superior 
 This case entails a linear projection of datato a higher dimensional, which yields a multicorrelated new space.
 }
 \description{
-addNeurons adds a specific number of hidden neurons to the SLFN being all of them of the same type of activation function.
+\code{addNeurons} adds a specific number of hidden neurons to the SLFN being
+ all of them of the same type of activation function.
 }
 
