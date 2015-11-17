@@ -62,7 +62,7 @@ setGeneric("rankNeurons", function(object, ...) standardGeneric("rankNeurons"))
 setGeneric("mse", function(object, ...) standardGeneric("mse"))
 setGeneric("trainV", function(object, ...) standardGeneric("trainV"))
 setGeneric("trainCV", function(object, ...) standardGeneric("trainCV"))
-setGeneric("trainPrunning", function(object, ...) standardGeneric("trainPrunning"))
+setGeneric("trainPruning", function(object, ...) standardGeneric("trainPruning"))
 setGeneric("computeError", function(object, ...) standardGeneric("computeError"))
 
 #' Compute the projection of the matrix H for a particular X

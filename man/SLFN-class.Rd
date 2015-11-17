@@ -44,10 +44,10 @@ layer and the ouptut}
 \item{\code{modelStrSel}}{character with the model structure selection method used
 #' \itemize{
 \item "none"
-\item "prunning"
+\item "pruning"
 }}
 
-\item{\code{ranking}}{character with the type of ranking implemented when prunning option is selected
+\item{\code{ranking}}{character with the type of ranking implemented when pruning option is selected
 \itemize{
 \item "random" - random ranking
 \item "lasso" - ranking based on LASSO - L1 penalty

@@ -20,9 +20,9 @@
 #' @slot modelStrSel character with the model structure selection method used
 #' #' \itemize{
 #' \item "none"
-#' \item "prunning"
+#' \item "pruning"
 #' }
-#' @slot ranking character with the type of ranking implemented when prunning option is selected
+#' @slot ranking character with the type of ranking implemented when pruning option is selected
 #' \itemize{
 #' \item "random" - random ranking
 #' \item "lasso" - ranking based on LASSO - L1 penalty
@@ -50,7 +50,7 @@ setClass("SLFN",
                    Wout =  "matrix",             # output weights - vector (1 output) / matrix (n outputs)
                    err = "numeric",        # mse c(mse_train, mse_val)
                    alpha = "numeric",        # normalization H'H solution (ridge parameter)
-                   modelStrSel = "character", # c("none", "prunning")
+                   modelStrSel = "character", # c("none", "pruning")
                    ranking = "character", # random/LASSO
                    validation = "character", # none/V/CV/LOO
                    folds = "numeric", # CV folds
@@ -147,8 +147,8 @@ setMethod("show", "SLFN",
             cat("    + ", outputs(object), "outputs \n")
             cat("\n")
             cat("Training scheme: \n")
-            if (modelStrSel(object) == "prunning") {
-              cat("    + Model structure selection = prunning \n ")
+            if (modelStrSel(object) == "pruning") {
+              cat("    + Model structure selection = pruning \n ")
               cat("        * Ranking of neurons:", ranking(object), " \n")
             } else {
               cat("    + Model Structure Selection = none \n")
@@ -307,7 +307,7 @@ setMethod("addNeurons",
              if (type %in% names(neurons(object))) { #type of neuron added already exists
                neurons(object)[[type]]$number = neurons(object)[[type]]$number + number
                neurons(object)[[type]]$W = cbind(neurons(object)[[type]]$W, W)
-               neurons(object)[[type]]$B = cbind(neurons(object)[[type]]$B, B)
+               neurons(object)[[type]]$B = c(neurons(object)[[type]]$B, B)
              } else {
                neurons(object)[[type]] = list(number = number, W = W, B = B)
              }
@@ -342,7 +342,7 @@ setMethod(f = "train",
           signature = 'SLFN',
           def = function (object, X, Y, Xv = NULL, Yv = NULL,
                           modelStrSel = "none", ranking = "random",
-                          validation = "none", folds = "10",
+                          validation = "none", folds = 10,
                           classification = "none",
                           # redundante. Aquí o en el prototipo ???
                           ...) {
@@ -364,16 +364,16 @@ setMethod(f = "train",
 
             # Solve
             H = project(object, X = X)
-            if (modelStrSel(object) == "prunning") { # optimize number of neurons
+            if (modelStrSel(object) == "pruning") { # optimize number of neurons
               if (validation(object) == "V") { # enter val. set
                 Hv = project(object, X = Xv)
-                object = trainPrunning(object, H = H, Y = Y, Hv = Hv, Yv = Yv)
+                object = trainPruning(object, H = H, Y = Y, Hv = Hv, Yv = Yv)
               } else if (validation(object) == "CV") {
                 # folds division (CV case)
                 index = createFolds(X[,1], folds(object)) # require caret !!!
-                object = trainPrunning(object, H = H, Y = Y, index = index)
+                object = trainPruning(object, H = H, Y = Y, index = index)
               } else if (validation(object) == "LOO")  { # no val. set
-                object = trainPrunning(object, H = H, Y = Y)
+                object = trainPruning(object, H = H, Y = Y)
               }
             } else if (modelStrSel(object) == "none") {  # validation for computing errors ???
               Wout(object) = solveSystem(object, H = H, Y = Y, getWout = TRUE)$Wout
@@ -538,12 +538,14 @@ setMethod(f = "prune",
 
 
 #' @export
-setMethod(f = "trainPrunning",
+setMethod(f = "trainPruning",
           signature = "SLFN",
           def = function (object, H, Y, Hv = NULL, Yv = NULL, index = NULL) {
 
             # ranking of neurons - with all available training data (akusok does it with val-fold in CV and V)
-            nRank = rankNeurons(object, H = H, Y = Y) # neuron rank
+            nRank = sort(rankNeurons(object, H = H, Y = Y)) # neuron rank
+              # sort: 1) to easy the pruning proces
+              #       2) to maintain
 
             # error at nn = nnMax
             nnMax = sum(sapply(neurons(object), function (x) {x$number})) # number of neurons (nn) max
