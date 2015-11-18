@@ -50,7 +50,7 @@ layer and the ouptut}
 \item{\code{ranking}}{character with the type of ranking implemented when pruning option is selected
 \itemize{
 \item "random" - random ranking
-\item "lasso" - ranking based on LASSO - L1 penalty
+\item "lars" - ranking based on lars - L1 penalty
 }}
 
 \item{\code{validation}}{validation procedure used for model structure

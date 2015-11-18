@@ -25,7 +25,7 @@
 #' @slot ranking character with the type of ranking implemented when pruning option is selected
 #' \itemize{
 #' \item "random" - random ranking
-#' \item "lasso" - ranking based on LASSO - L1 penalty
+#' \item "lars" - ranking based on lars - L1 penalty
 #' }
 #' @slot validation validation procedure used for model structure
 #' #' \itemize{
@@ -51,7 +51,7 @@ setClass("SLFN",
                    err = "numeric",        # mse c(mse_train, mse_val)
                    alpha = "numeric",        # normalization H'H solution (ridge parameter)
                    modelStrSel = "character", # c("none", "pruning")
-                   ranking = "character", # random/LASSO
+                   ranking = "character", # random/lars
                    validation = "character", # none/V/CV/LOO
                    folds = "numeric", # CV folds
                    classification= "character", # type of classification ("none"/""/""/"weighted")
@@ -62,8 +62,8 @@ setClass("SLFN",
          prototype = prototype(inputs = integer(1),  # Initialize the SLFN
                                outputs = integer(1),
                                neurons = list(),
-                               Wout = matrix(NA),
-                               err = NaN,
+                               Wout = matrix(),
+                               err = -1,
                                alpha = 1E-9,
                                modelStrSel = "none", #defaults when calling train function
                                ranking = "random",
@@ -316,7 +316,7 @@ setMethod("addNeurons",
            }
 
            cat(" Adding", number, type, "hidden neurons \n")
-           if (!is.null(Wout(object))) {
+           if (err(object)[1] != -1) {
              cat ("WARNING - The SLFN needs to be re-trained")
            }
            return(object)
@@ -331,7 +331,7 @@ setMethod("addNeurons",
 ##' @param X a data matrix of dimensions [Nxd] with input data
 ##' @param Y vector/matrix of outputs [Nx1c]
 ##' @param modelStrSel logical
-##' @param ranking type of neurons ranking \code{random} or \code{LASSO}
+##' @param ranking type of neurons ranking \code{random} or \code{lars}
 ##' @param validation t
 ##' @param classification
 ##' @param folds
@@ -476,11 +476,12 @@ setMethod(f = "predict",
 setMethod(f = "rankNeurons",
           signature = "SLFN",
           def = function (object, nn, H = NULL, Y = NULL){
-            if (ranking(object) == "LASSO") { # Use lars {lars} package
+            if (ranking(object) == "lars") { # Use lars {lars} package
 #=========== QUE PASA SI HAY MENOS neuronas o se quieres dejar menos. Falta el nn ?? ========
-              rank = unlist(lars(x = H, y = Y, type = "lar")$actions)
+              rank = abs(unlist(lars(x = H, y = Y, type = "lar")$actions))
 #=========== Rank$actions puede dar valores negativos. Notar...  ========
               # llevas razón... lo tengo que mirar....
+              # abs(), but not sure if it is the right solution
             } else {
               nnMax = sum(sapply(neurons(object), function (x) {x$number})) # number of neurons (nn) max
               rank = sample(1:nnMax)

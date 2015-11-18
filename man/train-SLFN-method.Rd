@@ -7,7 +7,7 @@
 \usage{
 \S4method{train}{SLFN}(object, X, Y, Xv = NULL, Yv = NULL,
   modelStrSel = "none", ranking = "random", validation = "none",
-  folds = "10", classification = "none", ...)
+  folds = 10, classification = "none", ...)
 }
 \arguments{
 \item{object}{SLFN object to serialize}
@@ -18,7 +18,7 @@
 
 \item{modelStrSel}{logical}
 
-\item{ranking}{type of neurons ranking \code{random} or \code{LASSO}}
+\item{ranking}{type of neurons ranking \code{random} or \code{lars}}
 
 \item{validation}{t}
 
