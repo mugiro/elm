@@ -30,8 +30,8 @@ setGeneric("batch",function(object, ...) standardGeneric("batch"))
 setGeneric("classification",function(object, ...) standardGeneric("classification"))
 ##' @export weights_wc
 setGeneric("weights_wc",function(object, ...) standardGeneric("weights_wc"))
-##' @export time
-setGeneric("time",function(object, ...) standardGeneric("time"))
+
+
 ##' @export bigdata
 setGeneric("bigdata",function(object, ...) standardGeneric("bigdata"))
 
@@ -48,7 +48,7 @@ setGeneric("ranking<-",function(object, value) standardGeneric("ranking<-"))
 setGeneric("batch<-", function(object, value) standardGeneric("batch<-"))
 setGeneric("classification<-", function(object, value) standardGeneric("classification<-"))
 setGeneric("weights_wc<-", function(object, value) standardGeneric("weights_wc<-"))
-setGeneric("time<-", function(object, value) standardGeneric("time<-"))
+
 setGeneric("bigdata<-", function(object, value) standardGeneric("bigdata<-"))
 
 # Other functions
@@ -65,21 +65,29 @@ setGeneric("trainCV", function(object, ...) standardGeneric("trainCV"))
 setGeneric("trainPrunning", function(object, ...) standardGeneric("trainPrunning"))
 setGeneric("computeError", function(object, ...) standardGeneric("computeError"))
 
-#' Compute the projection of the matrix H for a particular X
+#' Compute the projection of the matrix H for a particular X.
 #'
-#' @param object the instance to SLFN class
-#' @param X a matrix of dimensions [Nxd]; input matrix
-#' @return H a matrix of dimensions [NxL]; matrix after transformation
-#' @export
+#' \code{project} returns the projection of the matrix H.
+#' @param object The instance to SLFN class.
+#' @param X The input matrix of dimensions [Nxd].
+#' @return A matrix H after transformation of dimensions [NxL].
 setGeneric("project", function(object, ...) standardGeneric("project"))
 
 ##' Add hidden neurons to the SLFN
 ##'
-##' addNeurons adds a specific number of hidden neurons to the SLFN being all of them of the same type of activation function.
-##' @param object SLFN type model
-##' @param number the number of hidden neurons added to the network
-##' @param type activation function of the added neurons ("linear", "sigmoid", "tan", "rbf").
-##' @param W input weight matrix of dimension [dxL]. List of centroids for rbf activation functions.
+##' \code{addNeurons} adds a specific number of hidden neurons to the SLFN being
+##'  all of them of the same type of activation function.
+##' @param object An instance to the SLFN class.
+##' @param number The number of hidden neurons to add to the network.
+##' @param type The activation function of the added neurons. Several types:
+#' #' \itemize{
+#' \item "linear" A standard linear function.
+#' \item "sigmoid" A mathematical function having an "S" shape.
+#' \item "tan"
+#' \item "rbf"
+#' }
+##' @param W An input weight matrix of dimension [dxL]. List of centroids for
+##'  rbf activation functions.
 ##' @param B input bias vector of dimension [1xL]. Vector of sigmas for rbf activation functions.
 ##' @param ...
 ##' @return object SLFN with new neurons added and W and B matrices updated.
@@ -93,6 +101,8 @@ setGeneric("project", function(object, ...) standardGeneric("project"))
 ##' This case entails a linear projection of datato a higher dimensional, which yields a multicorrelated new space.
 ##' @export
 setGeneric("addNeurons", function(object, ...) standardGeneric("addNeurons"))
+
+
 setGeneric("prune", function(object, ...) standardGeneric("prune"))
 
 

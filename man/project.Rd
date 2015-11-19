@@ -2,19 +2,19 @@
 % Please edit documentation in R/AllGenerics.R
 \name{project}
 \alias{project}
-\title{Compute the projection of the matrix H for a particular X}
+\title{Compute the projection of the matrix H for a particular X.}
 \usage{
 project(object, ...)
 }
 \arguments{
-\item{object}{the instance to SLFN class}
+\item{object}{The instance to SLFN class.}
 
-\item{X}{a matrix of dimensions [Nxd]; input matrix}
+\item{X}{The input matrix of dimensions [Nxd].}
 }
 \value{
-H a matrix of dimensions [NxL]; matrix after transformation
+A matrix H after transformation of dimensions [NxL].
 }
 \description{
-Compute the projection of the matrix H for a particular X
+\code{project} returns the projection of the matrix H.
 }
 
