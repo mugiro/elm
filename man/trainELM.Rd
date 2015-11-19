@@ -2,44 +2,46 @@
 % Please edit documentation in R/wrapper.R
 \name{trainELM}
 \alias{trainELM}
-\title{train ELM}
+\title{trainELM}
 \usage{
 trainELM(X, Y, Xv = NULL, Yv = NULL, nType, nNumber, W = NULL, B = NULL,
   structureSelection = FALSE, validation = "none", ranking = "random",
   alpha, bigdata = FALSE)
 }
 \arguments{
-\item{X}{a data matrix, a vector with input data}
+\item{X}{A data matrix, a vector with input data}
 
-\item{Y}{a data matrix, a vector with output data}
+\item{Y}{A data matrix, a vector with output data}
 
-\item{Xv}{a data matrix, a vector with input data for the simple validation procedure}
+\item{Xv}{A data matrix, a vector with input data for the simple validation procedure}
 
-\item{Yv}{a data matrix, a vector with output data for the simple validation procedure}
+\item{Yv}{A data matrix, a vector with output data for the simple validation procedure}
 
-\item{nType}{a vector with the types of activation functions used}
+\item{nType}{A vector with the types of activation functions used}
 
-\item{W}{a list of matrices, with the input weight vectors or centroids (rbf) for each type of activation function}
+\item{W}{A list of matrices, with the input weight vectors or centroids (rbf) for each type of activation function}
 
-\item{B}{a list of vectors, with the input biases or sigmas (rbf) for each tye of activation function}
+\item{B}{A list of vectors, with the input biases or sigmas (rbf) for each tye of activation function}
 
-\item{structureSelection}{a numeric vector with the number of hidden neurons added.}
+\item{structureSelection}{A numeric vector with the number of hidden neurons added.}
 
-\item{nNeurons}{a vector, with the number of hidden neurons for each type of activation function}
+\item{nNeurons}{A vector, with the number of hidden neurons for each type of activation function}
 }
 \value{
 An object of class \code{"SLFN"} with the fitted model
 }
 \description{
-train ELM is used to create an object of class SLFN and trained it given X and Y
+trainELM is used to create an object of class SLFN and trained it given X and Y
 }
 \details{
-train ELM is a wrapper method/function that:
-\itemize{
-\item 1 - Creates the SLFN object by calling \code{new()}.
-\item 2 - Adds the different hidden neurons by making sequential calls to \code{addNeurons()},
+The function \code{trainELM} is a wrapper for summarizing several actions
+requiered when creating and adjusting an ELM model. The particular steps are
+the following:
+\enumerate{
+\item Creates the SLFN object by calling \code{new()}.
+\item Adds the different hidden neurons by making sequential calls to \code{addNeurons()},
  one call per each type of activation function defined.
-\item 3 - Trains the SLFN and obtaines the output weigth vector by calling \code{train()}.
+\item Trains the SLFN and obtaines the output weigth vector by calling \code{train()}.
 }
 }
 \examples{

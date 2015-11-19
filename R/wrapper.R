@@ -1,23 +1,25 @@
-#' train ELM
+#' trainELM
 #'
-#' train ELM is used to create an object of class SLFN and trained it given X and Y
+#' trainELM is used to create an object of class SLFN and trained it given X and Y
 #'
-#' train ELM is a wrapper method/function that:
-#' \itemize{
-#' \item 1 - Creates the SLFN object by calling \code{new()}.
-#' \item 2 - Adds the different hidden neurons by making sequential calls to \code{addNeurons()},
+#' The function \code{trainELM} is a wrapper for summarizing several actions
+#' requiered when creating and adjusting an ELM model. The particular steps are
+#' the following:
+#' \enumerate{
+#' \item Creates the SLFN object by calling \code{new()}.
+#' \item Adds the different hidden neurons by making sequential calls to \code{addNeurons()},
 #'  one call per each type of activation function defined.
-#' \item 3 - Trains the SLFN and obtaines the output weigth vector by calling \code{train()}.
+#' \item Trains the SLFN and obtaines the output weigth vector by calling \code{train()}.
 #' }
-#' @param X a data matrix, a vector with input data
-#' @param Y a data matrix, a vector with output data
-#' @param Xv a data matrix, a vector with input data for the simple validation procedure
-#' @param Yv  a data matrix, a vector with output data for the simple validation procedure
-#' @param nType a vector with the types of activation functions used
-#' @param nNeurons a vector, with the number of hidden neurons for each type of activation function
-#' @param W a list of matrices, with the input weight vectors or centroids (rbf) for each type of activation function
-#' @param B a list of vectors, with the input biases or sigmas (rbf) for each tye of activation function
-#' @param structureSelection a numeric vector with the number of hidden neurons added.
+#' @param X A data matrix, a vector with input data
+#' @param Y A data matrix, a vector with output data
+#' @param Xv A data matrix, a vector with input data for the simple validation procedure
+#' @param Yv  A data matrix, a vector with output data for the simple validation procedure
+#' @param nType A vector with the types of activation functions used
+#' @param nNeurons A vector, with the number of hidden neurons for each type of activation function
+#' @param W A list of matrices, with the input weight vectors or centroids (rbf) for each type of activation function
+#' @param B A list of vectors, with the input biases or sigmas (rbf) for each tye of activation function
+#' @param structureSelection A numeric vector with the number of hidden neurons added.
 #'
 #' @return An object of class \code{"SLFN"} with the fitted model
 #'
