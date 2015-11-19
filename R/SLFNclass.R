@@ -48,7 +48,7 @@ setClass("SLFN",
                    neurons = "list",         # list different type of neurons.
                    # Each element of the list contains the number of neurons, activation fucntion, B and W.
                    Wout =  "matrix",             # output weights - vector (1 output) / matrix (n outputs)
-                   err = "numeric",        # mse c(mse_train, mse_val)
+                   errors = "numeric",        # mse c(mse_train, mse_val)
                    alpha = "numeric",        # normalization H'H solution (ridge parameter)
                    modelStrSel = "character", # c("none", "pruning")
                    ranking = "character", # random/lars
@@ -59,18 +59,18 @@ setClass("SLFN",
                    batch = "integer",        # batch size of adaptive EL
                    time = "numeric",         # time of calculation
                    bigdata = "logical"),     # selection of acelerator
-         prototype = prototype(inputs = integer(1),  # Initialize the SLFN
-                               outputs = integer(1),
+         prototype = prototype(inputs = 0,  # Initialize the SLFN
+                               outputs = 0,
                                neurons = list(),
-                               Wout = matrix(),
-                               err = -1,
+                               Wout = matrix(), # NA matrix
+                               errors = numeric(),
                                alpha = 1E-9,
                                modelStrSel = "none", #defaults when calling train function
                                ranking = "random",
                                validation = "none",
                                folds = 10,
-                               batch = integer(10),
                                classification= "none",
+                               batch = integer(10),
                               # weights_wc = NA,
                                time = 0 ,
                                bigdata = FALSE))
@@ -84,7 +84,7 @@ setMethod("outputs","SLFN",function(object) return(object@outputs))
 setMethod("neurons","SLFN",function(object) return(object@neurons))
 ##' @exportMethod Wout
 setMethod("Wout", "SLFN", function(object) return(object@Wout))
-setMethod("err", "SLFN", function(object) return(object@err))
+setMethod("errors", "SLFN", function(object) return(object@errors))
 ##' @exportMethod alpha
 setMethod("alpha","SLFN",function(object) return(object@alpha))
 ##' @exportMethod modelStrSel
@@ -110,7 +110,7 @@ setMethod("inputs<-", "SLFN", function(object, value) { object@inputs = value; o
 setMethod("outputs<-", "SLFN", function(object, value) { object@outputs = value; object})
 setMethod("neurons<-", "SLFN", function(object, value) { object@neurons = value; object})
 setMethod("Wout<-", "SLFN", function(object, value) { object@Wout = value; object})
-setMethod("err<-", "SLFN", function(object, value) { object@err = value; object})
+setMethod("errors<-", "SLFN", function(object, value) { object@errors = value; object})
 setMethod("alpha<-", "SLFN", function(object, value) { object@alpha = value; object})
 setMethod("modelStrSel<-","SLFN",function(object, value) { object@modelStrSel <- value; object})
 setMethod("ranking<-","SLFN",function(object, value) { object@ranking <- value; object})
@@ -156,9 +156,9 @@ setMethod("show", "SLFN",
             cat("    + Validation =", validation(object), "\n")
             cat("\n")
             cat("Errors: \n")
-            cat("    + MSE train : ",err(object)[1] ," \n")
+            cat("    + MSE train : ",errors(object)[1] ," \n")
             if (validation(object) != "none"){
-              cat("    + MSE validation:" ,err(object)[2] ," \n")
+              cat("    + MSE validation:" ,errors(object)[2] ," \n")
             }
           })
 
@@ -252,7 +252,7 @@ setMethod("loadSLFN", "SLFN",
           })
 
 
-#' @describeIn SLFN Add Neurons to SLFN
+#' @describeIn addNeurons
 setMethod("addNeurons",
          signature = "SLFN",
          def = function(object, type, number, W = NULL, B = NULL){
@@ -316,7 +316,7 @@ setMethod("addNeurons",
            }
 
            cat(" Adding", number, type, "hidden neurons \n")
-           if (err(object)[1] != -1) {
+           if (!all(is.na(Wout(object)))) {
              cat ("WARNING - The SLFN needs to be re-trained")
            }
            return(object)
@@ -377,7 +377,7 @@ setMethod(f = "train",
               }
             } else if (modelStrSel(object) == "none") {  # validation for computing errors ???
               Wout(object) = solveSystem(object, H = H, Y = Y, getWout = TRUE)$Wout
-              err(object) = mse(object, Y = Y, Yp = predict(object, X = X)) #training error
+              errors(object) = mse(object, Y = Y, Yp = predict(object, X = X)) #training error
             }
             return(object)
           })
@@ -453,10 +453,10 @@ setMethod(f = "solveSystem",
 ##' @export
 setMethod(f = "predict",
           signature = 'SLFN',
-          def = function (object, X=NULL) {
+          def = function (object, X = NULL) {
             X = as.matrix(X)
-            if(is.null(Wout(object))) {
-              print("Wout is NULL. Train before the SLFN model.")
+            if(all(is.na(Wout(object)))) {
+              cat("Wout not computed. The SLFN model has to be trained \n")
               Yp = NULL
             } else{
               H = project(object, X)
@@ -603,8 +603,8 @@ setMethod(f = "trainPruning",
             Wout(object) = solveSystem(object, H = H, Y = Y, getWout = TRUE)$Wout
 
             # errors
-            err(object) = mse(object, Y = Y, Yp = predict(object, X = X), H = H) # train MSE
-            err(object) = c(err(object), m) # val MSE
+            errors(object) = mse(object, Y = Y, Yp = predict(object, X = X), H = H) # train MSE
+            errors(object) = c(errors(object), m) # val MSE
             return (object)
           })
 

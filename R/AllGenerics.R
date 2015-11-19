@@ -13,7 +13,7 @@ setGeneric("outputs",function(object, ...) standardGeneric("outputs"))
 setGeneric("neurons",function(object, ...) standardGeneric("neurons"))
 ##' @export Wout
 setGeneric("Wout",function(object, ...) standardGeneric("Wout"))
-setGeneric("err",function(object, ...) standardGeneric("err"))
+setGeneric("errors",function(object, ...) standardGeneric("errors"))
 ##' @export alpha
 setGeneric("alpha",function(object, ...) standardGeneric("alpha"))
 ##' @export modelStrSel
@@ -39,7 +39,7 @@ setGeneric("inputs<-", function(object, value) standardGeneric("inputs<-"))
 setGeneric("outputs<-", function(object, value) standardGeneric("outputs<-"))
 setGeneric("neurons<-", function(object, value) standardGeneric("neurons<-"))
 setGeneric("Wout<-", function(object, value) standardGeneric("Wout<-"))
-setGeneric("err<-", function(object, value) standardGeneric("err<-"))
+setGeneric("errors<-", function(object, value) standardGeneric("errors<-"))
 setGeneric("alpha<-", function(object, value) standardGeneric("alpha<-"))
 setGeneric("modelStrSel<-",function(object, value) standardGeneric("modelStrSel<-"))
 setGeneric("validation<-",function(object, value) standardGeneric("validation<-"))

@@ -3,12 +3,9 @@
 \docType{class}
 \name{SLFN-class}
 \alias{SLFN-class}
-\alias{addNeurons,SLFN-method}
 \alias{project,SLFN-method}
 \title{Class "SFLN"}
 \usage{
-\S4method{addNeurons}{SLFN}(object, type, number, W = NULL, B = NULL)
-
 \S4method{project}{SLFN}(object, X)
 }
 \description{
@@ -19,8 +16,6 @@ Details
 }
 \section{Methods (by generic)}{
 \itemize{
-\item \code{addNeurons}: Add Neurons to SLFN
-
 \item \code{project}: 
 }}
 \section{Slots}{
