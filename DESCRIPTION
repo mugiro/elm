@@ -10,7 +10,7 @@ Authors@R: c(
 Description: Implementation of extreme learning machines in R for regression and classifiction. The training functions include
 different regularization methods, optional pruning of neurons and several validation procedures.
 License: GPL (>= 2)
-LazyData: TRUE
+LazyLoad: TRUE
 Depends:
     R(>= 3.0),
     methods

@@ -10,6 +10,7 @@
 #' \item \emph{...}
 #' }
 #' @return A vector of length \emph{N} with all distances
+#' @export
 distMatVect = function(X, ref, type = "euclidean") {
     if (type == "euclidean") {
         dist = apply(X, 1, function(x) {sqrt(sum((x-ref)^2))})
