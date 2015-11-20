@@ -271,8 +271,6 @@ setMethod("loadSLFN", "SLFN",
             }
           })
 
-
-<<<<<<< HEAD
 #' @describeIn addNeurons
 setMethod("addNeurons",
          signature = "SLFN",

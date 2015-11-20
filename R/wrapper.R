@@ -11,7 +11,6 @@
 #'  one call per each type of activation function defined.
 #' \item Trains the SLFN and obtaines the output weigth vector by calling \code{train()}.
 #' }
-<<<<<<< HEAD
 #' @param X The input data values in a matrix or vector
 #' @param Y The output data values in a matrix or vector
 #' @param Xv The input data values in a matrix or vector for performing a simple validation procedure
