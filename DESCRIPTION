@@ -1,12 +1,14 @@
 Package: elm
 Type: Package
-Title: Extreme Learning Machine library
+Title: Extreme Learning Machine for regression and classification
 Version: 0.1
 Date: 2015-10-09
-Author: Ruben Urraca [aut],
-    Andres Sanz-Garcia [aut, cre],
-Maintainer: Andres Sanz <andres.sanz-garcia@helsinki.fi>
-Description: More about what it does (maybe more than one line)
+Authors@R: c(
+  person("Ruben", "Urraca", email = "ruben.urraca@unirioja.es", role = c("aut")),
+  person("Andres", "Sanz-Garcia", email = "andres.sanz-garcia@helsinki.fi", role = c("aut", "cre"))
+  )
+Description: Implementation of extreme learning machines in R for regression and classifiction. The training functions include
+different regularization methods, optional pruning of neurons and several validation procedures.
 License: GPL (>= 2)
 LazyData: TRUE
 Depends:
@@ -27,4 +29,6 @@ Collate:
     'RcppExports.R'
     'distance.R'
     'wrapper.R'
+URL: https://github.com/mugiro/elm
+BugReports: https://github.com/mugiro/elm/issues
 VignetteBuilder: knitr

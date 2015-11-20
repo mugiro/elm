@@ -370,7 +370,7 @@ setMethod(f = "train",
                 object = trainPruning(object, H = H, Y = Y, Hv = Hv, Yv = Yv)
               } else if (validation(object) == "CV") {
                 # folds division (CV case)
-                index = createFolds(X[,1], folds(object)) # require caret !!!
+                index = caret::createFolds(X[,1], folds(object)) # require caret !!!
                 object = trainPruning(object, H = H, Y = Y, index = index)
               } else if (validation(object) == "LOO")  { # no val. set
                 object = trainPruning(object, H = H, Y = Y)
