@@ -25,13 +25,13 @@
 #' @slot modelStrSel A character to define the selection of model's structure.
 #' #' \itemize{
 #' \item "none"
-#' \item "prunning"
+#' \item "pruning"
 #' }
 #' @slot ranking A character to select the type of ranking implemented when
 #'  prunning option is selected.
 #' \itemize{
 #' \item "random" - random ranking
-#' \item "lasso" - ranking based on LASSO - L1 penalty
+#' \item "lars" - ranking based on lars - L1 penalty
 #' }
 #' @slot validation The validation procedure used for developing the model.
 #' #' \itemize{
@@ -59,29 +59,30 @@ setClass("SLFN",
                    outputs = "numeric",
                    neurons = "list",
                    Wout =  "matrix",
-                   err = "numeric",
+                   errors = "numeric",        # mse c(mse_train, mse_val)
                    alpha = "numeric",
-                   modelStrSel = "character",
-                   ranking = "character",
-                   validation = "character",
+                   modelStrSel = "character", # c("none", "pruning")
+                   ranking = "character",     # c("random", "lars")
+                   validation = "character",  # none/V/CV/LOO
                    folds = "numeric",
                    classification= "character",
                    weights_wc = "ANY",
                    batch = "integer",
+    #=============== change the name of time?? (may be not..)
                    time = "numeric",
                    bigdata = "logical"),
-         prototype = prototype(inputs = integer(1),  # Initialize the SLFN
-                               outputs = integer(1),
+         prototype = prototype(inputs = 0,  # Initialize the SLFN
+                               outputs = 0,
                                neurons = list(),
-                               Wout = matrix(NA),
-                               err = NaN,
+                               Wout = matrix(), # NA matrix
+                               errors = numeric(),
                                alpha = 1E-9,
                                modelStrSel = "none",
                                ranking = "random",
                                validation = "none",
                                folds = 10,
-                               batch = integer(10),
                                classification= "none",
+                               batch = integer(10),
                                weights_wc = NA,
                                time = 0 ,
                                bigdata = FALSE))
@@ -95,7 +96,7 @@ setMethod("outputs","SLFN",function(object) return(object@outputs))
 setMethod("neurons","SLFN",function(object) return(object@neurons))
 ##' @exportMethod Wout
 setMethod("Wout", "SLFN", function(object) return(object@Wout))
-setMethod("err", "SLFN", function(object) return(object@err))
+setMethod("errors", "SLFN", function(object) return(object@errors))
 ##' @exportMethod alpha
 setMethod("alpha","SLFN",function(object) return(object@alpha))
 ##' @exportMethod modelStrSel
@@ -130,7 +131,7 @@ setMethod("inputs<-", "SLFN", function(object, value) { object@inputs = value; o
 setMethod("outputs<-", "SLFN", function(object, value) { object@outputs = value; object})
 setMethod("neurons<-", "SLFN", function(object, value) { object@neurons = value; object})
 setMethod("Wout<-", "SLFN", function(object, value) { object@Wout = value; object})
-setMethod("err<-", "SLFN", function(object, value) { object@err = value; object})
+setMethod("errors<-", "SLFN", function(object, value) { object@errors = value; object})
 setMethod("alpha<-", "SLFN", function(object, value) { object@alpha = value; object})
 setMethod("modelStrSel<-","SLFN",function(object, value) { object@modelStrSel <- value; object})
 setMethod("ranking<-","SLFN",function(object, value) { object@ranking <- value; object})
@@ -166,8 +167,8 @@ setMethod("show", "SLFN",
             cat("    + ", outputs(object), "outputs \n")
             cat("\n")
             cat("Training scheme: \n")
-            if (modelStrSel(object) == "prunning") {
-              cat("    + Model structure selection = prunning \n ")
+            if (modelStrSel(object) == "pruning") {
+              cat("    + Model structure selection = pruning \n ")
               cat("        * Ranking of neurons:", ranking(object), " \n")
             } else {
               cat("    + Model Structure Selection = none \n")
@@ -175,9 +176,9 @@ setMethod("show", "SLFN",
             cat("    + Validation =", validation(object), "\n")
             cat("\n")
             cat("Errors: \n")
-            cat("    + MSE train : ",err(object)[1] ," \n")
+            cat("    + MSE train : ",errors(object)[1] ," \n")
             if (validation(object) != "none"){
-              cat("    + MSE validation:" ,err(object)[2] ," \n")
+              cat("    + MSE validation:" ,errors(object)[2] ," \n")
             }
           })
 
@@ -271,76 +272,76 @@ setMethod("loadSLFN", "SLFN",
           })
 
 
-#' @describeIn SLFN Add Neurons to a SLFN object
+<<<<<<< HEAD
+#' @describeIn addNeurons
 setMethod("addNeurons",
-          signature = "SLFN",
-          def = function(object, type, number, W = NULL, B = NULL){
-            if (type == 'linear') {# cannot have more linear neurons than featrues
-              number_prev = 0
-              if (length(neurons(object)) > 0) {
-                if ('linear' %in% (names(neurons(object))) ) { #TRUE/FALSE/logical(0)
-                  number_prev = neurons(object)[['linear']]$number
-                }
-              }
-              if ((number_prev + number) > inputs(object)) {
-                cat("Cannot have more linear neurons than features: \n")
-                number = inputs(object) - number_prev
-              }
-              if (number == 0) {
-                stop("Cannot add more linear neurons")
-              }
-            }
-            # W input weight matrix [dxL]
-            if (is.null(W)) {
-              if (type == 'linear') { # linear - diagonal matrix, W just copies features to neurons.
-                W = diag(x = 1, nrow = inputs(object), ncol = number)
-              } else { # general case
-                W = matrix(data = rnorm(inputs(object) * number, mean = 0, sd = 1),
-                           nrow = inputs(object), ncol = number)
-                if (type == 'rbf') { # rbf - high dimensionalty correction
-                  W = W * (3 / sqrt(inputs(object)))
-                }
-              }
-            } else { # check W dimensions
-              # 1 - check W dimensions
-              # 2 - case when no all linear neurons can be added
-              # 3 - rbf - if W = vector, it means the same centroid for all neurons
-            }
-            # B input bias vector [1xL]
-            if (is.null(B)) {
-              if (type == 'linear') { # linear - no bias (vector of 0s)
-                B = rep(0, number)
-              } else { # general case
-                B = rnorm(n = number, mean = 0, sd = 1)
-                if (type == 'rbf') { # rbf - high dimensionalty correction
-                  B = abs(B) * inputs(object)
-                }
-              }
-            } else {
-              # 1 - check B dimensions
-              # 2 - case when no all linear neurons can be added
-              # 3 - rbf - if B = number, it means the same gamma for all neurons
-            }
-            #=============== review how to initialize list(list()) ....
-            if (length(neurons(object)) > 0) { #any type of neuron already exists
-              if (type %in% names(neurons(object))) { #type of neuron added already exists
-                neurons(object)[[type]]$number = neurons(object)[[type]]$number + number
-                neurons(object)[[type]]$W = cbind(neurons(object)[[type]]$W, W)
-                neurons(object)[[type]]$B = cbind(neurons(object)[[type]]$B, B)
-              } else {
-                neurons(object)[[type]] = list(number = number, W = W, B = B)
-              }
-            } else { #there were no neurons
-              neurons(object)[[type]] = list(number = number, W = W, B = B)
-            }
+         signature = "SLFN",
+         def = function(object, type, number, W = NULL, B = NULL){
+           if (type == 'linear') {# cannot have more linear neurons than featrues
+             number_prev = 0
+             if (length(neurons(object)) > 0) {
+               if ('linear' %in% (names(neurons(object))) ) { #TRUE/FALSE/logical(0)
+                 number_prev = neurons(object)[['linear']]$number
+               }
+             }
+             if ((number_prev + number) > inputs(object)) {
+               cat("Cannot have more linear neurons than features: \n")
+               number = inputs(object) - number_prev
+             }
+             if (number == 0) {
+               stop("Cannot add more linear neurons")
+             }
+           }
+           # W input weight matrix [dxL]
+           if (is.null(W)) {
+             if (type == 'linear') { # linear - diagonal matrix, W just copies features to neurons.
+               W = diag(x = 1, nrow = inputs(object), ncol = number)
+             } else { # general case
+               W = matrix(data = rnorm(inputs(object) * number, mean = 0, sd = 1),
+                          nrow = inputs(object), ncol = number)
+               if (type == 'rbf') { # rbf - high dimensionalty correction
+                 W = W * (3 / sqrt(inputs(object)))
+               }
+             }
+           } else { # check W dimensions
+             # 1 - check W dimensions
+             # 2 - case when no all linear neurons can be added
+             # 3 - rbf - if W = vector, it means the same centroid for all neurons
+           }
+           # B input bias vector [1xL]
+           if (is.null(B)) {
+             if (type == 'linear') { # linear - no bias (vector of 0s)
+               B = rep(0, number)
+             } else { # general case
+               B = rnorm(n = number, mean = 0, sd = 1)
+               if (type == 'rbf') { # rbf - high dimensionalty correction
+                 B = abs(B) * inputs(object)
+               }
+             }
+           } else {
+             # 1 - check B dimensions
+             # 2 - case when no all linear neurons can be added
+             # 3 - rbf - if B = number, it means the same gamma for all neurons
+           }
+           #=============== review how to initialize list(list()) ....
+           if (length(neurons(object)) > 0) { #any type of neuron already exists
+             if (type %in% names(neurons(object))) { #type of neuron added already exists
+               neurons(object)[[type]]$number = neurons(object)[[type]]$number + number
+               neurons(object)[[type]]$W = cbind(neurons(object)[[type]]$W, W)
+               neurons(object)[[type]]$B = c(neurons(object)[[type]]$B, B)
+             } else {
+               neurons(object)[[type]] = list(number = number, W = W, B = B)
+             }
+           } else { #there were no neurons
+             neurons(object)[[type]] = list(number = number, W = W, B = B)
+           }
 
-            cat(" Adding", number, type, "hidden neurons \n")
-            if (!is.null(Wout(object))) {
-              cat ("WARNING - The SLFN needs to be re-trained")
-            }
-            return(object)
-          }
-)
+           cat(" Adding", number, type, "hidden neurons \n")
+           if (!all(is.na(Wout(object)))) {
+             cat ("WARNING - The SLFN needs to be re-trained")
+           }
+           return(object)
+         })
 
 ##' Train a SLFN
 ##'
@@ -350,7 +351,7 @@ setMethod("addNeurons",
 ##' @param X a data matrix of dimensions [Nxd] with input data
 ##' @param Y vector/matrix of outputs [Nx1c]
 ##' @param modelStrSel logical
-##' @param ranking type of neurons ranking \code{random} or \code{LASSO}
+##' @param ranking type of neurons ranking \code{random} or \code{lars}
 ##' @param validation t
 ##' @param classification
 ##' @param folds
@@ -361,7 +362,7 @@ setMethod(f = "train",
           signature = 'SLFN',
           def = function (object, X, Y, Xv = NULL, Yv = NULL,
                           modelStrSel = "none", ranking = "random",
-                          validation = "none", folds = "10",
+                          validation = "none", folds = 10,
                           classification = "none",
                           # redundante. Aquí o en el prototipo ???
                           ...) {
@@ -383,20 +384,20 @@ setMethod(f = "train",
 
             # Solve
             H = project(object, X = X)
-            if (modelStrSel(object) == "prunning") { # optimize number of neurons
+            if (modelStrSel(object) == "pruning") { # optimize number of neurons
               if (validation(object) == "V") { # enter val. set
                 Hv = project(object, X = Xv)
-                object = trainPrunning(object, H = H, Y = Y, Hv = Hv, Yv = Yv)
+                object = trainPruning(object, H = H, Y = Y, Hv = Hv, Yv = Yv)
               } else if (validation(object) == "CV") {
                 # folds division (CV case)
-                index = createFolds(X[,1], folds(object)) # require caret !!!
-                object = trainPrunning(object, H = H, Y = Y, index = index)
+                index = caret::createFolds(X[,1], folds(object)) # require caret !!!
+                object = trainPruning(object, H = H, Y = Y, index = index)
               } else if (validation(object) == "LOO")  { # no val. set
-                object = trainPrunning(object, H = H, Y = Y)
+                object = trainPruning(object, H = H, Y = Y)
               }
             } else if (modelStrSel(object) == "none") {  # validation for computing errors ???
               Wout(object) = solveSystem(object, H = H, Y = Y, getWout = TRUE)$Wout
-              err(object) = mse(object, Y = Y, Yp = predict(object, X = X)) #training error
+              errors(object) = mse(object, Y = Y, Yp = predict(object, X = X)) #training error
             }
             return(object)
           })
@@ -457,7 +458,7 @@ setMethod(f = "solveSystem",
             HH = (t(H) %*% H) + diag(ncol(H)) * alpha(object) # HH [LxL]
             HT = t(H) %*% Y  # HT [Lxc]
             if (getWout == TRUE) {
-              #=============== WE SHOULD USE MATRIX PACKAGE: solve-methods {Matrix}==============================
+#=============== WE SHOULD USE MATRIX PACKAGE: solve-methods {Matrix}===========
               Wout = solve(HH, HT) # base package. Interface to the LAPACK routine DGESV
             } else {
               Wout = NULL
@@ -472,10 +473,10 @@ setMethod(f = "solveSystem",
 ##' @export
 setMethod(f = "predict",
           signature = 'SLFN',
-          def = function (object, X=NULL) {
+          def = function (object, X = NULL) {
             X = as.matrix(X)
-            if(is.null(Wout(object))) {
-              print("Wout is NULL. Train before the SLFN model.")
+            if(all(is.na(Wout(object)))) {
+              cat("Wout not computed. The SLFN model has to be trained \n")
               Yp = NULL
             } else{
               H = project(object, X)
@@ -495,11 +496,12 @@ setMethod(f = "predict",
 setMethod(f = "rankNeurons",
           signature = "SLFN",
           def = function (object, nn, H = NULL, Y = NULL){
-            if (ranking(object) == "LASSO") { # Use lars {lars} package
-              #=========== QUE PASA SI HAY MENOS neuronas o se quieres dejar menos. Falta el nn ?? ========
-              rank = unlist(lars(x = H, y = Y, type = "lar")$actions)
-              #=========== Rank$actions puede dar valores negativos. Notar...  ========
+            if (ranking(object) == "lars") { # Use lars {lars} package
+#=========== QUE PASA SI HAY MENOS neuronas o se quieres dejar menos. Falta el nn ?? ========
+              rank = abs(unlist(lars(x = H, y = Y, type = "lar")$actions))
+#=========== Rank$actions puede dar valores negativos. Notar...  ========
               # llevas razón... lo tengo que mirar....
+              # abs(), but not sure if it is the right solution
             } else {
               nnMax = sum(sapply(neurons(object), function (x) {x$number})) # number of neurons (nn) max
               rank = sample(1:nnMax)
@@ -557,7 +559,7 @@ setMethod(f = "prune",
 
 
 #' @export
-setMethod(f = "trainPrunning",
+setMethod(f = "trainPruning",
           signature = "SLFN",
           def = function (object, H, Y, Hv = NULL, Yv = NULL, index = NULL) {
 
@@ -566,7 +568,8 @@ setMethod(f = "trainPrunning",
 
             # error at nn = nnMax
             nnMax = sum(sapply(neurons(object), function (x) {x$number})) # number of neurons (nn) max
-            error_nn = computeError(object, nn = nnMax, nRank = nRank, H = H, Y = Y, Hv = Hv, Yv = Yv, index = index)
+            nSelected = sort(nRank[1:nnMax]) # selected neurons = all
+            error_nn = computeError(object, nSelected = nSelected, H = H, Y = Y, Hv = Hv, Yv = Yv, index = index)
             # compute penalty (constant) - 1% of error at nnMax
             penalty = (error_nn * 0.01) / nnMax
 
@@ -585,7 +588,8 @@ setMethod(f = "trainPrunning",
             while (l > 2) {
               for (nn in c(A, B, C, D, E)) {
                 if (e[nn] == -1) {
-                  error_nn = computeError(object, nn = nn, nRank = nRank, H = H, Y = Y, Hv = Hv, Yv = Yv, index = index)
+                  nSelected = sort(nRank[1:nn])
+                  error_nn = computeError(object, nSelected = nSelected, H = H, Y = Y, Hv = Hv, Yv = Yv, index = index)
                   e[nn] = error_nn + nn * penalty
                 }
               }
@@ -610,30 +614,31 @@ setMethod(f = "trainPrunning",
             nnOpt = unique(c(A,B,C,D,E)[which(c(e[A], e[B], e[C], e[D], e[E]) %in% m)]) #  optimum number of neurons
 
             # update model
-            object = prune(object, nSelected = nRank[1:nnOpt]) #update object - delete neurons
+            nSelected = sort(nRank[1:nnOpt])
+            object = prune(object, nSelected = nSelected) #update object - delete neurons
             cat ("Removing", nnMax - nnOpt, "hidden neurons \n")
             cat("   MSE_val with", nnMax, "hidden neurons = ", e[nnMax],"\n" )
             cat("   MSE_val with", nnOpt, "hidden neurons = ", e[nnOpt],"\n" )
-            H = H[,nRank[1:nnOpt], drop = FALSE] # new H
+            H = H[,nSelected, drop = FALSE] # new H
             Wout(object) = solveSystem(object, H = H, Y = Y, getWout = TRUE)$Wout
 
             # errors
-            err(object) = mse(object, Y = Y, Yp = predict(object, X = X), H = H) # train MSE
-            err(object) = c(err(object), m) # val MSE
+            errors(object) = mse(object, Y = Y, Yp = predict(object, X = X), H = H) # train MSE
+            errors(object) = c(errors(object), m) # val MSE
             return (object)
           })
 
 # function to compute error with differen number of neurons (nn)
 setMethod(f = "computeError",
           signature = "SLFN",
-          def = function (object, nn, nRank, H, Y, Hv = NULL, Yv = NULL, index = NULL) {
+          def = function (object, nSelected, H, Y, Hv = NULL, Yv = NULL, index = NULL) {
             if (validation(object) == "CV") {
               error = 0
               for (i in 1:folds(object)) {
                 # define train - val sets
-                Ht = H[-index[[i]],nRank[1:nn], drop = FALSE]
+                Ht = H[-index[[i]],nSelected, drop = FALSE]
                 Yt = Y[-index[[i]], , drop = FALSE]
-                Hv = H[index[[i]], nRank[1:nn], drop = FALSE]
+                Hv = H[index[[i]], nSelected, drop = FALSE]
                 Yv = Y[index[[i]], , drop = FALSE]
                 # compute error
                 Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
@@ -642,9 +647,9 @@ setMethod(f = "computeError",
               }
             } else if (validation(object) == "V") {
               # define train - val sets
-              Ht = H[,nRank[1:nn], drop = FALSE]
+              Ht = H[,nSelected, drop = FALSE]
               Yt = Y
-              Hv = Hv[,nRank[1:nn], drop = FALSE]
+              Hv = Hv[,nSelected, drop = FALSE]
               Yv = Yv
               # compute error
               Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
@@ -652,7 +657,7 @@ setMethod(f = "computeError",
               error = mse(object, Y = Yv, Yp = Yv_p)
             } else if (validation(object) == "LOO") {
               # define train set
-              Ht = H[,nRank[1:nn], drop = FALSE]
+              Ht = H[,nSelected, drop = FALSE]
               Yt = Y
               # compute error
               Wout = solveSystem(object, H = Ht , Y = Yt)$Wout

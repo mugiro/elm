@@ -3,12 +3,9 @@
 \docType{class}
 \name{SLFN-class}
 \alias{SLFN-class}
-\alias{addNeurons,SLFN-method}
 \alias{project,SLFN-method}
 \title{Class "SFLN"}
 \usage{
-\S4method{addNeurons}{SLFN}(object, type, number, W = NULL, B = NULL)
-
 \S4method{project}{SLFN}(object, X)
 }
 \description{
@@ -50,14 +47,14 @@ normalization H'H solution (ridge parameter)}
 \item{\code{modelStrSel}}{A character to define the selection of model's structure.
 #' \itemize{
 \item "none"
-\item "prunning"
+\item "pruning"
 }}
 
 \item{\code{ranking}}{A character to select the type of ranking implemented when
  prunning option is selected.
 \itemize{
 \item "random" - random ranking
-\item "lasso" - ranking based on LASSO - L1 penalty
+\item "lars" - ranking based on lars - L1 penalty
 }}
 
 \item{\code{validation}}{The validation procedure used for developing the model.

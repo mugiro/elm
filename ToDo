@@ -7,3 +7,15 @@ Task in the project elm (S4)
 4. Use RcppEigen to calculate the matrices for the ELM
 (5. Define the functions in C++ for the training system.)
 6. Test the speed of inline functions (http://www.cprogramming.com/tutorial/lesson13.html). A priori faster than without...
+
+
+
+Coding issues/tasks:
+1. Decide the place to initialize training slots: prototype or train() ???
+2. lars function issue - in lars$actions, the number of steps is correct and equal to the number of features, but sometimes some features are preceded by -1. They are not dropped features as they were not added before. 
+3. The random ranking generates highly unstable results.
+4. Other feature ranking methods may be explored.
+5. Definitive package to implement matrix operations
+6. Classification still missing. Decide whether the place of preprocessing outputs to determine predicted classes - predict() or error()
+7. Discuss how to store neurons. now list(list())
+8. implement some of the existing loops with for+apply
