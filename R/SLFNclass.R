@@ -51,7 +51,7 @@
 #' }
 #' @slot weights_wc The weigths in the weighted classification problem.
 #' @slot batch The size of the bacth in an adaptative ELM.
-#' @slot time The time of calculation.
+#' @slot modelTime The time of calculation for training the model.
 #' @slot bigdata An logical parameter to select the kind of acceleration used in
 #'  case of solving big data problems.
 setClass("SLFN",
@@ -68,8 +68,7 @@ setClass("SLFN",
                    classification= "character",
                    weights_wc = "ANY",
                    batch = "integer",
-    #=============== change the name of time?? (may be not..)
-                   time = "numeric",
+                   modelTime = "numeric",
                    bigdata = "logical"),
          prototype = prototype(inputs = 0,  # Initialize the SLFN
                                outputs = 0,
@@ -84,7 +83,7 @@ setClass("SLFN",
                                classification= "none",
                                batch = integer(10),
                                weights_wc = NA,
-                               time = 0 ,
+                               modelTime = 0 ,
                                bigdata = FALSE))
 
 # Getter and setter methods
@@ -114,15 +113,15 @@ setMethod("classification","SLFN",function(object) return(object@classification)
 ##' @exportMethod weights_wc
 setMethod("weights_wc","SLFN",function(object) return(object@weights_wc))
 
-if(!isGeneric("time")){
-  if (is.function("time"))
+if(!isGeneric("modelTime")){
+  if (is.function("modelTime"))
     fun = time
-  else fun = function(object) standardGeneric("time")
-  setGeneric("time", fun)
+  else fun = function(object) standardGeneric("modelTime")
+  setGeneric("modelTime", fun)
 }
-setMethod("time","SLFN",function(object) return(object@time))
-setGeneric("time<-", function(object, value) standardGeneric("time<-"))
-setMethod("time<-", "SLFN", function(object, value) { object@time = value; object})
+setMethod("modelTime","SLFN",function(object) return(object@modelTime))
+setGeneric("modelTime<-", function(object, value) standardGeneric("modelTime<-"))
+setMethod("modelTime<-", "SLFN", function(object, value) { object@modelTime = value; object})
 
 ##' @exportMethod bigdata
 setMethod("bigdata","SLFN",function(object) return(object@bigdata))
