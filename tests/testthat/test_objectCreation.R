@@ -20,7 +20,7 @@ test_that("Creation of an SLFN object",{
 #   act(object)
 #   H=project(object,X)
 #
-#   beta(object) = matrix(rnorm(neurons(object)*outputs(object), mean=0, sd=1),
+#   Wout(object) = matrix(rnorm(neurons(object)*outputs(object), mean=0, sd=1),
 #                          nrow=neurons(object), ncol=outputs(object))
 #   Y=predict(object,X)
 

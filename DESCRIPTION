@@ -7,8 +7,9 @@ Authors@R: c(
   person("Ruben", "Urraca", email = "ruben.urraca@unirioja.es", role = c("aut")),
   person("Andres", "Sanz-Garcia", email = "andres.sanz-garcia@helsinki.fi", role = c("aut", "cre"))
   )
-Description: Implementation of extreme learning machines in R for regression and classifiction. The training functions include
-different regularization methods, optional pruning of neurons and several validation procedures.
+Description: Implementation of extreme learning machines in R for regression and
+    classifiction. The training functions include different regularization methods,
+    optional pruning of neurons and several validation procedures.
 License: GPL (>= 2)
 LazyLoad: TRUE
 Depends:
@@ -22,12 +23,17 @@ Suggests:
     knitr,
     rmarkdown
 Collate:
-    'AllClasses.R'
     'AllGenerics.R'
     'SLFNclass.R'
     'ELMclass.R'
     'RcppExports.R'
-    'distance.R'
+    'addNeurons.R'
+    'elm-package.R'
+    'errors.R'
+    'pruning.R'
+    'ranking.R'
+    'saveload.R'
+    'utils.R'
     'wrapper.R'
 URL: https://github.com/mugiro/elm
 BugReports: https://github.com/mugiro/elm/issues

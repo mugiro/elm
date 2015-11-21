@@ -3,23 +3,13 @@
 \docType{class}
 \name{SLFN-class}
 \alias{SLFN-class}
-\alias{project,SLFN-method}
-\title{Class "SFLN"}
-\usage{
-\S4method{project}{SLFN}(object, X)
-}
+\title{Class \code{"SLFN"}}
 \description{
-Class "SFLN" of Single-hidden Layer Feed-forward Network
+A class for defining a Single-hidden Layer Feed-forward Network (SLFN)
 }
 \details{
 Include here more details <<<<<<ANDRES<<<<<<
 }
-\section{Methods (by generic)}{
-\itemize{
-\item \code{addNeurons}: Add Neurons to a SLFN object
-
-\item \code{project}: 
-}}
 \section{Slots}{
 
 \describe{
@@ -80,9 +70,10 @@ normalization H'H solution (ridge parameter)}
 
 \item{\code{batch}}{The size of the bacth in an adaptative ELM.}
 
-\item{\code{time}}{The time of calculation.}
+\item{\code{modelTime}}{The time of calculation for training the model.}
 
 \item{\code{bigdata}}{An logical parameter to select the kind of acceleration used in
 case of solving big data problems.}
 }}
+\keyword{classes}
 

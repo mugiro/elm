@@ -3,19 +3,19 @@
 \docType{methods}
 \name{predict,SLFN-method}
 \alias{predict,SLFN-method}
-\title{Predict targets for the given inputs X}
+\title{Predict targets for the given inputs X.}
 \usage{
 \S4method{predict}{SLFN}(object, X = NULL)
 }
 \arguments{
 \item{object}{the instance to SLFN class}
 
-\item{X}{a matrix of dimensions [Nxd]; input matrix}
+\item{X}{The input matrix of dimensions [Nxd].}
 }
 \value{
-Yp a matrix of dimensions [Nxc]; output matrix
+A output matrix of predictions Yp with dimensions [Nxc].
 }
 \description{
-Predict targets for the given inputs X
+\code{predict} changed
 }
 
