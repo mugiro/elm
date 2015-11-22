@@ -33,23 +33,22 @@ setGeneric("addNeurons", function(object, ...) standardGeneric("addNeurons"))
 setMethod("addNeurons",
           signature = "SLFN",
           def = function(object, type, number, W = NULL, B = NULL, ...){
-            if (type == 'linear') {# cannot have more linear neurons than featrues
-              number_prev = 0
-              if (length(neurons(object)) > 0) {
-                if ('linear' %in% (names(neurons(object))) ) { #TRUE/FALSE/logical(0)
-                  number_prev = neurons(object)[['linear']]$number
-                }
+
+            if (type == 'linear') {# Never more linear neurons than features
+              if (length(neurons(object)) > 0 && 'linear' %in% names(neurons(object)) ) {
+                numberPrev = neurons(object)[['linear']]$number
+              }else {
+                numberPrev = 0
               }
-              if ((number_prev + number) > inputs(object)) {
+              if ((numberPrev + number) > inputs(object)) {
                 cat("Cannot have more linear neurons than features: \n")
-                number = inputs(object) - number_prev
+                number = inputs(object) - numberPrev
+                cat("The number new linear neurons proposed is truncated to ", number, "\n")
               }
-              if (number == 0) {
-                stop("Cannot add more linear neurons")
-              }
+              try(if(number == 0) stop("No more linear neurons can be added"))
             }
-            # W input weight matrix [dxL]
-            if (is.null(W)) {
+
+            if (is.null(W)) { ## W input weight matrix [dxL]
               if (type == 'linear') {
                 # linear - diagonal matrix, W just copies features to neurons
                 W = diag(x = 1, nrow = inputs(object), ncol = number)
@@ -62,13 +61,13 @@ setMethod("addNeurons",
                   W = W * (3 / sqrt(inputs(object)))
                 }
               }
-            } else { # check W dimensions
+            }else {
               # 1.- check W dimensions
               # 2.- case when no all linear neurons can be added
               # 3.- rbf - if W = vector, it means the same centroid for all neurons
             }
-            # B input bias vector [1xL]
-            if (is.null(B)) {
+
+            if (is.null(B)) { ## B input bias vector [1xL]
               if (type == 'linear') {
                 # linear - no bias (vector of 0s)
                 B = rep(0, number)
@@ -80,11 +79,12 @@ setMethod("addNeurons",
                   B = abs(B) * inputs(object)
                 }
               }
-            } else {
+            }else {
               # 1 - check B dimensions
               # 2 - case when no all linear neurons can be added
               # 3 - rbf - if B = number, it means the same gamma for all neurons
             }
+
             #=============== review how to initialize list(list()) ....
             if (length(neurons(object)) > 0) { #any type of neuron already exists
               if (type %in% names(neurons(object))) { #type of neuron added already exists
@@ -97,10 +97,11 @@ setMethod("addNeurons",
             } else { #there were no neurons
               neurons(object)[[type]] = list(number = number, W = W, B = B)
             }
+            cat(" --> Adding", number, type, "hidden neurons \n")
 
-            cat(" Adding", number, type, "hidden neurons \n")
+            #############=============== I don't understand what is thing with Wout here??
             if (!all(is.na(Wout(object)))) {
               cat ("WARNING - The SLFN needs to be re-trained")
             }
-            # return(object)
+            return(object)
           })

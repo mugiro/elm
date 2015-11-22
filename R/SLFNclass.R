@@ -33,6 +33,7 @@
 #' \item "random" - random ranking
 #' \item "lars" - ranking based on lars - L1 penalty
 #' }
+#' @slot nnRank An integer that defines teh maximum number of neurons in ranking
 #' @slot validation The validation procedure used for developing the model.
 #' #' \itemize{
 #' \item "none" - no validation process  <<<<<<ANDRES<<<<<<
@@ -65,6 +66,7 @@ setClass("SLFN",  # Definition of Single-hidden Layer Feed-forward Network SLFN
                    alpha = "numeric",
                    modelStrSel = "character", # c("none", "pruning")
                    ranking = "character",     # c("random", "lars")
+                   nnRank = "integer",
                    validation = "character",  # none/V/CV/LOO
                    folds = "numeric",
                    classification= "character",
@@ -80,8 +82,9 @@ setClass("SLFN",  # Definition of Single-hidden Layer Feed-forward Network SLFN
                                alpha = 1E-9,
                                modelStrSel = "none",
                                ranking = "random",
+                               nnRank = integer(0),
                                validation = "none",
-                               folds = 10,
+                               folds = 0,
                                classification= "none",
                                batch = integer(10),
                                weights_wc = NA,
@@ -159,6 +162,16 @@ if(!isGeneric("modelStrSel")){
 setMethod("modelStrSel","SLFN",function(object) return(object@modelStrSel))
 setGeneric("modelStrSel<-", function(object, value) standardGeneric("modelStrSel<-"))
 setMethod("modelStrSel<-", "SLFN", function(object, value) { object@modelStrSel = value; object})
+
+if(!isGeneric("nnRank")){
+  if (is.function("nnRank"))
+    fun = nnRank
+  else fun = function(object) standardGeneric("nnRank")
+  setGeneric("nnRank", fun)
+}
+setMethod("nnRank","SLFN",function(object) return(object@nnRank))
+setGeneric("nnRank<-", function(object, value) standardGeneric("nnRank<-"))
+setMethod("nnRank<-", "SLFN", function(object, value) { object@nnRank = value; object})
 
 if(!isGeneric("ranking")){
   if (is.function("ranking"))
@@ -281,26 +294,29 @@ setMethod("show", "SLFN",
             }
           })
 
-#' Check that inputs, outputs and dataset dimensions are correct.
-#' Only checks the data if the variables is not NULL
+#' Checking data
+#'
+#' \code{checkingXY} checks that inputs, outputs and dataset dimensions are correct.
+#' Only checks the data if the variables is not NULL.
 #' @param object SLFN object to compare the matrices X and Y
 #' @param X a input matrix of dimensions [Nxd]
 #' @param Y a output matrix of dimensions [Nxc]
-#' @return X a input matrix of dimensions [Nxd]
-#' @return Y a output matrix of dimensions [Nxc]
+#' @return boolean value that is TRUE if everything is correct
 #' @export
-setGeneric("chekingDataModel", function(object, ...) standardGeneric("chekingDataModel"))
-setMethod("chekingDataModel", "SLFN",
+setGeneric("checkingXY", function(object, ...) standardGeneric("checkingXY"))
+setMethod("checkingXY", "SLFN",
           function(object,X,Y,...) {
+
+            # Checking the input matrix X
             if (!is.null(X)) {
               if (bigdata(object)) {
                 print("BIGDATA checking")
                 stop("No bigdata implementation for X")
               }else {
                 if (is.matrix(X)) {
-                  if(length(dim(X))==1) {
+                  if(length(dim(X)) == 1) {
                     stop("Input matrix 'X' must have 2 dimensions")
-                  } else if(dim(X)[2]!=inputs(object)) {
+                  } else if(dim(X)[2] != inputs(object)) {
                     stop("Input matrix 'X' must have num_cols = num_inputs.")
                   }
                 }else {
@@ -309,143 +325,81 @@ setMethod("chekingDataModel", "SLFN",
               }
             }
 
+            # Checking the output matrix Y
             if (!is.null(Y)) {
               if (bigdata(object)) {
                 print("BIGDATA checking")
                 stop("No bigdata implementation for Y")
               }else {
-                if (is.matrix(T)) {
-                  if(length(dim(X))==1) {
+                if (is.matrix(Y)) {
+                  if(length(dim(Y)) == 1) {
                     stop("Input matrix 'Y' must have 2 dimensions")
-                  } else if(dim(X)[2]!=outputs(object)) {
+                  } else if(dim(Y)[2] != outputs(object)) {
                     stop("Input matrix 'Y' must have num_cols = num_outputs.")
                   }
                 }else {
-                  stop("Input 'X' must be a matrix")
+                  stop("Input 'Y' must be a matrix")
                 }
               }
             }
 
+            # Checking both the output and input matrices X,Y
             if (!is.null(X) & !is.null(Y)) {
               if (nrow(X) != nrow(Y))
                 stop("Input matrix 'X' and output matrix 'Y' must have the same number of samples")
             }
-            return (list(X,Y))
+            return (TRUE)
           })
 
-#' Train a SLFN
-#'
-#' \code{train} fits all the parameters that include a SLFN given a set of
-#'  input data (X, Y) and a training scheme
-#'
-#' @param object SLFN object to serialize
-#' @param X a data matrix of dimensions [Nxd] with input data
-#' @param Y vector/matrix of outputs [Nx1c]
-#' @param modelStrSel logical
-#' @param ranking type of neurons ranking \code{random} or \code{lars}
-#' @param validation t
-#' @param classification
-#' @param folds
-#' @param classType
-#' @param ...
-#' @export
-setGeneric("train", function(object, ...) standardGeneric("train"))
-setMethod(f = "train",
-          signature = 'SLFN',
-          def = function (object, X, Y, Xv = NULL, Yv = NULL,
-                          modelStrSel = "none", ranking = "random",
-                          validation = "none", folds = 10,
-                          classification = "none",
-                          # redundante. Aquí o en el prototipo ???
-                          ...) {
-            # coerce input and output data to matrix (for the case of 1 input or 1 output)
-            X = as.matrix(X)
-            Y = as.matrix(Y)
-            if (!is.null(Xv)) {
-              Xv = as.matrix(Xv)
-              Yv = as.matrix(Yv)
-            }
-
-            # read training conditions
-            modelStrSel(object) = modelStrSel
-            ranking(object) = ranking
-            validation(object) = validation
-            if (validation(object) == "CV") {
-              folds(object) = folds
-            }
-
-            # Solve
-            H = project(object, X = X)
-            if (modelStrSel(object) == "pruning") { # optimize number of neurons
-              if (validation(object) == "V") { # enter val. set
-                Hv = project(object, X = Xv)
-                object = trainPruning(object, H = H, Y = Y, Hv = Hv, Yv = Yv)
-              } else if (validation(object) == "CV") {
-                # folds division (CV case)
-                index = caret::createFolds(X[,1], folds(object)) # require caret !!!
-                object = trainPruning(object, H = H, Y = Y, index = index)
-              } else if (validation(object) == "LOO")  { # no val. set
-                object = trainPruning(object, H = H, Y = Y)
-              }
-            } else if (modelStrSel(object) == "none") {  # validation for computing errors ???
-              Wout(object) = solveSystem(object, H = H, Y = Y, getWout = TRUE)$Wout
-              errors(object) = mse(object, Y = Y, Yp = predict(object, X = X)) #training error
-            }
-            return(object)
-          })
 
 #' Compute the projection of the matrix H for a particular X.
 #'
 #' \code{project} returns the projection of the matrix H.
 #' @param object The instance to SLFN class.
 #' @param X The input matrix of dimensions [Nxd].
+#' @param typeDist The method to compute the distance. Default \code{euclidean}.
 #' @return A matrix H after transformation of dimensions [NxL].
 #' @export
 setGeneric("project", function(object, ...) standardGeneric("project"))
 setMethod("project",
           signature = 'SLFN',
-          def = function(object, X) {
-            H = NULL # initialize H
-            for (i in 1:length(neurons(object))) { # all diff. types of neurons
+          def = function(object, X, typeDist) {
+
+            H = NULL
+            for (i in 1:length(neurons(object))) { # for all types of neurons
               # projection
               nType = names(neurons(object))[i]
               W = neurons(object)[[i]]$W
               B = neurons(object)[[i]]$B
-              number = neurons(object)[[i]]$number
-              if (nType == 'rbf') { # distances from centroids
+
+              if (nType == 'rbf') {  # distances from centroids
                 H0 = matrix(nrow = nrow(X), ncol = ncol(W))
-                for (neuronIndex in 1:number) {
-                  H0[,neuronIndex] = distMatVect(X = X, ref = W[,neuronIndex], type = "euclidean")
-                }
-                # muy mejorable el loop for, pero es para esquivar los problemas del apply momentaneamte... Soluciones???
-                # H0 = apply(W, 2, function(x) {distance(X=X, ref=x, type="euclidean")})
+                for (k in 1:neurons(object)[[i]]$number)
+                  H0[,k] = distMatVect(X = X, ref = W[,k], type = typeDist)
               } else { # project
-                H0 = X %*% W # [NxL] matrix. could be implented in C++ (should be!!!)
+                H0 = X %*% W
                 H0 = H0 + matrix(rep(B, nrow(H0)), nrow = nrow(H0), byrow = TRUE)
-                #H00 = t(apply(H0, 1, function(rowsH0) {rowsH0 + B} )) # add Bias vector (by row)
-                # problem when having 1 neuron. apply returns a vector, and then making the transpose
-                # gives us just the opposite H we want.
               }
-              # transformation
-              if (nType == "sigmoid"){
+
+              if (nType == 'sigmoid') {  # Apply the transformation function
                 H0 = 1 / (1 + exp(-H0))
               } else if (nType == 'tanH') {
                 H0 = tanh(H0)
               } else if (nType == 'rbf') {
-                H0 = exp( - (H0 ^ 2) / matrix(rep(B, nrow(H0)), nrow = nrow(H0), byrow = TRUE) )
+                H0 = exp( -(H0 ^ 2) / matrix(rep(B, nrow(H0)), nrow = nrow(H0), byrow = TRUE))
               } else {
-                # add new activation functions
-                # linear: do nothing
+                NULL  # linear: do nothing
               }
-              H = cbind (H, H0)
+              H = cbind(H, H0)
             }
             return(H)
           })
 
+
 #' Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] x= [Nxc]
 #'   Use orthogonal projection - correlation matrices
-#' Solve the linear system HH * Wout = HT - [LxL] %*% [Lxc] = [Lxc]
-#' similar to .proj_cpu (akusok).
+#' The function \code{solveSystem} solves the linear system under the equation
+#' HH * Wout = HT - [LxL] %*% [Lxc] = [Lxc].
 #' @param H a matrix of dimensions [NxL] after transformation
 #' @param getWout logical; needs to be true to return Wout value
 #' @param Y a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)
@@ -463,7 +417,70 @@ setMethod(f = "solveSystem",
             } else {
               Wout = NULL
             }
+#=============== HH y HT - should we return them?? needed?? ===========
             return(list('HH' = HH, 'HT' = HT, 'Wout' = Wout)) # one return only
+          })
+
+
+#' Train a SLFN
+#'
+#' \code{train} fits all the parameters that include a SLFN given a set of
+#'  input data (X, Y) and a training scheme
+#'
+#' @param object SLFN object to serialize
+#' @param X a data matrix of dimensions [Nxd] with input data
+#' @param Y vector/matrix of outputs [Nx1c]
+#' @param modelStrSel logical Select the pruning for reduce model's size.
+#' @param ranking Type of neurons ranking \code{random} or \code{lars}.
+#' @param validation Method to validate the model developed
+#' \itemize{
+#' \item "none" - no validation process
+#' \item "V" - validation. Xv and Yv are required
+#' \item "CV" - cross validation. The number of folds is required
+#' \item "LOO" - leave one out based on the PRESS statistic
+#' }
+#' @param classification None
+#' @param folds Number of folds defined for the cross-validation procedure
+#' @param classType !!!!Redundante. Aquí o en el prototipo!!!!
+#' @param ... None to use until now
+#' @export
+setGeneric("train", function(object, ...) standardGeneric("train"))
+setMethod(f = "train",
+          signature = 'SLFN',
+          def = function (object, X, Y, Xv = NULL, Yv = NULL,
+                          modelStrSel = "none", ranking = "random",
+                          validation = "none", folds = 10,
+                          classification = "none",
+                          ...) {
+            # Check the dimensions of the data and the ELM structure.
+            stopifnot(checkingXY(object,X,Y))
+            if (!(is.null(Xv) && is.null(Xv))) stopifnot(checkingXY(object,Xv,Yv))
+            stopifnot(length(neurons(object)) > 0)
+
+            # Load training conditions
+            modelStrSel(object) = modelStrSel
+            ranking(object) = ranking
+            validation(object) = validation
+            folds(object) = folds
+
+            # Solve the system
+            H = project(object, X = X)
+            if (modelStrSel(object) == "pruning") { # optimize number of neurons
+              if (validation(object) == "V") { # enter val. set
+                Hv = project(object, X = Xv)
+                object = trainPruning(object, H = H, Y = Y, Hv = Hv, Yv = Yv)
+              } else if (validation(object) == "CV") { # no validation set
+                # folds division (CV case)
+                index = createFolds(X[,1], folds(object))
+                object = trainPruning(object, H = H, Y = Y, index = index)
+              } else if (validation(object) == "LOO")  {
+                object = trainPruning(object, H = H, Y = Y)
+              }
+            }else if (modelStrSel(object) == "none") {  # validation for computing errors ???
+              Wout(object) = solveSystem(object, H = H, Y = Y, getWout = TRUE)$Wout
+              errors(object) = mse(object, Y = Y, Yp = predict(object, X = X)) # training error
+            }
+            return(object)
           })
 
 
@@ -473,23 +490,24 @@ if(!isGeneric("predict")){
   else fun = function(object) standardGeneric("predict")
   setGeneric("predict", fun)
 }
-#' Predict targets for the given inputs X.
+##' \code{\link{predict}} method for \code{\linkS4class{SLFN}} objects
 #'
-#' \code{predict} changed
+#' \code{predict} gives the estimation of input data X for the ELM model
 #' @param object the instance to SLFN class
 #' @param X The input matrix of dimensions [Nxd].
 #' @return A output matrix of predictions Yp with dimensions [Nxc].
+#' @export
 setMethod(f = "predict",
           signature = 'SLFN',
           def = function (object, X = NULL) {
             X = as.matrix(X)
-            if(all(is.na(Wout(object)))) {
-  #=========== QUE PASA SI HAY UN NA ???
-              cat("Wout was not computed yet. The SLFN model must be first trained \n")
+            if(any(is.na(Wout(object)))) {
+              cat("NA values were detected in Wout.
+                  The SLFN model should be first trained. \n")
               Yp = NULL
             } else{
-              H = project(object, X)
-              Yp = H %*% Wout(object)
+              H = project(object, X) # proyected matrix dim [NxL]
+              Yp = H %*% Wout(object) # predicte matrix dim [Nxc]
             }
             return(Yp)
           })

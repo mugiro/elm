@@ -8,6 +8,7 @@
 #' @param Y The output matrix of dimensions [Nxc] with number of columns
 #'  equivalent to the number of variables or classes.
 #' @param Yp The predicted output matrix of dimensions [Nxc]; output matrix
+#' @param H The transformed matrix H of dimensions [NxL].
 #' @return error the value of the model error
 #' @export
 setGeneric("mse", function(object, ...) standardGeneric("mse"))
@@ -16,6 +17,7 @@ setMethod(f = "mse",
           def = function(object, Y, Yp, H = NULL){
             if (classification(object) != "none"){
               #=========== Falta el tratamiento de clasificacion ========
+              stop("No implementation for classification")
             } else {
               if (validation(object) == "LOO"){ #improve....
                 num = Yp - Y # numerator
@@ -33,19 +35,18 @@ setMethod(f = "mse",
             return(mse_error)
           })
 
-
-
 #' Compute model's errors with different number of neurons (nn)
 #'
 #'  \code{computeError} calculate the error of a ELM model.
 #'
 #' @param object An instance to the SLFN class.
 #' @param nSelected The number of hidden neurons to be used.
-#' @param H
-#' @param Y
-#' @param Hv
-#' @param Yv
-#' @param index
+#' @param H The transformed matrix H of dimensions [NxL].
+#' @param Y The output matrix of dimensions [Nxc].
+#' @param Hv The transformed matrix H for the validation dataset
+#'  of dimensions [NxL].
+#' @param Yv The output matrix for the validation dataset of dimensions [Nxc].
+#' @param index The vector containing the selection of the data.
 #' @return The error of the ELM model
 setGeneric("computeError", function(object, ...) standardGeneric("computeError"))
 setMethod(f = "computeError",

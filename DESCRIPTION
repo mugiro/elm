@@ -38,3 +38,4 @@ Collate:
 URL: https://github.com/mugiro/elm
 BugReports: https://github.com/mugiro/elm/issues
 VignetteBuilder: knitr
+RoxygenNote: 5.0.1

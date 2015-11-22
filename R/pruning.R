@@ -27,7 +27,8 @@ setMethod(f = "trainPruning",
           signature = "SLFN",
           def = function (object, H, Y, Hv = NULL, Yv = NULL, index = NULL) {
 
-            # ranking of neurons - with all available training data (akusok does it with val-fold in CV and V)
+            # ranking of neurons - with all available training data.
+            # Akusok does the same with val-fold in CV and V)
             nRank = rankNeurons(object, H = H, Y = Y) # neuron rank
 
             # error at nn = nnMax
@@ -41,7 +42,7 @@ setMethod(f = "trainPruning",
             e = rep(-1, nnMax) # error vector for different number of neurons. initially filled with (-1)
             e[nnMax] = error_nn + nnMax * penalty
 
-            # minimization algorithm (MYOPT of aksuok)
+            # minimization algorithm (MYOPT of Akusok)
             A = 1 # min
             E = nnMax # max
             l = E- A # initial range - search interval
@@ -53,13 +54,14 @@ setMethod(f = "trainPruning",
               for (nn in c(A, B, C, D, E)) {
                 if (e[nn] == -1) {
                   nSelected = sort(nRank[1:nn])
-                  error_nn = computeError(object, nSelected = nSelected, H = H, Y = Y, Hv = Hv, Yv = Yv, index = index)
+                  error_nn = computeError(object, nSelected = nSelected, H = H,
+                                          Y = Y, Hv = Hv, Yv = Yv, index = index)
                   e[nn] = error_nn + nn * penalty
                 }
               }
-              # find minimum
+              # Find the minimum value e
               m = min (e[A], e[B], e[C], e[D], e[E])
-              # halve the search interval
+              # Halve the search interval
               if (m %in% c(e[A], e[B])) {
                 E = C
                 C = B
@@ -75,7 +77,8 @@ setMethod(f = "trainPruning",
               D = as.integer(A + 3*l/4)
             }
 
-            nnOpt = unique(c(A,B,C,D,E)[which(c(e[A], e[B], e[C], e[D], e[E]) %in% m)]) #  optimum number of neurons
+            # Determine the optimum number of neurons
+            nnOpt = unique(c(A,B,C,D,E)[which(c(e[A], e[B], e[C], e[D], e[E]) %in% m)])
 
             # update model
             nSelected = sort(nRank[1:nnOpt])

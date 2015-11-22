@@ -18,5 +18,5 @@
 #'@seealso Rcpp package
 #'@references \url{github.com/mugiro/elm}
 #'@keywords package
-NULL
-#> NULL
+"_PACKAGE"
+
