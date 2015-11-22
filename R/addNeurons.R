@@ -31,70 +31,76 @@
 #' @export
 setGeneric("addNeurons", function(object, ...) standardGeneric("addNeurons"))
 setMethod("addNeurons",
-         signature = "SLFN",
-         def = function(object, type, number, W = NULL, B = NULL, ...){
-           if (type == 'linear') {# cannot have more linear neurons than featrues
-             number_prev = 0
-             if (length(neurons(object)) > 0) {
-               if ('linear' %in% (names(neurons(object))) ) { #TRUE/FALSE/logical(0)
-                 number_prev = neurons(object)[['linear']]$number
-               }
-             }
-             if ((number_prev + number) > inputs(object)) {
-               cat("Cannot have more linear neurons than features: \n")
-               number = inputs(object) - number_prev
-             }
-             if (number == 0) {
-               stop("Cannot add more linear neurons")
-             }
-           }
-           # W input weight matrix [dxL]
-           if (is.null(W)) {
-             if (type == 'linear') { # linear - diagonal matrix, W just copies features to neurons.
-               W = diag(x = 1, nrow = inputs(object), ncol = number)
-             } else { # general case
-               W = matrix(data = rnorm(inputs(object) * number, mean = 0, sd = 1),
-                          nrow = inputs(object), ncol = number)
-               if (type == 'rbf') { # rbf - high dimensionalty correction
-                 W = W * (3 / sqrt(inputs(object)))
-               }
-             }
-           } else { # check W dimensions
-             # 1 - check W dimensions
-             # 2 - case when no all linear neurons can be added
-             # 3 - rbf - if W = vector, it means the same centroid for all neurons
-           }
-           # B input bias vector [1xL]
-           if (is.null(B)) {
-             if (type == 'linear') { # linear - no bias (vector of 0s)
-               B = rep(0, number)
-             } else { # general case
-               B = rnorm(n = number, mean = 0, sd = 1)
-               if (type == 'rbf') { # rbf - high dimensionalty correction
-                 B = abs(B) * inputs(object)
-               }
-             }
-           } else {
-             # 1 - check B dimensions
-             # 2 - case when no all linear neurons can be added
-             # 3 - rbf - if B = number, it means the same gamma for all neurons
-           }
-           #=============== review how to initialize list(list()) ....
-           if (length(neurons(object)) > 0) { #any type of neuron already exists
-             if (type %in% names(neurons(object))) { #type of neuron added already exists
-               neurons(object)[[type]]$number = neurons(object)[[type]]$number + number
-               neurons(object)[[type]]$W = cbind(neurons(object)[[type]]$W, W)
-               neurons(object)[[type]]$B = c(neurons(object)[[type]]$B, B)
-             } else {
-               neurons(object)[[type]] = list(number = number, W = W, B = B)
-             }
-           } else { #there were no neurons
-             neurons(object)[[type]] = list(number = number, W = W, B = B)
-           }
+          signature = "SLFN",
+          def = function(object, type, number, W = NULL, B = NULL, ...){
+            if (type == 'linear') {# cannot have more linear neurons than featrues
+              number_prev = 0
+              if (length(neurons(object)) > 0) {
+                if ('linear' %in% (names(neurons(object))) ) { #TRUE/FALSE/logical(0)
+                  number_prev = neurons(object)[['linear']]$number
+                }
+              }
+              if ((number_prev + number) > inputs(object)) {
+                cat("Cannot have more linear neurons than features: \n")
+                number = inputs(object) - number_prev
+              }
+              if (number == 0) {
+                stop("Cannot add more linear neurons")
+              }
+            }
+            # W input weight matrix [dxL]
+            if (is.null(W)) {
+              if (type == 'linear') {
+                # linear - diagonal matrix, W just copies features to neurons
+                W = diag(x = 1, nrow = inputs(object), ncol = number)
+              } else {
+                # general case
+                W = matrix(data = rnorm(inputs(object) * number, mean = 0, sd = 1),
+                           nrow = inputs(object), ncol = number)
+                if (type == 'rbf') {
+                  # rbf - high dimensionalty correction
+                  W = W * (3 / sqrt(inputs(object)))
+                }
+              }
+            } else { # check W dimensions
+              # 1.- check W dimensions
+              # 2.- case when no all linear neurons can be added
+              # 3.- rbf - if W = vector, it means the same centroid for all neurons
+            }
+            # B input bias vector [1xL]
+            if (is.null(B)) {
+              if (type == 'linear') {
+                # linear - no bias (vector of 0s)
+                B = rep(0, number)
+              } else {
+                # general case
+                B = rnorm(n = number, mean = 0, sd = 1)
+                if (type == 'rbf') {
+                  # rbf - high dimensionalty correction
+                  B = abs(B) * inputs(object)
+                }
+              }
+            } else {
+              # 1 - check B dimensions
+              # 2 - case when no all linear neurons can be added
+              # 3 - rbf - if B = number, it means the same gamma for all neurons
+            }
+            #=============== review how to initialize list(list()) ....
+            if (length(neurons(object)) > 0) { #any type of neuron already exists
+              if (type %in% names(neurons(object))) { #type of neuron added already exists
+                neurons(object)[[type]]$number = neurons(object)[[type]]$number + number
+                neurons(object)[[type]]$W = cbind(neurons(object)[[type]]$W, W)
+                neurons(object)[[type]]$B = c(neurons(object)[[type]]$B, B)
+              } else {
+                neurons(object)[[type]] = list(number = number, W = W, B = B)
+              }
+            } else { #there were no neurons
+              neurons(object)[[type]] = list(number = number, W = W, B = B)
+            }
 
-           cat(" Adding", number, type, "hidden neurons \n")
-           if (!all(is.na(Wout(object)))) {
-             cat ("WARNING - The SLFN needs to be re-trained")
-           }
-           return(object)
-         })
+            cat(" Adding", number, type, "hidden neurons \n")
+            if (!all(is.na(Wout(object)))) {
+              cat ("WARNING - The SLFN needs to be re-trained")
+            }
+            # return(object)
+          })

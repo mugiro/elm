@@ -49,8 +49,8 @@ trainELM = function(X, Y, Xv = NULL, Yv = NULL, nType, nNumber, W = NULL, B = NU
     Yv = as.matrix(Yv)
   }
 
-  # wrapper training function
-  object = new("SLFN", inputs = ncol(as.matrix(X)), outputs = ncol(as.matrix(Y)))
+  # Create the object with the minimum information
+  object = new("SLFN", inputs = ncol(X), outputs = ncol(Y))
 
   # read neuron arguments
   if (length(nNumber) != length(nType)) { # check the length of neuron arguments
