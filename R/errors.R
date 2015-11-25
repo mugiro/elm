@@ -49,7 +49,7 @@ setMethod(f = "computeError",
               # compute error
               Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
               Yp = Ht %*% Wout
-              error = mse(object, Y = Y, Yp = Yp, H = Ht)
+              error = mse(object, Y = Y, Yp = Yp, X = Ht)
             }
             return(error)
           })
@@ -58,34 +58,38 @@ setMethod(f = "computeError",
 
 #' MSE error
 #'
+#' Function to compute the mean squared error (MSE)
+#'
+#' If LOO option is activated, the MSE Allen's PRESS formula is used and the data matrix X must be supplied.
+#'
 #' @param object The instance to SLFN class.
-#' @param Y The output matrix of dimensions [Nxc] with number of columns
+#' @param Y The output matrix of dimensions [N x c] with number of columns
 #'  equivalent to the number of variables or classes.
-#' @param Yp The predicted output matrix of dimensions [Nxc]; output matrix
-#' @param H The transformed matrix H of dimensions [NxL].
-#' @return error the value of the model error
+#' @param Yp The predicted output matrix of dimensions [N x c]; output matrix
+#' @param X the input matrix [N x L]. Required for the LOO case
+#'
+#' @return MSE error
+#'
+#' If LOO is activated, the Allen's PRESS estimation is returned
 #' @export
 setGeneric("mse", function(object, ...) standardGeneric("mse"))
-#' @describeIn SLFN compute the MSE error between two vectors
+#' @describeIn SLFN MSE error
 setMethod(f = "mse",
           signature = "SLFN",
-          def = function(object, Y, Yp, H = NULL){
-            if (classification(object) != "none"){
-              #=========== Falta el tratamiento de clasificacion ========
-              stop("No implementation for classification")
-            } else {
-              if (validation(object) == "LOO"){ #improve....
-                num = Yp - Y # numerator
-                den = 0 # denomitator
-                HH = t(H) %*% H + diag(dim(H)[2]) * alpha(object)
-                invHH = solve(HH)
-                for (i in 1:dim(Y)[1]) {
-                  den[i] = 1 - (H[i,,drop = FALSE] %*% invHH %*% t(H[i,,drop = FALSE]))
-                }
-                mse_error = sum((num/den) ^ 2) / dim(Y)[1]
-              } else {
-                mse_error = sum((Yp - Y) ^ 2) / dim(Y)[1] # when dimension Y > 1 ????
+          def = function(object, Y, Yp, X){
+
+            if (validation(object) == "LOO") {
+              #improve the implementation of Allen's PRESS
+              num = Yp - Y # numerator
+              den = 0 # denomitator
+              XX = t(X) %*% X + diag(dim(X)[2]) * alpha(object)
+              invXX = solve(XX)
+              for (i in 1:dim(Y)[1]) {
+                den[i] = 1 - (X[i,,drop = FALSE] %*% invXX %*% t(X[i,,drop = FALSE]))
               }
+              mse_error = sum((num/den) ^ 2) / dim(Y)[1]
+            } else {
+              mse_error = sum((Yp - Y) ^ 2) / dim(Y)[1] # when dimension Y > 1 ????
             }
             return(mse_error)
           })

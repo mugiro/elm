@@ -2,8 +2,7 @@
 % Please edit documentation in R/ranking.R
 \name{rankNeurons}
 \alias{rankNeurons}
-\title{Return ranking of hidden neurons: random or OP.
-L1 regularization}
+\title{Rank hidden neurons}
 \usage{
 rankNeurons(object, ...)
 }

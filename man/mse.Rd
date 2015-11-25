@@ -2,24 +2,27 @@
 % Please edit documentation in R/errors.R
 \name{mse}
 \alias{mse}
-\title{Errors calculation.}
+\title{MSE error}
 \usage{
 mse(object, ...)
 }
 \arguments{
 \item{object}{The instance to SLFN class.}
 
-\item{Y}{The output matrix of dimensions [Nxc] with number of columns
+\item{Y}{The output matrix of dimensions [N x c] with number of columns
 equivalent to the number of variables or classes.}
 
-\item{Yp}{The predicted output matrix of dimensions [Nxc]; output matrix}
+\item{Yp}{The predicted output matrix of dimensions [N x c]; output matrix}
 
-\item{H}{The transformed matrix H of dimensions [NxL].}
+\item{X}{the input matrix [N x L]. Required for the LOO case}
 }
 \value{
-error the value of the model error
+MSE error
 }
 \description{
-\code{mse} determines the regression or classification error.
+Function to compute the mean squared error (MSE)
+}
+\details{
+If LOO option is activated, the MSE Allen's PRESS formula is used and the data matrix X has to be supplied.
 }
 
