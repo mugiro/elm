@@ -5,7 +5,7 @@
 \alias{predict,SLFN-method}
 \title{\code{\link{predict}} method for \code{\linkS4class{SLFN}} objects}
 \usage{
-\S4method{predict}{SLFN}(object, X = NULL)
+\S4method{predict}{SLFN}(object, X, createLabels = TRUE, ml_threshold = 0.5)
 }
 \arguments{
 \item{object}{the instance to SLFN class}

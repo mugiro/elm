@@ -1,28 +1,21 @@
 ### File that contains methods for pruning strategy
 ### Urraca-Valle, Ruben & Sanz-Garcia, Andres (21-11-2015)
 
-
-setGeneric("prune", function(object, ...) standardGeneric("prune"))
-setMethod(f = "prune",
-          signature = "SLFN",
-          def = function (object, nSelected) {
-            nn_type = sapply(neurons(object), function (x) {x$number}) # number of neurons per type
-            index = 1:sum(nn_type) # index of all neurons
-            index_type = split(index, rep(1:length(neurons(object)), nn_type))
-
-            for (i in 1:length(neurons(object))) {
-              # indexes of these type of neurons
-              nKeep = which(index_type[[i]] %in% nSelected)
-              neurons(object)[[i]]$number = length(nKeep)
-              neurons(object)[[i]]$W = neurons(object)[[i]]$W[,nKeep, drop = FALSE]
-              neurons(object)[[i]]$B = neurons(object)[[i]]$B[nKeep]
-            }
-            # case when no neurons are left of one type !!!!
-            return(object)
-          })
-
-
+#' train a SLFN with pruning
+#'
+#' train a SLFN with pruning. The function implements an optimization algorithm for determine the optimium
+#' number of neurons
+#'
+#' @param object An instance to the SLFN class.
+#' @param H
+#' @param Y
+#' @param Hv
+#' @param Yv
+#' @param index
+#' @return A trained SLFN object
+#' @export
 setGeneric("trainPruning", function(object, ...) standardGeneric("trainPruning"))
+#' @describeIn SLFN optimization algorithm for obtaining the optimial number of neurons for pruning
 setMethod(f = "trainPruning",
           signature = "SLFN",
           def = function (object, H, Y, Hv = NULL, Yv = NULL, index = NULL) {
@@ -93,5 +86,33 @@ setMethod(f = "trainPruning",
             errors(object) = mse(object, Y = Y, Yp = predict(object, X = X), H = H) # train MSE
             errors(object) = c(errors(object), m) # val MSE
             return (object)
+          })
+
+#' SLFN pruning
+#'
+#' Prune a SLFN, given the index of neurons selected
+#'
+#' @param object An instance to the SLFN class.
+#' @param nSelected a vector, with the indexes of neurons kept after pruning
+#' @return A SLFN object
+#' @export
+setGeneric("prune", function(object, ...) standardGeneric("prune"))
+#' @describeIn SLFN prune a SLFN
+setMethod(f = "prune",
+          signature = "SLFN",
+          def = function (object, nSelected) {
+            nn_type = sapply(neurons(object), function (x) {x$number}) # number of neurons per type
+            index = 1:sum(nn_type) # index of all neurons
+            index_type = split(index, rep(1:length(neurons(object)), nn_type))
+
+            for (i in 1:length(neurons(object))) {
+              # indexes of these type of neurons
+              nKeep = which(index_type[[i]] %in% nSelected)
+              neurons(object)[[i]]$number = length(nKeep)
+              neurons(object)[[i]]$W = neurons(object)[[i]]$W[,nKeep, drop = FALSE]
+              neurons(object)[[i]]$B = neurons(object)[[i]]$B[nKeep]
+            }
+            # case when no neurons are left of one type !!!!
+            return(object)
           })
 

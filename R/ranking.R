@@ -1,6 +1,8 @@
 ### File that contains methods for ranking procedure
 ### Urraca-Valle, Ruben & Sanz-Garcia, Andres (21-11-2015)
 
+#' Rank hidden neurons
+#'
 #' Return ranking of hidden neurons: random or OP.
 #' L1 regularization
 #' @param object the instance to SLFN class
@@ -10,6 +12,7 @@
 #' @import lars
 #' @export
 setGeneric("rankNeurons", function(object, ...) standardGeneric("rankNeurons"))
+#' @describeIn SLFN rank neurons of a SLFN
 setMethod(f = "rankNeurons",
           signature = "SLFN",
           def = function (object, nn, H = NULL, Y = NULL){
