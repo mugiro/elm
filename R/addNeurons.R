@@ -30,6 +30,7 @@
 #'  new space.
 #' @export
 setGeneric("addNeurons", function(object, ...) standardGeneric("addNeurons"))
+#' @describeIn SLFN add neurons of the same type of activation function to the hidden layer
 setMethod("addNeurons",
           signature = "SLFN",
           def = function(object, type, number, W = NULL, B = NULL, ...){
