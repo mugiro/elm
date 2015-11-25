@@ -30,9 +30,11 @@ Collate:
     'addNeurons.R'
     'elm-package.R'
     'errors.R'
+    'predict.R'
     'pruning.R'
     'ranking.R'
     'saveload.R'
+    'train.R'
     'utils.R'
     'wrapper.R'
 URL: https://github.com/mugiro/elm
