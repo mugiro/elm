@@ -30,6 +30,9 @@ setMethod(f = "computeError",
                 # compute error
                 Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
                 Yv_p = Hv %*% Wout
+                if (classification(object) != "none") {
+                  Yp_v = postprocess(object, Yp = Yp_v, typePred = "prob", ml_threshold = "0.5")
+                }
                 error = error + mse(object, Y = Yv, Yp = Yv_p) / folds(object)
               }
             } else if (validation(object) == "V") {
@@ -41,6 +44,9 @@ setMethod(f = "computeError",
               # compute error
               Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
               Yv_p = Hv %*% Wout
+              if (classification(object) != "none") {
+                Yp_v = postprocess(object, Yp = Yp_v, typePred = "prob", ml_threshold = "0.5")
+              }
               error = mse(object, Y = Yv, Yp = Yv_p)
             } else if (validation(object) == "LOO") {
               # define train set
@@ -49,6 +55,9 @@ setMethod(f = "computeError",
               # compute error
               Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
               Yp = Ht %*% Wout
+              if (classification(object) != "none") {
+                Yp = postprocess(object, Yp = Yp, typePred = "prob", ml_threshold = "0.5")
+              }
               error = mse(object, Y = Y, Yp = Yp, X = Ht)
             }
             return(error)
@@ -93,4 +102,3 @@ setMethod(f = "mse",
             }
             return(mse_error)
           })
-

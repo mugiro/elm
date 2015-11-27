@@ -18,11 +18,13 @@ equivalent to the number of variables or classes.}
 }
 \value{
 MSE error
+
+If LOO is activated, the Allen's PRESS estimation is returned
 }
 \description{
 Function to compute the mean squared error (MSE)
 }
 \details{
-If LOO option is activated, the MSE Allen's PRESS formula is used and the data matrix X has to be supplied.
+If LOO option is activated, the MSE Allen's PRESS formula is used and the data matrix X must be supplied.
 }
 
