@@ -63,7 +63,7 @@ setMethod(f = "postprocess",
             Yp = t(apply(Yp, 1, softmax)) #softmax transformation
             if (typePred == "label") {
               Yp_post = matrix(0, nrow = dim(Yp)[1], ncol = dim(Yp)[2])
-              if (classification(object) == "mc") { # multi-class, single-label
+              if ((classification(object) == "mc") | (classification(object) == "w")) { # multi-class, single-label
                 for (i in 1:dim(Yp)[1]) {
                   Yp_post[i,which.max(Yp[i,])] = 1
                 }

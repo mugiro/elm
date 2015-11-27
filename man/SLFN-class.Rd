@@ -33,7 +33,7 @@
 
 \S4method{train}{SLFN}(object, X, Y, Xv = NULL, Yv = NULL,
   modelStrSel = "none", ranking = "random", validation = "none",
-  folds = 10, classification = "none", ...)
+  folds = 10, classification = "none", weights_wc = NULL, ...)
 
 \S4method{project}{SLFN}(object, X, typeDist)
 
@@ -125,7 +125,7 @@ normalization H'H solution (ridge parameter)}
 \item "w":  weigted.
 }}
 
-\item{\code{weights_wc}}{The weigths in the weighted classification problem.}
+\item{\code{weights_wc}}{numeric vector of length = number_of_classes with the weigths for weighted classification}
 
 \item{\code{batch}}{The size of the bacth in an adaptative ELM.}
 

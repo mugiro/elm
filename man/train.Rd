@@ -27,11 +27,11 @@ train(object, ...)
 \item "LOO" - leave one out based on the PRESS statistic
 }}
 
-\item{classification}{None}
-
 \item{folds}{Number of folds defined for the cross-validation procedure}
 
-\item{classType}{!!!!Redundante. Aquí o en el prototipo!!!!}
+\item{classification}{"none"/"mc"/"ml"/"w"}
+
+\item{weights_wc}{numeric vector of length = number_of_classes with the weigths for weighted classification}
 }
 \description{
 \code{train} fits all the parameters that include a SLFN given a set of
