@@ -16,7 +16,6 @@
 #'  rbf activation functions.
 #' @param B An input bias vector of dimension [1xL]. Vector of sigmas for
 #'  rbf activation functions.
-#' @param ... Optional additional parameters. None are used at present.
 #' @return An object SLFN with new neurons added and W and B matrices updated.
 #'
 #' It is called by the training wrapper when a new SLFN object is created.
@@ -32,18 +31,18 @@
 setGeneric("addNeurons", function(object, ...) standardGeneric("addNeurons"))
 #' @describeIn SLFN add neurons of the same type of activation function to the hidden layer
 setMethod("addNeurons",
-          signature = "SLFN",
-          def = function(object, type, number, W = NULL, B = NULL, ...){
+          signature <- "SLFN",
+          def <- function(object, type, number, W, B){
 
             if (type == 'linear') {# Never more linear neurons than features
               if (length(neurons(object)) > 0 && 'linear' %in% names(neurons(object)) ) {
-                numberPrev = neurons(object)[['linear']]$number
+                numberPrev <- neurons(object)[['linear']]$number
               }else {
-                numberPrev = 0
+                numberPrev <- 0
               }
               if ((numberPrev + number) > inputs(object)) {
                 cat("Cannot have more linear neurons than features: \n")
-                number = inputs(object) - numberPrev
+                number <- inputs(object) - numberPrev
                 cat("The number new linear neurons proposed is truncated to ", number, "\n")
               }
               try(if(number == 0) stop("No more linear neurons can be added"))
@@ -52,14 +51,14 @@ setMethod("addNeurons",
             if (is.null(W)) { ## W input weight matrix [dxL]
               if (type == 'linear') {
                 # linear - diagonal matrix, W just copies features to neurons
-                W = diag(x = 1, nrow = inputs(object), ncol = number)
+                W <- diag(x = 1, nrow = inputs(object), ncol = number)
               } else {
                 # general case
-                W = matrix(data = rnorm(inputs(object) * number, mean = 0, sd = 1),
+                W <- matrix(data = rnorm(inputs(object) * number, mean = 0, sd = 1),
                            nrow = inputs(object), ncol = number)
                 if (type == 'rbf') {
                   # rbf - high dimensionalty correction
-                  W = W * (3 / sqrt(inputs(object)))
+                  W <- W * (3 / sqrt(inputs(object)))
                 }
               }
             }else {
@@ -71,13 +70,13 @@ setMethod("addNeurons",
             if (is.null(B)) { ## B input bias vector [1xL]
               if (type == 'linear') {
                 # linear - no bias (vector of 0s)
-                B = rep(0, number)
+                B <- rep(0, number)
               } else {
                 # general case
-                B = rnorm(n = number, mean = 0, sd = 1)
+                B <- rnorm(n = number, mean = 0, sd = 1)
                 if (type == 'rbf') {
                   # rbf - high dimensionalty correction
-                  B = abs(B) * inputs(object)
+                  B <- abs(B) * inputs(object)
                 }
               }
             }else {
@@ -89,16 +88,16 @@ setMethod("addNeurons",
             #=============== review how to initialize list(list()) ....
             if (length(neurons(object)) > 0) { #any type of neuron already exists
               if (type %in% names(neurons(object))) { #type of neuron added already exists
-                neurons(object)[[type]]$number = neurons(object)[[type]]$number + number
-                neurons(object)[[type]]$W = cbind(neurons(object)[[type]]$W, W)
-                neurons(object)[[type]]$B = c(neurons(object)[[type]]$B, B)
+                neurons(object)[[type]]$number <- neurons(object)[[type]]$number + number
+                neurons(object)[[type]]$W <- cbind(neurons(object)[[type]]$W, W)
+                neurons(object)[[type]]$B <- c(neurons(object)[[type]]$B, B)
               } else {
-                neurons(object)[[type]] = list(number = number, W = W, B = B)
+                neurons(object)[[type]] <- list(number = number, W = W, B = B)
               }
             } else { #there were no neurons
-              neurons(object)[[type]] = list(number = number, W = W, B = B)
+              neurons(object)[[type]] <- list(number = number, W = W, B = B)
             }
-            cat(" --> Adding", number, type, "hidden neurons \n")
+            cat(" ==> Adding", number, type, "hidden neurons \n")
 
             #############=============== I don't understand what is thing with Wout here??
             if (!all(is.na(Wout(object)))) {

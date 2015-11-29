@@ -1,8 +1,8 @@
 Task in the project elm (S4)
 ------------------------
 
-1. Create the main classes SLFN and ELM
-2. Define the attributes, slots, methods
+1. Create the main classes SLFN, ELM and HiddenLayer.
+2. Define the attributes, slots, methods for the classes.
 3. Implement the training in R first and then we will use C ++
 4. Use RcppEigen to calculate the matrices for the ELM
 (5. Define the functions in C++ for the training system.)
@@ -11,8 +11,8 @@ Task in the project elm (S4)
 
 
 Coding issues/tasks:
-1. Decide the place to initialize training slots: prototype or train() ???
-2. lars function issue - in lars$actions, the number of steps is correct and equal to the number of features, but sometimes some features are preceded by -1. They are not dropped features as they were not added before. 
+1. Decide the place to initialize training slots: prototype!!!
+2. lars function issue - in lars$actions, the number of steps is correct and equal to the number of features, but sometimes some features are preceded by -1. They are not dropped features as they were not added before.
 3. The random ranking generates highly unstable results.
 4. Other feature ranking methods may be explored.
 5. Definitive package to implement matrix operations

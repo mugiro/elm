@@ -9,7 +9,7 @@
 #'
 #' @slot inputs The number of input features.
 #' @slot outputs The number of outputs.
-#' @slot neurons A list with the description of thehidden layer. The hidden layer
+#' @slot neurons A list that describes the hidden layer. The hidden layer
 #'  can be composed by neurons with different activation functions. Each element
 #'  of the list includes neurons with the same activation function. The element
 #'  is labelled with the type of activation function and contains the following
