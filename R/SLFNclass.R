@@ -50,7 +50,7 @@
 #' \item "ml": multi-label: the sample can belong to m classes out of n (m<n).
 #' \item "w":  weigted.
 #' }
-#' @slot weights_wc The weigths in the weighted classification problem.
+#' @slot weights_wc numeric vector of length = number_of_classes with the weigths for weighted classification
 #' @slot batch The size of the bacth in an adaptative ELM.
 #' @slot modelTime The time of calculation for training the model.
 #' @slot bigdata An logical parameter to select the kind of acceleration used in
@@ -70,7 +70,7 @@ setClass("SLFN",  # Definition of Single-hidden Layer Feed-forward Network SLFN
                    validation = "character",  # none/V/CV/LOO
                    folds = "numeric",
                    classification= "character",
-                   weights_wc = "ANY",
+                   weights_wc = "numeric",
                    batch = "integer",
                    modelTime = "numeric",
                    bigdata = "logical"),
@@ -87,7 +87,7 @@ setClass("SLFN",  # Definition of Single-hidden Layer Feed-forward Network SLFN
                                folds = 0,
                                classification= "none",
                                batch = integer(10),
-                               weights_wc = NA,
+                           #   weights_wc = numeric(),
                                modelTime = 0 ,
                                bigdata = FALSE))
 

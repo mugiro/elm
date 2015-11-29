@@ -15,9 +15,9 @@
 #' \item "CV" - cross validation. The number of folds is required
 #' \item "LOO" - leave one out based on the PRESS statistic
 #' }
-#' @param classification None
 #' @param folds Number of folds defined for the cross-validation procedure
-#' @param classType !!!!Redundante. Aquí o en el prototipo!!!!
+#' @param classification "none"/"mc"/"ml"/"w"
+#' @param weights_wc numeric vector of length = number_of_classes with the weigths for weighted classification
 #' @param ... None to use until now
 #' @export
 setGeneric("train", function(object, ...) standardGeneric("train"))
@@ -27,7 +27,7 @@ setMethod(f = "train",
           def = function (object, X, Y, Xv = NULL, Yv = NULL,
                           modelStrSel = "none", ranking = "random",
                           validation = "none", folds = 10,
-                          classification = "none",
+                          classification = "none", weights_wc = NULL,
                           ...) {
             # Check the dimensions of the data and the ELM structure.
             stopifnot(checkingXY(object,X,Y))
@@ -36,9 +36,21 @@ setMethod(f = "train",
 
             # Load training conditions
             modelStrSel(object) = modelStrSel
-            ranking(object) = ranking
-            validation(object) = validation
-            folds(object) = folds
+            if (modelStrSel(object) != "none"){
+              ranking(object) = ranking
+              validation(object) = validation
+              if (validation(object) == "CV"){
+                folds(object) = folds
+              }
+            }
+            classification(object) = classification
+            if (classification(object) == "w"){
+              if (is.null(weights_wc)) {
+                weights_wc(object) = apply(Y, 2, sum) / dim(Y)[1]
+              } else {
+                weights_wc(object) = weights_wc
+              }
+            }
 
             # Solve the system
             H = project(object, X = X)
@@ -118,8 +130,15 @@ setGeneric("solveSystem", function(object, ...) standardGeneric("solveSystem"))
 setMethod(f = "solveSystem",
           signature = "SLFN",
           def = function (object, H, Y, getWout = TRUE){
-            HH = (t(H) %*% H) + diag(ncol(H)) * alpha(object) # HH [LxL]
-            HT = t(H) %*% Y  # HT [Lxc]
+            if (classification(object) == "w") {
+              w_samples = apply(Y, 1, function(x) {weights_wc(object)[which(x == 1)]}) # vector of length
+              A = diag(dim(H)[1]) * w_samples # diagonal weight matrix
+              HH = (t(H) %*% A %*% H) + diag(ncol(H)) * alpha(object) # HH [LxL]
+              HT = t(H) %*% A %*% Y  # HT [Lxc]
+            } else {
+              HH = (t(H) %*% H) + diag(ncol(H)) * alpha(object) # HH [LxL]
+              HT = t(H) %*% Y  # HT [Lxc]
+            }
             if (getWout == TRUE) {
               #=============== WE SHOULD USE MATRIX PACKAGE: solve-methods {Matrix}===========
               Wout = solve(HH, HT) # base package. Interface to the LAPACK routine DGESV
