@@ -5,7 +5,8 @@
 \alias{predict,SLFN-method}
 \title{\code{\link{predict}} method for \code{\linkS4class{SLFN}} objects}
 \usage{
-\S4method{predict}{SLFN}(object, X, typePred = "prob", ml_threshold = 0.5)
+\S4method{predict}{SLFN}(object, x, class_output = "prob",
+  ml_threshold = 0.5)
 }
 \arguments{
 \item{object}{the instance to SLFN class}

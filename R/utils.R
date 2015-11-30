@@ -15,13 +15,13 @@
 #' \item \emph{manhattan}
 #' }
 #' @return A vector of length \emph{N} with all distances
-distMatVect = function(X, ref, type = "euclidean") {
-    if (type == "euclidean") {
-        dist = apply(X, 1, function(x) {sqrt(sum((x-ref)^2))})
-    }else if  (type == "manhattan") {
-      dist = apply(X, 1, function(x) {sum(abs(x-ref))})
+dist_mat_vec = function(x, ref, dist_type = "euclidean") {
+    if (dist_type == "euclidean") {
+        dist <- apply(x, 1, function(x) {sqrt(sum((x - ref) ^ 2))})
+    }else if  (dist_type == "manhattan") {
+      dist <- apply(x, 1, function(x) {sum(abs(x - ref))})
     }else {
-      stop("No implementation for the distance",type,". \n")
+      stop("No implementation for the distance",dist_type,". \n")
     }
     return(as.matrix(dist))
 }

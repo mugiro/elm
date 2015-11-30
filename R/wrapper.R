@@ -1,7 +1,7 @@
-### Methods without classes ???
-### Urraca-Valle, Ruben & Sanz-Garcia, Andres (12-10-2015)
+# Methods without classes ???
+# Urraca, Ruben & Sanz-Garcia, Andres (12-10-2015)
 
-#' trainELM
+#' elm
 #'
 #' \code{trainELM} creates and trains an object of class SLFN for given X and Y.
 #'
@@ -14,11 +14,11 @@
 #' \item Trains the SLFN and obtaines the output weigth vector by calling \code{train()}.
 #' }
 #'
-#' @param X The input data values in a matrix or vector
-#' @param Y The output data values in a matrix or vector
-#' @param Xv The input data values in a matrix or vector for performing a simple
+#' @param x The input data values in a matrix or vector
+#' @param y The output data values in a matrix or vector
+#' @param x_val The input data values in a matrix or vector for performing a simple
 #'  validation procedure
-#' @param Yv The output data values in a matrix or vector for performing a
+#' @param y_val The output data values in a matrix or vector for performing a
 #'  simple validation procedure
 #' @param nType The types of activation functions used in a vector
 #' @param nNeurons A vector containing the number of hidden neurons per type of
@@ -37,26 +37,28 @@
 #' a = trainELM(X = X, Y = Y, nType = "sigmoid", nNumber = 20)
 #' a = trainELM(X = X, Y = Y, nType = c("sigmoid", "tanH"), nNumber = c(20, 10))
 #' @export
-trainELM = function(X, Y, Xv = NULL, Yv = NULL, nType, nNumber, W = NULL, B = NULL,
-                    structureSelection = FALSE, validation = "none",
-                    ranking = "random", alpha, bigdata = FALSE, ...) {
+elm = function(x, y, x_val = NULL, y_val = NULL,
+              neur_type, nn, w = NULL, b = NULL,
+              type = "reg", tune = "none",
+              validation = "none", ranking = "random",
+              ridge, ....) {
 
   # coerce input and output data to matrix (for the case of 1 input or 1 output)
-  X = as.matrix(X)
-  Y = as.matrix(Y)
-  if (!is.null(Xv)) {
-    Xv = as.matrix(Xv)
-    Yv = as.matrix(Yv)
+  x <- as.matrix(x)
+  y <- as.matrix(y)
+  if (!is.null(x_val)) {
+    x_val <- as.matrix(x_val)
+    y_val <- as.matrix(y_val)
   }
 
   # Create the object with the minimum information
-  object = new("SLFN", inputs = ncol(X), outputs = ncol(Y))
+  object <- new("SLFN", inputs = dim(X)[2], outputs = dim(Y)[2])
 
   # read neuron arguments
-  if (length(nNumber) != length(nType)) { # check the length of neuron arguments
+  if (length(nn) != length(neur_type)) { # check the length of neuron arguments
     stop("nNumber and nType lengths differ")
-  } else if (!is.null(W)){
-    if (length(nNumber) != length(W)) {
+  } else if (!is.null(w)) {
+    if (length(nn) != length(w)) {
       stop("incorrect length of W")
     }
   } else if (!is.null(B)) {
@@ -66,11 +68,12 @@ trainELM = function(X, Y, Xv = NULL, Yv = NULL, nType, nNumber, W = NULL, B = NU
   }
 
   for (i in 1:length(nType)){ # call addNeurons
-    object = addNeurons(object, nType[i], nNumber[i], W[i], B[i])
+    object <- add_neurons(object, ntype[i], nn[i], w[i], b[i])
   }
 
-  object = train(object, X = X, Y = Y, Xv = Xv, Yv = Yv,
-                 structureSelection = structureSelection,
-                 validation = validation, ranking = ranking)
+  object <- train(object, x = x, y = y, x_val = x_val, y_val = y_val,
+                  type = type, tune = tune,
+                  validation = validation, ranking = ranking,
+                  ridge = ridge)
   return(object)
 }

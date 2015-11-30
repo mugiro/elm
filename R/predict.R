@@ -13,23 +13,23 @@ if(!isGeneric("predict")){
 #' @export
 setMethod(f = "predict",
           signature = 'SLFN',
-          def = function (object, X, typePred = "prob", ml_threshold = 0.5) {
+          def = function (object, x, class_output = "prob", ml_threshold = 0.5) {
 
-            X = as.matrix(X)
-            if (any(is.na(Wout(object)))) {
+            x = as.matrix(x)
+            if (any(is.na(w_out(object)))) {
               cat("NA values were detected in Wout.
                   The SLFN model should be first trained. \n")
-              Yp = NULL
+              yp <- NULL
             } else {
-              H = project(object, X) # proyected matrix dim [NxL]
-              Yp = H %*% Wout(object) # predicted matrix dim [Nxc]
+              h <- project(object, x) # proyected matrix dim [NxL]
+              yp <- h %*% w_out(object) # predicted matrix dim [Nxc]
 
-              if (classification(object) != "none") {
-                Yp = postprocess(object, Yp = Yp, typePred = typePred, ml_threshold = ml_threshold)
+              if (type(object) != "reg") {
+                yp <- class_postprocess(object, yp = yp, class_output = class_output,
+                      ml_threshold = ml_threshold)
               }
             }
-
-            return(Yp)
+            return(yp)
           })
 
 
@@ -51,31 +51,31 @@ setMethod(f = "predict",
 #' @param ml_threshold Threshold value to assign multi-label targets.
 #'
 #' @return The output matrix/vector with post-processed predtictors
-setGeneric("postprocess", function(object, ...) standardGeneric("postprocess"))
+setGeneric("class_postprocess", function(object, ...) standardGeneric("class_postprocess"))
 #' @describeIn SLFN
-setMethod(f = "postprocess",
+setMethod(f = "class_postprocess",
           signature = 'SLFN',
-          def = function(object, Yp, typePred, ml_threshold) {
+          def = function(object, yp, class_output, ml_threshold) {
 
           #
 
-          if ((typePred == "prob") | (typePred == "label")) {
-            Yp = t(apply(Yp, 1, softmax)) #softmax transformation
-            if (typePred == "label") {
-              Yp_post = matrix(0, nrow = dim(Yp)[1], ncol = dim(Yp)[2])
-              if ((classification(object) == "mc") | (classification(object) == "w")) { # multi-class, single-label
-                for (i in 1:dim(Yp)[1]) {
-                  Yp_post[i,which.max(Yp[i,])] = 1
+          if ((class_output == "prob") | (class_output == "label")) {
+            yp <- t(apply(yp, 1, softmax)) #softmax transformation
+            if (class_output == "label") {
+              yp_post <- matrix(0, nrow = dim(yp)[1], ncol = dim(yp)[2])
+              if ((type(object) == "mc") | (type(object) == "w")) { # multi-class, single-label
+                for (i in 1:dim(yp)[1]) {
+                  yp_post[i, which.max(yp[i,])] <- 1
                 }
               } else if (classification(object) == "ml") { # multi-class, multi-label
                 for (i in 1:dim(Yp)[1]) {
-                  Yp_post[i,which(Yp[i,] > ml_threshold)] = 1
+                  yp_post[i, which(yp[i,] > ml_threshold)] <- 1
                 }
               }
-              Yp = Yp_post
+              yp <- yp_post
             }
           }
-          return(Yp)
+          return(yp)
           })
 
 
