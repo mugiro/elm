@@ -17,57 +17,59 @@
 #' }
 #' @param folds Number of folds defined for the cross-validation procedure
 #' @param classification "none"/"mc"/"ml"/"w"
-#' @param weights_wc numeric vector of length = number_of_classes with the weigths for weighted classification
+#' @param class_weights numeric vector of length = number_of_classes
+#' with the weigths for weighted classification
 #' @param ... None to use until now
 #' @export
 setGeneric("train", function(object, ...) standardGeneric("train"))
 #' @describeIn SLFN train the SLFN
 setMethod(f = "train",
           signature = 'SLFN',
-          def = function (object, X, Y, Xv = NULL, Yv = NULL,
-                          modelStrSel = "none", ranking = "random",
-                          validation = "none", folds = 10,
-                          classification = "none", weights_wc = NULL,
+          def = function (object, x, y, x_val = NULL, y_val = NULL, type = "reg", tune = "none",
+                          ranking = "random", validation = "none", folds = 10,
+                          class_weights = NULL,
                           ...) {
             # Check the dimensions of the data and the ELM structure.
-            stopifnot(checkingXY(object,X,Y))
-            if (!(is.null(Xv) && is.null(Xv))) stopifnot(checkingXY(object,Xv,Yv))
+            stopifnot(checking_xy(object, x, y))
+            if (!(is.null(x_val) && is.null(y_val))) {
+              stopifnot(checking_xy(object, x_val, y_val))
+            }
             stopifnot(length(neurons(object)) > 0)
 
             # Load training conditions
-            modelStrSel(object) = modelStrSel
-            if (modelStrSel(object) != "none"){
-              ranking(object) = ranking
-              validation(object) = validation
-              if (validation(object) == "CV"){
-                folds(object) = folds
+            tune(object) <- tune
+            if (tune(object) != "none"){
+              ranking(object) <- ranking
+              validation(object) <- validation
+              if (validation(object) == "cv"){
+                folds(object) <- folds
               }
             }
-            classification(object) = classification
-            if (classification(object) == "w"){
-              if (is.null(weights_wc)) {
-                weights_wc(object) = apply(Y, 2, sum) / dim(Y)[1]
+            type(object) <- type
+            if (type(object) == "w"){
+              if (is.null(class_weights)) {
+                class_weights(object) <- apply(Y, 2, sum) / dim(Y)[1]
               } else {
-                weights_wc(object) = weights_wc
+                class_weights(object) <- class_weights
               }
             }
 
             # Solve the system
-            H = project(object, X = X)
-            if (modelStrSel(object) == "pruning") { # optimize number of neurons
-              if (validation(object) == "V") { # enter val. set
-                Hv = project(object, X = Xv)
-                object = trainPruning(object, H = H, Y = Y, Hv = Hv, Yv = Yv)
-              } else if (validation(object) == "CV") { # no validation set
+            h <- project(object, x = x)
+            if (tune(object) == "pruning") { # optimize number of neurons
+              if (validation(object) == "v") { # enter val. set
+                h_val <- project(object, x = x_val)
+                object <- train_pruning(object, h = h, y = y, h_val = h_val, y_val = y_val)
+              } else if (validation(object) == "cv") { # no validation set
                 # folds division (CV case)
-                index = createFolds(X[,1], folds(object))
-                object = trainPruning(object, H = H, Y = Y, index = index)
-              } else if (validation(object) == "LOO")  {
-                object = trainPruning(object, H = H, Y = Y)
+                cv_rows <- createFolds(1:dim(x)[1], folds(object))
+                object <- train_pruning(object, h = h, y = y, cv_rows = cv_rows)
+              } else if (validation(object) == "loo")  {
+                object <- train_pruning(object, h = h, y = y)
               }
-            }else if (modelStrSel(object) == "none") {  # validation for computing errors ???
-              Wout(object) = solveSystem(object, H = H, Y = Y, getWout = TRUE)$Wout
-              errors(object) = mse(object, Y = Y, Yp = predict(object, X = X)) # training error
+            } else if (tune(object) == "none") {  # validation for computing errors ???
+              w_out(object) <- solve_system(object, h = h, y = y, solve = TRUE)$w_out
+              results(object) <- mse(object, y = y, yp = predict(object, x = x)) # training error
             }
             return(object)
           })
@@ -84,36 +86,37 @@ setGeneric("project", function(object, ...) standardGeneric("project"))
 #' @describeIn SLFN project form input-space to neuron-space. Compute H
 setMethod("project",
           signature = 'SLFN',
-          def = function(object, X, typeDist) {
+          def = function(object, x, rbf_dist = "euclidean") {
 
-            H = NULL
+            h = NULL
             for (i in 1:length(neurons(object))) { # for all types of neurons
               # projection
-              nType = names(neurons(object))[i]
-              W = neurons(object)[[i]]$W
-              B = neurons(object)[[i]]$B
+              act_fun <- names(neurons(object))[i]
+              w_in <- neurons(object)[[i]]$w_in
+              b <- neurons(object)[[i]]$b
 
-              if (nType == 'rbf') {  # distances from centroids
-                H0 = matrix(nrow = nrow(X), ncol = ncol(W))
-                for (k in 1:neurons(object)[[i]]$number)
-                  H0[,k] = distMatVect(X = X, ref = W[,k], type = typeDist)
+              if (act_fun == 'rbf') {  # distances from centroids
+                h0 <- matrix(nrow = nrow(x), ncol = ncol(w_in))
+                for (j in 1:neurons(object)[[i]]$nn) {
+                  h0[, j] <- dist_mat_vec(x = x, ref = w_in[, j], dist_type = rbf_dist)
+                }
               } else { # project
-                H0 = X %*% W
-                H0 = H0 + matrix(rep(B, nrow(H0)), nrow = nrow(H0), byrow = TRUE)
+                h0 <- x %*% w_in
+                h0 <- h0 + matrix(rep(b, nrow(h0)), nrow = nrow(h0), byrow = TRUE)
               }
 
-              if (nType == 'sigmoid') {  # Apply the transformation function
-                H0 = 1 / (1 + exp(-H0))
-              } else if (nType == 'tanH') {
-                H0 = tanh(H0)
-              } else if (nType == 'rbf') {
-                H0 = exp( -(H0 ^ 2) / matrix(rep(B, nrow(H0)), nrow = nrow(H0), byrow = TRUE))
+              if (act_fun == 'sigmoid') {  # Apply the transformation function
+                h0 <- 1 / (1 + exp(-h0))
+              } else if (act_fun == 'tanH') {
+                h0 <- tanh(h0)
+              } else if (act_fun == 'rbf') {
+                h0 <- exp( - (h0 ^ 2) / matrix(rep(b, nrow(h0)), nrow = nrow(h0), byrow = TRUE))
               } else {
                 NULL  # linear: do nothing
               }
-              H = cbind(H, H0)
+              h = cbind(h, h0)
             }
-            return(H)
+            return(h)
           })
 
 #' Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] x= [Nxc]
@@ -121,30 +124,32 @@ setMethod("project",
 #' The function \code{solveSystem} solves the linear system under the equation
 #' HH * Wout = HT - [LxL] %*% [Lxc] = [Lxc].
 #' @param H a matrix of dimensions [NxL] after transformation
-#' @param getWout logical; needs to be true to return Wout value
+#' @param solve logical; needs to be true to return Wout value
 #' @param Y a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)
 #' @return Wout a matrix of dimensions [Lxc] with the output weights
 #' @export
-setGeneric("solveSystem", function(object, ...) standardGeneric("solveSystem"))
+setGeneric("solve_system", function(object, ...) standardGeneric("solve_system"))
 #' @describeIn SLFN solve linear system H x Wout = Y
-setMethod(f = "solveSystem",
+setMethod(f = "solve_system",
           signature = "SLFN",
-          def = function (object, H, Y, getWout = TRUE){
-            if (classification(object) == "w") {
-              w_samples = apply(Y, 1, function(x) {weights_wc(object)[which(x == 1)]}) # vector of length
-              A = diag(dim(H)[1]) * w_samples # diagonal weight matrix
-              HH = (t(H) %*% A %*% H) + diag(ncol(H)) * alpha(object) # HH [LxL]
-              HT = t(H) %*% A %*% Y  # HT [Lxc]
+          def = function (object, h, y, solve = TRUE){
+
+            diag_ridge <- diag(dim(h)[2]) * ridge(object) # diagonal matrix (ridge penalty)
+            if (type(object) == "w") {
+              sample_weights <- apply(y, 1, function(x) {class_weights(object)[which(x == 1)]})
+              diag_weights <- diag(dim(h)[1]) * sample_weights # diagonal matrix (weights)
+              hh <- (t(h) %*% diag_weights %*% h) + diag_ridge # HH [LxL]
+              ht <- t(h) %*% diag_weights %*% y  # HT [Lxc]
             } else {
-              HH = (t(H) %*% H) + diag(ncol(H)) * alpha(object) # HH [LxL]
-              HT = t(H) %*% Y  # HT [Lxc]
+              hh <- (t(h) %*% h) + diag_ridge # HH [LxL]
+              ht <- t(h) %*% y  # HT [Lxc]
             }
-            if (getWout == TRUE) {
+            if (solve) {
               #=============== WE SHOULD USE MATRIX PACKAGE: solve-methods {Matrix}===========
-              Wout = solve(HH, HT) # base package. Interface to the LAPACK routine DGESV
+              w_out <- solve(hh, ht) # base package. Interface to the LAPACK routine DGESV
             } else {
-              Wout = NULL
+              w_out <- NULL
             }
             #=============== HH y HT - should we return them?? needed?? ===========
-            return(list('HH' = HH, 'HT' = HT, 'Wout' = Wout)) # one return only
+            return(list('hh' = hh, 'ht' = ht, 'w_out' = w_out)) # one return only
           })

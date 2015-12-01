@@ -1,5 +1,5 @@
-### File that contains methods to manage error calculations
-### Urraca-Valle, Ruben & Sanz-Garcia, Andres (21-11-2015)
+# File that contains methods to manage error calculations
+# Urraca, Ruben & Sanz-Garcia, Andres (21-11-2015)
 
 #' Compute model's errors with different number of neurons (nn)
 #'
@@ -14,51 +14,54 @@
 #' @param Yv The output matrix for the validation dataset of dimensions [Nxc].
 #' @param index The vector containing the selection of the data.
 #' @return The error of the ELM model
-setGeneric("computeError", function(object, ...) standardGeneric("computeError"))
+setGeneric("get_error", function(object, ...) standardGeneric("get_error"))
 #' @describeIn SLFN implement a validation procedure
-setMethod(f = "computeError",
+setMethod(f = "get_error",
           signature = "SLFN",
-          def = function (object, nSelected, H, Y, Hv = NULL, Yv = NULL, index = NULL) {
-            if (validation(object) == "CV") {
-              error = 0
+          def = function (object, n_sel, h, y, h_val = NULL, y_val = NULL, cv_rows = NULL) {
+            if (validation(object) == "cv") {
+              error <- 0
               for (i in 1:folds(object)) {
-                # define train - val sets
-                Ht = H[-index[[i]],nSelected, drop = FALSE]
-                Yt = Y[-index[[i]], , drop = FALSE]
-                Hv = H[index[[i]], nSelected, drop = FALSE]
-                Yv = Y[index[[i]], , drop = FALSE]
+                # define train (t) and validation (v)
+                h_tr <- h[-cv_rows[[i]], n_sel, drop = FALSE]
+                y_tr <- y[-cv_rows[[i]], , drop = FALSE]
+                h_val <- h[cv_rows[[i]], n_sel, drop = FALSE]
+                y_val <- y[cv_rows[[i]], , drop = FALSE]
                 # compute error
-                Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
-                Yv_p = Hv %*% Wout
-                if (classification(object) != "none") {
-                  Yp_v = postprocess(object, Yp = Yp_v, typePred = "prob", ml_threshold = "0.5")
+                w_out <- solve_system(object, h = h_tr , y = y_tr)$w_out
+                yp_val <- h_val %*% w_out
+                if (type(object) != "reg") {
+                  yp_val <- class_postprocess(object, yp = yp_val, class_output = "prob",
+                                        ml_threshold = "0.5")
                 }
-                error = error + mse(object, Y = Yv, Yp = Yv_p) / folds(object)
+                error <- error + mse(object, y = y_val, yp = yp_val) / folds(object)
               }
-            } else if (validation(object) == "V") {
-              # define train - val sets
-              Ht = H[,nSelected, drop = FALSE]
-              Yt = Y
-              Hv = Hv[,nSelected, drop = FALSE]
-              Yv = Yv
+            } else if (validation(object) == "v") {
+              # define train (t) and validation (v)
+              h_tr <- h[, n_sel, drop = FALSE]
+              y_tr <- y
+              h_val <- h_val[, n_sel, drop = FALSE]
+              y_val <- y_val
               # compute error
-              Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
-              Yv_p = Hv %*% Wout
-              if (classification(object) != "none") {
-                Yp_v = postprocess(object, Yp = Yp_v, typePred = "prob", ml_threshold = "0.5")
+              w_out <- solve_system(object, h = h_tr , y = y_tr)$w_out
+              yp_val <- h_val %*% w_out
+              if (type(object) != "reg") {
+                yp_val <- class_postprocess(object, yp = yp_val, class_outputs = "prob",
+                                      ml_threshold = "0.5")
               }
-              error = mse(object, Y = Yv, Yp = Yv_p)
-            } else if (validation(object) == "LOO") {
+              error <- mse(object, y = y_val, yp = yp_val)
+            } else if (validation(object) == "loo") {
               # define train set
-              Ht = H[,nSelected, drop = FALSE]
-              Yt = Y
+              h_tr <- h[, n_sel, drop = FALSE]
+              y_tr <- y
               # compute error
-              Wout = solveSystem(object, H = Ht , Y = Yt)$Wout
-              Yp = Ht %*% Wout
-              if (classification(object) != "none") {
-                Yp = postprocess(object, Yp = Yp, typePred = "prob", ml_threshold = "0.5")
+              w_out <- solve_system(object, h = h_tr , y = y_tr)$w_out
+              yp <- h_tr %*% w_out
+              if (type(object) != "reg") {
+                yp <- class_postprocess(object, yp = yp, class_output = "prob",
+                                  ml_threshold = "0.5")
               }
-              error = mse(object, Y = Y, Yp = Yp, X = Ht)
+              error <- mse(object, y = y, yp = yp, x = h_tr)
             }
             return(error)
           })
@@ -85,20 +88,21 @@ setGeneric("mse", function(object, ...) standardGeneric("mse"))
 #' @describeIn SLFN MSE error
 setMethod(f = "mse",
           signature = "SLFN",
-          def = function(object, Y, Yp, X){
+          def = function(object, y, yp, x){
 
-            if (validation(object) == "LOO") {
+            if (validation(object) == "loo") {
               #improve the implementation of Allen's PRESS
-              num = Yp - Y # numerator
-              den = 0 # denomitator
-              XX = t(X) %*% X + diag(dim(X)[2]) * alpha(object)
-              invXX = solve(XX)
-              for (i in 1:dim(Y)[1]) {
-                den[i] = 1 - (X[i,,drop = FALSE] %*% invXX %*% t(X[i,,drop = FALSE]))
+              num <- yp - y # numerator
+              den <- 0 # denomitator
+              xx <- t(x) %*% x + diag(dim(x)[2]) * ridge(object)
+              inv_xx <- solve(xx)
+              for (i in 1:dim(y)[1]) {
+                den[i] <- 1 - (x[i, , drop = FALSE] %*% inv_xx %*% t(x[i, , drop = FALSE]))
               }
-              mse_error = sum((num/den) ^ 2) / dim(Y)[1]
+              metric <- sum((num/den) ^ 2) / dim(y)[1]
             } else {
-              mse_error = sum((Yp - Y) ^ 2) / dim(Y)[1] # when dimension Y > 1 ????
+              metric <- sum((yp - y) ^ 2) / dim(y)[1] # when dimension Y > 1 ????
             }
-            return(mse_error)
+            return(metric)
           })
+

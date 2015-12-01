@@ -31,7 +31,8 @@ train(object, ...)
 
 \item{classification}{"none"/"mc"/"ml"/"w"}
 
-\item{weights_wc}{numeric vector of length = number_of_classes with the weigths for weighted classification}
+\item{class_weights}{numeric vector of length = number_of_classes
+with the weigths for weighted classification}
 }
 \description{
 \code{train} fits all the parameters that include a SLFN given a set of
