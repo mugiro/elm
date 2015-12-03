@@ -23,7 +23,7 @@ setMethod(f = "rank_neurons",
               # llevas razón... lo tengo que mirar....
               # abs(), but not sure if it is the right solution
             } else {
-              nn <- sum(sapply(neurons(object), function (x) {x$nn})) # number of neurons (nn) max
+              nn <- length(act_fun(h_neurons(object))) # number of neurons (nn) max
               ranking = sample(1:nn)
             }
             return(ranking)
