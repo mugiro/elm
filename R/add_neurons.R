@@ -29,8 +29,8 @@
 #'  new space.
 #' @export
 setGeneric("add_neurons", function(object, ...) standardGeneric("add_neurons"))
-#' @describeIn SLFN
-#' add neurons of the same type of activation function to the hidden layer
+#' @include SLFN-class.R
+#' @describeIn SLFN add neurons of the same type of activation function to the hidden layer
 setMethod("add_neurons",
           signature <- "SLFN",
           def <- function(object, act_fun, nn, w_in = NULL, b = NULL) {
@@ -48,6 +48,8 @@ setMethod("add_neurons",
             return(object)
           })
 
+#' @include hiddenlayer-class.R
+#' @describeIn hiddenlayer add neurons of the same type of activation function
 setMethod("add_neurons",
           signature <- "hiddenlayer",
           def <- function(object, ninputs, nn, act_fun, w_in, b) {

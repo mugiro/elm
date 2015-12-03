@@ -3,40 +3,36 @@
 
 #' Class \code{"SLFN"}
 #'
-#' A class for defining a Single-hidden Layer Feed-forward Network (SLFN)
+#' A S4 class to represent a Single-hidden Layer Feed-forward Network (SLFN)
 #'
 #' Include here more details <<<<<<ANDRES<<<<<<
 #'
 #' @slot inputs The number of input features.
 #' @slot outputs The number of outputs.
-#' @slot h_neurons A list that describes the hidden layer. The hidden layer
-#'  can be composed by neurons with different activation functions. Each element
-#'  of the list includes neurons with the same activation function. The element
-#'  is labelled with the type of activation function and contains the following
-#'  information: number of neurons (number), input weight vector (W) and biases
-#'  (B) associated to all the neurons included.
+#' @slot h_neurons An object of classs hiddenlayer
 #' @slot w_out The weight output vector that includes the computed weights between
 #'  the hidden and the output layer.
 #'        output weights - vector (1 output) / matrix (n outputs)
 #' @slot results The error used to evaluate model performance.
 #'  mse c(mse_train, mse_val)
-#' @slot ridge The regularization parameter of the network.
-#'  normalization H'H solution (ridge parameter)
-#' @slot type The of model implmented:
+#' @slot ridge The regularization parameter used to include the L2 penalty the
+#' @slot type The type of model implemented:
 #' \itemize{
 #' \item "reg": regression problem.
 #' \item "class_mc": multi-class: the sample belongs to 1 class out of n.
 #' \item "class_ml": multi-label: the sample can belong to m classes out of n (m<n).
 #' \item "class_w":  weigted classification
 #' }
-#' @slot tune A character to define the model structure selection method
-#' implemented
+#' @slot tune Parameter to define the model structure selection method implemented to tune
+#' the model hyper-parameters
 #' #' \itemize{
-#' \item "none"
-#' \item "pruning"
+#' \item "none": no model selection
+#' \item "pruning": pruning of neurons of the hidden layer: P-ELM, if "ridge = 0 &
+#' ranking = "random", OP-ELM, if "ridge = 0 & ranking = lars", TROP-ELM, if ("ridge != 0 &
+#' ranking = lars)
 #' }
-#' @slot ranking A character to select the type of ranking implemented when
-#'  prunning option is selected.
+#' @slot ranking A character to select the type of ranking implemented when prunning option
+#' is selected.
 #' \itemize{
 #' \item "random" - random ranking
 #' \item "lars" - ranking based on lars - L1 penalty
@@ -277,6 +273,7 @@ setMethod(f = "initialize",
 #'
 #' @param object The SLFN object to be displayed.
 #' @export
+#' @describeIn SLFN show an object of class \code{SLFN}
 setMethod("show", "SLFN",
           function(object) {
             cat("\n")

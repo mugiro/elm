@@ -107,7 +107,7 @@ setMethod(f = "prune",
             return(object)
           })
 
-#' @describeIn hiddenlayer prune a hidden layer
+#' @describeIn hiddenlayer prune/remove neurons from the hiddenlayer given an index of neurons
 setMethod(f = "prune",
   signature = "hiddenlayer",
   def = function (object, n_sel) {

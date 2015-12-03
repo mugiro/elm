@@ -2,27 +2,28 @@
 % Please edit documentation in R/train.R
 \name{solve_system}
 \alias{solve_system}
-\title{Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] x= [Nxc]
-  Use orthogonal projection - correlation matrices
-The function \code{solveSystem} solves the linear system under the equation
-HH * Wout = HT - [LxL] %*% [Lxc] = [Lxc].}
+\title{Solve the linear system between a hidden layer and the outputs}
 \usage{
 solve_system(object, ...)
 }
 \arguments{
-\item{H}{a matrix of dimensions [NxL] after transformation}
+\item{h}{a \code{matrix} of dimensions [n x l], with the outputs of the hidden layer}
 
-\item{solve}{logical; needs to be true to return Wout value}
+\item{solve}{a \code{logical} to set if w_out has to computed. If FALSE, only the two
+correlation matrices are returned}
 
-\item{Y}{a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)}
+\item{y}{a \code{matrix} of dimensions [n x c] or a \code{vector} if c = 1, with the output values}
 }
 \value{
-Wout a matrix of dimensions [Lxc] with the output weights
+w_out a \code{matrix} of dimensions [l x c] with the output weights
 }
 \description{
-Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] x= [Nxc]
-  Use orthogonal projection - correlation matrices
-The function \code{solveSystem} solves the linear system under the equation
-HH * Wout = HT - [LxL] %*% [Lxc] = [Lxc].
+Solve the linear system h [n x l] * w_out [l x c] = y [n x c]
+}
+\details{
+The Moore-Penrose generalized inverse is found by using orthogonal projection. The two
+correlation matrices hh = t(h) * h and ht = t(h) * y are computed. The final squared linear
+system solved is: hh [l x l] * w_out [l x c] = ht [n x c]
+Orthogonal projection is used to compute the generalized inverse of the matrixUse orthogonal projection - correlation matrices
 }
 

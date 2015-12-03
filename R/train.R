@@ -135,14 +135,22 @@ setMethod("project",
             return(h)
           })
 
-#' Solve the linear system H %*% Wout = Y - [NxL] %*% [Lxc] x= [Nxc]
-#'   Use orthogonal projection - correlation matrices
-#' The function \code{solveSystem} solves the linear system under the equation
-#' HH * Wout = HT - [LxL] %*% [Lxc] = [Lxc].
-#' @param H a matrix of dimensions [NxL] after transformation
-#' @param solve logical; needs to be true to return Wout value
-#' @param Y a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)
-#' @return Wout a matrix of dimensions [Lxc] with the output weights
+
+
+#' Solve the linear system between a hidden layer and the outputs
+#'
+#' Solve the linear system h [n x l] * w_out [l x c] = y [n x c]
+#'
+#' The Moore-Penrose generalized inverse is found by using orthogonal projection. The two
+#' correlation matrices hh = t(h) * h and ht = t(h) * y are computed. The final squared linear
+#' system solved is: hh [l x l] * w_out [l x c] = ht [n x c]
+#' Orthogonal projection is used to compute the generalized inverse of the matrixUse orthogonal projection - correlation matrices
+#'
+#' @param h a \code{matrix} of dimensions [n x l], with the outputs of the hidden layer
+#' @param solve a \code{logical} to set if w_out has to computed. If FALSE, only the two
+#' correlation matrices are returned
+#' @param y a \code{matrix} of dimensions [n x c] or a \code{vector} if c = 1, with the output values
+#' @return w_out a \code{matrix} of dimensions [l x c] with the output weights
 #' @export
 setGeneric("solve_system", function(object, ...) standardGeneric("solve_system"))
 #' @describeIn SLFN solve linear system H x Wout = Y
