@@ -7,7 +7,7 @@
 #' @include SLFN-class.R
 #' @keywords classes
 #' @export
-setClass("ELM",
+ELM <- setClass("ELM",
          slots = c(ID = "numeric"),
          contains = "SLFN",
          prototype = prototype(ID=0))

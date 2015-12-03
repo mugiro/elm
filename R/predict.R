@@ -52,7 +52,7 @@ setMethod(f = "predict",
 #'
 #' @return The output matrix/vector with post-processed predtictors
 setGeneric("class_postprocess", function(object, ...) standardGeneric("class_postprocess"))
-#' @describeIn SLFN
+#' @describeIn SLFN Description of class_postprocess for SLFN (origin predic.R)
 setMethod(f = "class_postprocess",
           signature = 'SLFN',
           def = function(object, yp, class_output, ml_threshold) {

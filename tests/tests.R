@@ -8,12 +8,17 @@ devtools::load_all()
 data = read.csv("/Users/mugiro/01work/elm/tests/testthat/hydrocarbons.csv")
 X = as.matrix(data[,c(2:5)])
 Y = as.matrix(data[,6])
-object = new("SLFN")
+object = new("ELM")
+
+object = ELM()
+
 # inputs(object) = ncol(X)
 # neurons(object)=4
 # outputs(object)= ncol(Y)
 object = new("SLFN", inputs = ncol(as.matrix(X)), outputs = ncol(as.matrix(Y)))
-inputs(object); Wout(object); neurons(object)
+inputs(object); w_out(object); h_neurons(object)
+
+elm::act_fun()
 
 # object = addNeurons(object, type = "sigmoid", number = 10)
 
@@ -82,3 +87,54 @@ n=10
 
 for (i in 1:n) print(i)
 for (i in n) print(i)
+
+
+
+
+######################################################################
+# Create the first quadrant class
+#
+# This is used to represent a coordinate in the first quadrant.
+FirstQuadrant <- setClass(
+  # Set the name for the class
+  "FirstQuadrant",
+
+  # Define the slots
+  slots = c(
+    x = "numeric",
+    y = "numeric"
+  ),
+
+  # Set the default values for the slots. (optional)
+  prototype=list(
+    x = 0.0,
+    y = 0.0
+  ),
+
+  # Make a function that can test to see if the data is consistent.
+  # This is not called if you have an initialize function defined!
+  validity=function(object)
+  {
+    if((object@x < 0) || (object@y < 0)) {
+      return("A negative number for one of the coordinates was given.")
+    }
+    return(TRUE)
+  }
+)
+
+
+new("FirstQuadrant")
+
+object = FirstQuadrant
+
+new("hiddenlayer")
+
+hiddenlayer()
+
+setClass("hiddenlayer",  # Definition of Single-hidden Layer Feed-forward Network SLFN
+         slots = c(act_fun = "factor",
+                   w_in = "matrix",
+                   b = "numeric"),
+         prototype = list()
+)
+

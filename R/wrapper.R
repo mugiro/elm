@@ -1,9 +1,9 @@
 # Methods without classes ???
 # Urraca, Ruben & Sanz-Garcia, Andres (12-10-2015)
 
-#' elm
+#' wrapper
 #'
-#' \code{trainELM} creates and trains an object of class SLFN for given X and Y.
+#' \code{wrapper} creates and trains an object of class SLFN for given X and Y.
 #'
 #' This function is a wrapper for summarizing several actions requiered when
 #' creating and adjusting an ELM model. The particular steps are listed below.
@@ -37,7 +37,7 @@
 #' a = trainELM(X = X, Y = Y, nType = "sigmoid", nNumber = 20)
 #' a = trainELM(X = X, Y = Y, nType = c("sigmoid", "tanH"), nNumber = c(20, 10))
 #' @export
-elm = function(x, y, x_val = NULL, y_val = NULL,
+wrapper <- function(x, y, x_val = NULL, y_val = NULL,
               neur_type, nn, w = NULL, b = NULL,
               type = "reg", tune = "none",
               validation = "none", ranking = "random",

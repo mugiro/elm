@@ -6,13 +6,13 @@
 #'  \code{computeError} calculate the error of a ELM model.
 #'
 #' @param object An instance to the SLFN class.
-#' @param nSelected The number of hidden neurons to be used.
-#' @param H The transformed matrix H of dimensions [NxL].
-#' @param Y The output matrix of dimensions [Nxc].
-#' @param Hv The transformed matrix H for the validation dataset
+#' @param n_sel The number of hidden neurons to be used.
+#' @param h The transformed matrix H of dimensions [NxL].
+#' @param y The output matrix of dimensions [Nxc].
+#' @param h_val The transformed matrix H for the validation dataset
 #'  of dimensions [NxL].
-#' @param Yv The output matrix for the validation dataset of dimensions [Nxc].
-#' @param index The vector containing the selection of the data.
+#' @param y_val The output matrix for the validation dataset of dimensions [Nxc].
+#' @param cv_rows The vector containing the selection of the data.
 #' @return The error of the ELM model
 setGeneric("get_error", function(object, ...) standardGeneric("get_error"))
 #' @describeIn SLFN implement a validation procedure
@@ -75,12 +75,12 @@ setMethod(f = "get_error",
 #' If LOO option is activated, the MSE Allen's PRESS formula is used and the data matrix X must be supplied.
 #'
 #' @param object The instance to SLFN class.
-#' @param Y The output matrix of dimensions [N x c] with number of columns
+#' @param y The output matrix of dimensions [N x c] with number of columns
 #'  equivalent to the number of variables or classes.
-#' @param Yp The predicted output matrix of dimensions [N x c]; output matrix
-#' @param X the input matrix [N x L]. Required for the LOO case
+#' @param yp The predicted output matrix of dimensions [N x c]; output matrix
+#' @param x the input matrix [N x L]. Required for the LOO case
 #'
-#' @return MSE error
+#' @return The MSE error
 #'
 #' If LOO is activated, the Allen's PRESS estimation is returned
 #' @export

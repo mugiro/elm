@@ -54,7 +54,7 @@
 #' @keywords classes
 #' @export
 #' @include hiddenlayer-class.R
-setClass("SLFN",  # Definition of Single-hidden Layer Feed-forward Network SLFN
+SLFN <- setClass("SLFN",  # Definition of Single-hidden Layer Feed-forward Network SLFN
          slots = c(inputs = "numeric",
                    outputs = "numeric",
                    h_neurons = "hiddenlayer",
@@ -88,7 +88,7 @@ setClass("SLFN",  # Definition of Single-hidden Layer Feed-forward Network SLFN
 #                              time_exec = 0 ,
                                bigdata = FALSE))
 
-# Accessors ========================================================================================
+# Accessors ====================================================================
 
 if(!isGeneric("inputs")) {
   if (is.function("inputs"))
@@ -257,7 +257,7 @@ if(!isGeneric("show")){
   setGeneric("show", fun)
 }
 
-# method - initializator ===========================================================================
+# method - initializator =======================================================
 setMethod(f = "initialize",
   signature = "SLFN",
   def = function(.Object, inputs, outputs) {
@@ -268,7 +268,8 @@ setMethod(f = "initialize",
   }
 )
 
-# method - show ====================================================================================
+# method - show ================================================================
+
 #' Display a SLFN object.
 #'
 #' @param object The SLFN object to be displayed.

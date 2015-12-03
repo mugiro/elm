@@ -4,8 +4,8 @@
 #'  input data (X, Y) and a training scheme
 #'
 #' @param object SLFN object to serialize
-#' @param X a data matrix of dimensions [Nxd] with input data
-#' @param Y vector/matrix of outputs [Nx1c]
+#' @param x a data matrix of dimensions [Nxd] with input data
+#' @param y vector/matrix of outputs [Nx1c]
 #' @param modelStrSel logical Select the pruning for reduce model's size.
 #' @param ranking Type of neurons ranking \code{random} or \code{lars}.
 #' @param validation Method to validate the model developed
@@ -16,9 +16,9 @@
 #' \item "LOO" - leave one out based on the PRESS statistic
 #' }
 #' @param folds Number of folds defined for the cross-validation procedure
-#' @param classification "none"/"mc"/"ml"/"w"
 #' @param class_weights numeric vector of length = number_of_classes
 #' with the weigths for weighted classification
+#' @param classification "none"/"mc"/"ml"/"w"
 #' @param ... None to use until now
 #' @export
 setGeneric("train", function(object, ...) standardGeneric("train"))
@@ -27,8 +27,7 @@ setMethod(f = "train",
           signature = 'SLFN',
           def = function (object, x, y, x_val = NULL, y_val = NULL, type = "reg", tune = "none",
                           ranking = "random", validation = "none", folds = 10,
-                          class_weights = NULL,
-                          ...) {
+                          class_weights = NULL,...) {
             # Check the dimensions of the data and the ELM structure.
             # stopifnot(checking_xy(object, x, y))
 

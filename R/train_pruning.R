@@ -7,15 +7,15 @@
 #' number of neurons
 #'
 #' @param object An instance to the SLFN class.
-#' @param H
-#' @param Y
-#' @param Hv
-#' @param Yv
-#' @param index
+#' @param h a \code{matrix} of dimensions [n x l], with the outputs of the hidden layer.
+#' @param y a \code{matrix} of dimensions [n x c] or a \code{vector} if c = 1, with the output values.
+#' @param h_val a \code{matrix} of dimensions [n x l], with the outputs of the hidden layer for the validation data.
+#' @param y_val a \code{matrix} of dimensions [n x c] or a \code{vector} if c = 1, with the output values.
+#' @param cv_rows The vector containing the selection of the data.
 #' @return A trained SLFN object
 #' @export
 setGeneric("train_pruning", function(object, ...) standardGeneric("train_pruning"))
-#' @describeIn SLFN optimization algorithm for obtaining the optimial number of neurons for pruning
+#' @describeIn SLFN Optimization procedure for obtaining the optimial number of neurons for pruning.
 setMethod(f = "train_pruning",
           signature = "SLFN",
           def = function (object, h, y, h_val = NULL, y_val = NULL, cv_rows = NULL) {
@@ -94,11 +94,11 @@ setMethod(f = "train_pruning",
 #' Prune a SLFN, given the index of neurons selected
 #'
 #' @param object An instance to the SLFN class.
-#' @param nSelected a vector, with the indexes of neurons kept after pruning
+#' @param n_sel a vector, with the indexes of neurons kept after pruning
 #' @return A SLFN object
 #' @export
 setGeneric("prune", function(object, ...) standardGeneric("prune"))
-#' @describeIn SLFN prune a SLFN
+#' @describeIn SLFN Prune the hidden layer of a SLFN
 setMethod(f = "prune",
           signature = "SLFN",
           def = function (object, n_sel) {
@@ -107,12 +107,11 @@ setMethod(f = "prune",
             return(object)
           })
 
-#' @describeIn hiddenlayer prune/remove neurons from the hiddenlayer given an index of neurons
+#' @describeIn hiddenlayer Remove neurons from the hiddenlayer given an index of neurons
 setMethod(f = "prune",
   signature = "hiddenlayer",
   def = function (object, n_sel) {
-
-        act_fun(object) <- act_fun(object)[n_sel]
+    act_fun(object) <- act_fun(object)[n_sel]
     w_in(object) <- w_in(object)[, n_sel, drop = FALSE]
     b(object) <- b(object)[n_sel]
     return(object)

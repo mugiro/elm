@@ -2,15 +2,16 @@
 #'
 #' A S4 class to encapsulate the parameters of the hidden layer in a SLFN
 #'
-#' @slot act_fun a \code{factor}, with the type of activation function used in each neurons. The levels
-#' of the factor are the different type of activation function combined, while the length of
-#' the factor equals to the number of neurons of the layer.
-#' @slot w_in a \code{matrix}, with the input weights. In the case of "rbf" neurons, it stands for the
-#' centroids of each hidden neurons
-#' @slot b a \code{vector}, with the input bias. In the case of \emph{rbf} neurons, it stands
-#' for the gamma values associated to each neuron.
+#' @slot act_fun a \code{factor}, with the type of activation function used in
+#' each neurons. The levels of the factor are the different type of activation
+#' function combined, while the length of the factor equals to the number of
+#' neurons of the layer.
+#' @slot w_in a \code{matrix}, with the input weights. In the case of "rbf"
+#' neurons, it stands for the centroids of each hidden neurons.
+#' @slot b a \code{vector}, with the input bias. In the case of \emph{rbf}
+#' neurons, it stands for the gamma values associated to each neuron.
 #' @export
-setClass("hiddenlayer",  # Definition of Single-hidden Layer Feed-forward Network SLFN
+hiddenlayer <- setClass("hiddenlayer",  # Definition of Single-hidden Layer Feed-forward Network SLFN
   slots = c(act_fun = "factor",
     w_in = "matrix",
     b = "numeric"),
@@ -18,7 +19,7 @@ setClass("hiddenlayer",  # Definition of Single-hidden Layer Feed-forward Networ
 )
 
 
-# Accessors ========================================================================================
+# Accessors ====================================================================
 if(!isGeneric("act_fun")){
   if (is.function("act_fun"))
     fun <- act_fun
@@ -52,7 +53,7 @@ setMethod("b<-", "hiddenlayer", function(object, value) {object@b <- value; obje
 
 
 
-# method - show ====================================================================================
+# method - show ================================================================
 #' @export
 #' @describeIn hiddenlayer show an object of class \code{hiddenlayer}
 setMethod(f = "show",
