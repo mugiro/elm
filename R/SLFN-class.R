@@ -9,7 +9,7 @@
 #'
 #' @slot inputs The number of input features.
 #' @slot outputs The number of outputs.
-#' @slot neurons A list that describes the hidden layer. The hidden layer
+#' @slot h_neurons A list that describes the hidden layer. The hidden layer
 #'  can be composed by neurons with different activation functions. Each element
 #'  of the list includes neurons with the same activation function. The element
 #'  is labelled with the type of activation function and contains the following
@@ -57,11 +57,11 @@
 #'  case of solving big data problems.
 #' @keywords classes
 #' @export
-#'
+#' @include hiddenlayer-class.R
 setClass("SLFN",  # Definition of Single-hidden Layer Feed-forward Network SLFN
          slots = c(inputs = "numeric",
                    outputs = "numeric",
-                   neurons = "list",
+                   h_neurons = "hiddenlayer",
                    w_out =  "matrix",
                    ridge = "numeric",
                    type = "character",          # "reg"/"class"/"class_mc"/"class_ml"/class_w"
@@ -75,9 +75,9 @@ setClass("SLFN",  # Definition of Single-hidden Layer Feed-forward Network SLFN
                    batch = "integer",
                    time_exec = "numeric",
                    bigdata = "logical"),
-         prototype = prototype(inputs = 0,  # Initialize the SLFN
+         prototype = list(inputs = 0,  # Initialize the SLFN
                                outputs = 0,
-                               neurons = list(),
+                               h_neurons = new("hiddenlayer"),
                                w_out = matrix(), # NA matrix
                                ridge = 1E-9,
                                type = "reg",
@@ -92,20 +92,19 @@ setClass("SLFN",  # Definition of Single-hidden Layer Feed-forward Network SLFN
 #                              time_exec = 0 ,
                                bigdata = FALSE))
 
-#
-# Getter and setter methods ===============================================
+# Accessors ========================================================================================
 
-if(!isGeneric("inputs")){
+if(!isGeneric("inputs")) {
   if (is.function("inputs"))
     fun <- inputs
   else fun <- function(object) standardGeneric("inputs")
   setGeneric("inputs", fun)
 }
-setMethod("inputs","SLFN",function(object) return(object@inputs))
+setMethod("inputs", "SLFN", function(object) return(object@inputs))
 setGeneric("inputs<-", function(object, value) standardGeneric("inputs<-"))
 setMethod("inputs<-", "SLFN", function(object, value) {object@inputs <- value; object})
 
-if(!isGeneric("outputs")){
+if(!isGeneric("outputs")) {
   if (is.function("outputs"))
     fun <- outputs
   else fun <- function(object) standardGeneric("outputs")
@@ -115,15 +114,15 @@ setMethod("outputs","SLFN",function(object) return(object@outputs))
 setGeneric("outputs<-", function(object, value) standardGeneric("outputs<-"))
 setMethod("outputs<-", "SLFN", function(object, value) {object@outputs <- value; object})
 
-if(!isGeneric("neurons")){
-  if (is.function("neurons"))
-    fun <- neurons
-  else fun <- function(object) standardGeneric("neurons")
-  setGeneric("neurons", fun)
+if(!isGeneric("h_neurons")){
+  if (is.function("h_neurons"))
+    fun <- h_neurons
+  else fun <- function(object) standardGeneric("h_neurons")
+  setGeneric("h_neurons", fun)
 }
-setMethod("neurons","SLFN",function(object) return(object@neurons))
-setGeneric("neurons<-", function(object, value) standardGeneric("neurons<-"))
-setMethod("neurons<-", "SLFN", function(object, value) {object@neurons <- value; object})
+setMethod("h_neurons","SLFN",function(object) return(object@h_neurons))
+setGeneric("h_neurons<-", function(object, value) standardGeneric("h_neurons<-"))
+setMethod("h_neurons<-", "SLFN", function(object, value) {object@h_neurons <- value; object})
 
 if(!isGeneric("w_out")){
   if (is.function("w_out"))
@@ -261,6 +260,19 @@ if(!isGeneric("show")){
   else fun <- function(object) standardGeneric("show")
   setGeneric("show", fun)
 }
+
+# method - initializator ===========================================================================
+setMethod(f = "initialize",
+  signature = "SLFN",
+  def = function(.Object, inputs, outputs) {
+    inputs(.Object) <- inputs
+    outputs(.Object) <- outputs
+    h_neurons(.Object) <- new("hiddenlayer", w_in = matrix(nrow = inputs, ncol = 0))
+    return(.Object)
+  }
+)
+
+# method - show ====================================================================================
 #' Display a SLFN object.
 #'
 #' @param object The SLFN object to be displayed.
@@ -270,14 +282,7 @@ setMethod("show", "SLFN",
             cat("\n")
             cat("SLFN structure: \n")
             cat("    + ", inputs(object), " inputs \n")
-            if (length(neurons(object)) == 0) {
-              cat("    + 0 hidden neurons: \n")
-            } else {
-              cat('    + ', sum(sapply(neurons(object), function(x) {x$number})), 'hidden neurons \n')
-              for (i in 1:length(neurons(object))) {
-                cat("          - ",neurons(object)[[i]]$number, names(neurons(object))[i], " \n")
-              }
-            }
+            show(h_neurons(object))
             cat("    + ", outputs(object), "outputs \n")
             cat("\n")
             cat("Training scheme: \n")
@@ -296,9 +301,10 @@ setMethod("show", "SLFN",
             }
           })
 
+
 #' Checking data
 #'
-#' \code{checkingXY} checks that inputs, outputs and dataset dimensions are correct.
+#' \code{checking_xy} checks that inputs, outputs and dataset dimensions are correct.
 #' Only checks the data if the variables is not NULL.
 #' @param object SLFN object to compare the matrices X and Y
 #' @param X a input matrix of dimensions [Nxd]
@@ -309,7 +315,8 @@ setGeneric("checking_xy", function(object, ...) standardGeneric("checking_xy"))
 setMethod("checking_xy", "SLFN",
           function(object, x, y,...) {
 
-            # Checking the input matrix X
+
+            # Checking the input matrix x
             if (!is.null(x)) {
               if (bigdata(object)) {
                 print("BIGDATA checking")

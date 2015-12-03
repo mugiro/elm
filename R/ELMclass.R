@@ -4,7 +4,7 @@
 #' Class "ELM"
 #'  --> ../man/ELM-class.Rd
 #'      ~~~~~~~~~~~~~~~~~~~~~~~
-#' @include SLFNclass.R
+#' @include SLFN-class.R
 #' @keywords classes
 #' @export
 setClass("ELM",

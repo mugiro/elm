@@ -30,15 +30,30 @@ setMethod(f = "train",
                           class_weights = NULL,
                           ...) {
             # Check the dimensions of the data and the ELM structure.
-            stopifnot(checking_xy(object, x, y))
-            if (!(is.null(x_val) && is.null(y_val))) {
-              stopifnot(checking_xy(object, x_val, y_val))
+            # stopifnot(checking_xy(object, x, y))
+
+            stopifnot(length(h_neurons(object)) > 0)
+
+            # Coerce x, y to matrix
+            if (!is.matrix(x)) {
+              x <- as.matrix(x)
             }
-            stopifnot(length(neurons(object)) > 0)
+            if (!is.matrix(y)) {
+              y <- as.matrix(y)
+            }
+
+            if (!(is.null(x_val) && is.null(y_val))) {
+              if (!is.matrix(x_val)) {
+                x_val <- as.matrix(x_val)
+              }
+              if (!is.matrix(y_val)) {
+                y_val <- as.matrix(y_val)
+              }
+            }
 
             # Load training conditions
             tune(object) <- tune
-            if (tune(object) != "none"){
+            if (tune(object) != "none") {
               ranking(object) <- ranking
               validation(object) <- validation
               if (validation(object) == "cv"){
@@ -46,7 +61,7 @@ setMethod(f = "train",
               }
             }
             type(object) <- type
-            if (type(object) == "w"){
+            if (type(object) == "w") {
               if (is.null(class_weights)) {
                 class_weights(object) <- apply(Y, 2, sum) / dim(Y)[1]
               } else {
@@ -85,19 +100,20 @@ setMethod(f = "train",
 setGeneric("project", function(object, ...) standardGeneric("project"))
 #' @describeIn SLFN project form input-space to neuron-space. Compute H
 setMethod("project",
-          signature = 'SLFN',
+          signature = "SLFN",
           def = function(object, x, rbf_dist = "euclidean") {
 
-            h = NULL
-            for (i in 1:length(neurons(object))) { # for all types of neurons
+            h = matrix(nrow = dim(x)[1], ncol = 0) # empty matrix without columns/neurons
+            act_funs <- levels(act_fun(h_neurons(object)))
+            for (i in 1:length(act_funs)) { # for all types of neurons
               # projection
-              act_fun <- names(neurons(object))[i]
-              w_in <- neurons(object)[[i]]$w_in
-              b <- neurons(object)[[i]]$b
+              w_in <- w_in(h_neurons(object))[, act_fun(h_neurons(object)) == act_funs[i], drop = FALSE]
+              b <- b(h_neurons(object))[act_fun(h_neurons(object)) == act_funs[i]]
 
-              if (act_fun == 'rbf') {  # distances from centroids
+              if (act_funs[i] == "rbf") {  # distances from centroids
                 h0 <- matrix(nrow = nrow(x), ncol = ncol(w_in))
-                for (j in 1:neurons(object)[[i]]$nn) {
+                nn_rbf <- length(which(act_fun(h_neurons(object)) == "rbf"))
+                for (j in 1:nn_rbf) {
                   h0[, j] <- dist_mat_vec(x = x, ref = w_in[, j], dist_type = rbf_dist)
                 }
               } else { # project
@@ -105,11 +121,11 @@ setMethod("project",
                 h0 <- h0 + matrix(rep(b, nrow(h0)), nrow = nrow(h0), byrow = TRUE)
               }
 
-              if (act_fun == 'sigmoid') {  # Apply the transformation function
+              if (act_funs[i] == "sigmoid") {  # Apply the transformation function
                 h0 <- 1 / (1 + exp(-h0))
-              } else if (act_fun == 'tanH') {
+              } else if (act_funs[i] == "tanH") {
                 h0 <- tanh(h0)
-              } else if (act_fun == 'rbf') {
+              } else if (act_funs[i] == "rbf") {
                 h0 <- exp( - (h0 ^ 2) / matrix(rep(b, nrow(h0)), nrow = nrow(h0), byrow = TRUE))
               } else {
                 NULL  # linear: do nothing

@@ -25,7 +25,7 @@ setMethod(f = "train_pruning",
             n_ranking <- rank_neurons(object, h = h, y = y) # neuron rank
 
             # error at nn = nnMax
-            nn_max <- sum(sapply(neurons(object), function (x) {x$nn}))
+            nn_max <- length(act_fun(h_neurons(object)))
             n_sel <- sort(n_ranking[1:nn_max]) # selected neurons = all
             error_nn <- get_error(object, n_sel = n_sel, h = h, y = y,
                                   h_val = h_val, y_val = y_val, cv_rows = cv_rows)
@@ -102,19 +102,20 @@ setGeneric("prune", function(object, ...) standardGeneric("prune"))
 setMethod(f = "prune",
           signature = "SLFN",
           def = function (object, n_sel) {
-            # number of neurons per type of activation function
-            nn_act <- sapply(neurons(object), function (x) {x$nn})
-            index <- 1:sum(nn_act) # index of all neurons
-            index_act <- split(index, rep(1:length(neurons(object)), nn_act))
-
-            for (i in 1:length(neurons(object))) {
-              # indexes of these type of neurons
-              n_kept <- which(index_act[[i]] %in% n_sel)
-              neurons(object)[[i]]$nn <- length(n_kept)
-              neurons(object)[[i]]$w_in <- neurons(object)[[i]]$w[, n_kept, drop = FALSE]
-              neurons(object)[[i]]$b <- neurons(object)[[i]]$b[n_kept]
-            }
-            # case when no neurons are left of one type !!!!
+            # call method for hiddenlayer-class
+            h_neurons(object) <- prune(h_neurons(object), n_sel = n_sel)
             return(object)
           })
+
+#' @describeIn hiddenlayer prune a hidden layer
+setMethod(f = "prune",
+  signature = "hiddenlayer",
+  def = function (object, n_sel) {
+
+        act_fun(object) <- act_fun(object)[n_sel]
+    w_in(object) <- w_in(object)[, n_sel, drop = FALSE]
+    b(object) <- b(object)[n_sel]
+    return(object)
+  })
+
 
