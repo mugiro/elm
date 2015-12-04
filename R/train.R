@@ -23,8 +23,9 @@
 #' @export
 setGeneric("train", function(object, ...) standardGeneric("train"))
 #' @describeIn SLFN train the SLFN
+#' @export
 setMethod(f = "train",
-          signature = 'SLFN',
+          signature = 'elm',
           def = function (object, x, y, x_val = NULL, y_val = NULL, type = "reg", tune = "none",
                           ranking = "random", validation = "none", folds = 10,
                           class_weights = NULL,...) {
@@ -99,7 +100,7 @@ setMethod(f = "train",
 setGeneric("project", function(object, ...) standardGeneric("project"))
 #' @describeIn SLFN project form input-space to neuron-space. Compute H
 setMethod("project",
-          signature = "SLFN",
+          signature = "elm",
           def = function(object, x, rbf_dist = "euclidean") {
 
             h = matrix(nrow = dim(x)[1], ncol = 0) # empty matrix without columns/neurons
@@ -154,7 +155,7 @@ setMethod("project",
 setGeneric("solve_system", function(object, ...) standardGeneric("solve_system"))
 #' @describeIn SLFN solve linear system H x Wout = Y
 setMethod(f = "solve_system",
-          signature = "SLFN",
+          signature = "elm",
           def = function (object, h, y, solve = TRUE){
 
             diag_ridge <- diag(dim(h)[2]) * ridge(object) # diagonal matrix (ridge penalty)

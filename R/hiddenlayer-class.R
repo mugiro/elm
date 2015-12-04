@@ -50,7 +50,18 @@ setMethod("b","hiddenlayer",function(object) return(object@b))
 setGeneric("b<-", function(object, value) standardGeneric("b<-"))
 setMethod("b<-", "hiddenlayer", function(object, value) {object@b <- value; object})
 
+# method - initializator =======================================================
+# crate an empty hidden layer adequated to a specific number of inputs
+setMethod(f = "initialize",
+  signature = "hiddenlayer",
+  def = function(.Object, inputs = 0) {
+    print("    hiddenlayer initialize")
+    w_in(.Object) <- matrix(nrow = inputs, ncol = 0)
 
+    # call validity function
+    return(.Object)
+  }
+)
 
 
 # method - show ================================================================
@@ -59,10 +70,10 @@ setMethod("b<-", "hiddenlayer", function(object, value) {object@b <- value; obje
 setMethod(f = "show",
           signature = "hiddenlayer",
           function(object) {
-            nn_levels <- table(act_fun(object))
-            cat("    + ", sum(nn_levels), " hidden neurons: \n")
-            for (i in 1:length(nn_levels)) {
-              cat("          - ", nn_levels[i], names(nn_levels)[i], " \n")
+            nn_type <- table(act_fun(object))
+            nn_type <- as.data.frame(nn_type)
+            cat("    +", sum(nn_type$Freq), " hidden neurons \n")
+            if (dim(nn_type)[1] != 0){
+              apply(nn_type, 1, function(x) {cat("       -", x[2], x[1], "hidden neurons \n")})
             }
-
           })

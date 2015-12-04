@@ -58,7 +58,6 @@ setMethod(f = "class_postprocess",
           def = function(object, yp, class_output, ml_threshold) {
 
           #
-
           if ((class_output == "prob") | (class_output == "label")) {
             yp <- t(apply(yp, 1, softmax)) #softmax transformation
             if (class_output == "label") {

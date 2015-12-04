@@ -17,7 +17,7 @@
 setGeneric("get_error", function(object, ...) standardGeneric("get_error"))
 #' @describeIn SLFN implement a validation procedure
 setMethod(f = "get_error",
-          signature = "SLFN",
+          signature = "elm",
           def = function (object, n_sel, h, y, h_val = NULL, y_val = NULL, cv_rows = NULL) {
             if (validation(object) == "cv") {
               error <- 0
@@ -87,7 +87,7 @@ setMethod(f = "get_error",
 setGeneric("mse", function(object, ...) standardGeneric("mse"))
 #' @describeIn SLFN MSE error
 setMethod(f = "mse",
-          signature = "SLFN",
+          signature = "elm",
           def = function(object, y, yp, x){
 
             if (validation(object) == "loo") {
