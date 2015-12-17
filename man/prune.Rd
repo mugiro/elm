@@ -2,19 +2,19 @@
 % Please edit documentation in R/train_pruning.R
 \name{prune}
 \alias{prune}
-\title{SLFN pruning}
+\title{ELM pruning}
 \usage{
 prune(object, ...)
 }
 \arguments{
-\item{object}{An instance to the SLFN class.}
+\item{object}{An instance to the ELM class.}
 
 \item{n_sel}{a vector, with the indexes of neurons kept after pruning}
 }
 \value{
-A SLFN object
+A ELM object
 }
 \description{
-Prune a SLFN, given the index of neurons selected
+Prune a ELM, given the index of neurons selected
 }
 

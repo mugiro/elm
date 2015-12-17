@@ -7,7 +7,7 @@
 get_error(object, ...)
 }
 \arguments{
-\item{object}{An instance to the SLFN class.}
+\item{object}{An instance to the ELM class.}
 
 \item{n_sel}{The number of hidden neurons to be used.}
 

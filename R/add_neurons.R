@@ -1,9 +1,9 @@
-#' Add hidden neurons to the SLFN.
+#' Add hidden neurons to the ELM.
 #'
-#' \code{add_neurons} adds a specific number of hidden neurons to the SLFN being
+#' \code{add_neurons} adds a specific number of hidden neurons to the ELM being
 #'  all of them of the same type of activation function.
 #'
-#' @param object An instance to the SLFN class.
+#' @param object An instance to the ELM class.
 #' @param nn The number of hidden neurons to add to the network.
 #' @param act_fun The activation function of the added neurons. Several types:
 #' \itemize{
@@ -16,12 +16,12 @@
 #'  rbf activation functions.
 #' @param b An input bias vector of dimension [1xL]. Vector of sigmas for
 #'  rbf activation functions.
-#' @return An object SLFN with new neurons added and w_in and b matrices updated.
+#' @return An object ELM with new neurons added and w_in and b matrices updated.
 #'
-#' It is called by the training wrapper when a new SLFN object is created.
+#' It is called by the training wrapper when a new ELM object is created.
 #' It is called sequentially based on the different type of activation functions.
 #'
-#' When addNeurons is called explicitly, the SLFN should be re-trained
+#' When addNeurons is called explicitly, the ELM should be re-trained
 #'
 #' For linear activation functions, the number of neurons added cannot be
 #'  superior to the number of features (L=<d). This case entails a linear
@@ -29,10 +29,10 @@
 #'  new space.
 #' @export
 setGeneric("add_neurons", function(object, ...) standardGeneric("add_neurons"))
-#' @include SLFN-class.R
-#' @describeIn SLFN add neurons of the same type of activation function to the hidden layer
+#' @include elm-class.R
+#' @describeIn elm add neurons of the same type of activation function to the hidden layer
 setMethod("add_neurons",
-          signature <- "SLFN",
+          signature <- "elm",
           def <- function(object, act_fun, nn, w_in = NULL, b = NULL) {
 
             h_neurons(object) <- add_neurons(h_neurons(object), ninputs = inputs(object), nn = nn,

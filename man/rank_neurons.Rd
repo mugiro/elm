@@ -7,7 +7,7 @@
 rank_neurons(object, ...)
 }
 \arguments{
-\item{object}{the instance to SLFN class}
+\item{object}{the instance to ELM class}
 
 \item{H}{a matrix of dimensions [NxL] after transformation}
 

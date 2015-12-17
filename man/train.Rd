@@ -2,12 +2,12 @@
 % Please edit documentation in R/train.R
 \name{train}
 \alias{train}
-\title{Train a SLFN}
+\title{Train a ELM}
 \usage{
 train(object, ...)
 }
 \arguments{
-\item{object}{SLFN object to serialize}
+\item{object}{ELM object to serialize}
 
 \item{...}{None to use until now}
 
@@ -35,7 +35,7 @@ with the weigths for weighted classification}
 \item{classification}{"none"/"mc"/"ml"/"w"}
 }
 \description{
-\code{train} fits all the parameters that include a SLFN given a set of
+\code{train} fits all the parameters that include a ELM given a set of
  input data (X, Y) and a training scheme
 }
 

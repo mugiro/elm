@@ -7,7 +7,7 @@
 project(object, ...)
 }
 \arguments{
-\item{object}{The instance to SLFN class.}
+\item{object}{The instance to elm class.}
 
 \item{X}{The input matrix of dimensions [Nxd].}
 

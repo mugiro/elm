@@ -38,7 +38,7 @@ per type of activation function}
 An object of class \code{"SLFN"} with the model developed
 }
 \description{
-\code{wrapper} creates and trains an object of class SLFN for given X and Y.
+\code{wrapper} creates and trains an object of class ELM for given X and Y.
 }
 \details{
 This function is a wrapper for summarizing several actions requiered when

@@ -55,7 +55,7 @@ setMethod("b<-", "hiddenlayer", function(object, value) {object@b <- value; obje
 setMethod(f = "initialize",
   signature = "hiddenlayer",
   def = function(.Object, inputs = 0) {
-    print("    hiddenlayer initialize")
+    cat(" ==> hiddenlayer initialize \n")
     w_in(.Object) <- matrix(nrow = inputs, ncol = 0)
 
     # call validity function

@@ -2,12 +2,12 @@
 % Please edit documentation in R/train_pruning.R
 \name{train_pruning}
 \alias{train_pruning}
-\title{train a SLFN with pruning}
+\title{train a ELM with pruning}
 \usage{
 train_pruning(object, ...)
 }
 \arguments{
-\item{object}{An instance to the SLFN class.}
+\item{object}{An instance to the ELM class.}
 
 \item{h}{a \code{matrix} of dimensions [n x l], with the outputs of the hidden layer.}
 
@@ -20,10 +20,10 @@ train_pruning(object, ...)
 \item{cv_rows}{The vector containing the selection of the data.}
 }
 \value{
-A trained SLFN object
+A trained ELM object
 }
 \description{
-train a SLFN with pruning. The function implements an optimization algorithm for determine the optimium
+train a ELM with pruning. The function implements an optimization algorithm for determine the optimium
 number of neurons
 }
 

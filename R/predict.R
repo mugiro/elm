@@ -4,21 +4,21 @@ if(!isGeneric("predict")){
   else fun = function(object) standardGeneric("predict")
   setGeneric("predict", fun)
 }
-#' \code{\link{predict}} method for \code{\linkS4class{SLFN}} objects
+#' \code{\link{predict}} method for \code{\linkS4class{elm}} objects
 #'
 #' \code{predict} gives the estimation of input data X for the ELM model
-#' @param object the instance to SLFN class
+#' @param object the instance to elm class
 #' @param X The input matrix of dimensions [Nxd].
 #' @return A output matrix of predictions Yp with dimensions [Nxc].
 #' @export
 setMethod(f = "predict",
-          signature = 'SLFN',
+          signature = 'elm',
           def = function (object, x, class_output = "prob", ml_threshold = 0.5) {
 
             x = as.matrix(x)
             if (any(is.na(w_out(object)))) {
               cat("NA values were detected in Wout.
-                  The SLFN model should be first trained. \n")
+                  The elm model should be first trained. \n")
               yp <- NULL
             } else {
               h <- project(object, x) # proyected matrix dim [NxL]
@@ -35,12 +35,12 @@ setMethod(f = "predict",
 
 #' Post-process classfication predictions
 #'
-#' Function to post-process the continuous prediction of a SLFN in classfication
+#' Function to post-process the continuous prediction of a ELM in classfication
 #'
 #' In classification, labels for multi-class and multi-label cases are computed as follows. For multi-class, the output
 #' with higher continous value is selected. For multi-label, all outputs above \code{ml_threshold} are selected.
 #'
-#' @param object The instance to SLFN class.
+#' @param object The instance to ELM class.
 #' @param typePred The type of post-processing implemented:
 #' \itemize{
 #' \item "raw" No post-processing: ELM predictions. Continuos predictions that do not follow the definition of probability.
@@ -52,9 +52,9 @@ setMethod(f = "predict",
 #'
 #' @return The output matrix/vector with post-processed predtictors
 setGeneric("class_postprocess", function(object, ...) standardGeneric("class_postprocess"))
-#' @describeIn SLFN Description of class_postprocess for SLFN (origin predic.R)
+#' @describeIn elm Description of class_postprocess for ELM (origin predic.R)
 setMethod(f = "class_postprocess",
-          signature = 'SLFN',
+          signature = 'elm',
           def = function(object, yp, class_output, ml_threshold) {
 
           #

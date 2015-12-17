@@ -4,7 +4,11 @@
 #' Class \code{elm}
 #'
 #' A S4 class to represent an Extreme Learning Machine (ELM) model
-#'
+#' @slot inputs The number of input features.
+#' @slot outputs The number of outputs.
+#' @slot h_neurons An object of classs hiddenlayer
+#' @slot w_out The weight output vector that includes the computed weights between
+#'  the hidden and the output layer.
 #' @slot type The type of model implemented:
 #' \itemize{
 #' \item "reg": regression problem.
@@ -42,36 +46,81 @@
 #' @slot bigdata An logical parameter to select the kind of acceleration used in
 #'  case of solving big data problems.
 #' @export
-#' @include SLFN-class.R
+#' @include hiddenlayer-class.R
 elm <- setClass("elm",
-         slots = c(
-            type = "character",          # "reg"/"class"/"class_mc"/"class_ml"/class_w"
-            tune = "character",          # c("none", "pruning")
-            ranking = "character",       # c("random", "lars")
-            validation = "character",    # "none"/"V"/"CV"/"LOO"
-            folds = "numeric",
-            ridge = "numeric",
-            class_weights = "numeric",
-            results = "numeric",
-            batch = "integer",
-            time_exec = "numeric",
-            bigdata = "logical"),
-          prototype = list(
-            type = "reg",
-            tune = "none",
-            ranking = "random",
-            validation = "none",
-            folds = 10,
-            ridge = 1E-9,
-#           results = numeric(),
-#           batch = integer(10),
-#           class_weights = numeric(),
-#           time_exec = 0 ,
-            bigdata = FALSE),
-         contains = "SLFN"
+         slots = c(inputs = "numeric",
+                  outputs = "numeric",
+                  h_neurons = "hiddenlayer",
+                  w_out =  "matrix",
+                  type = "character",          # "reg"/"class"/"class_mc"/"class_ml"/class_w"
+                  tune = "character",          # c("none", "pruning")
+                  ranking = "character",       # c("random", "lars")
+                  validation = "character",    # "none"/"V"/"CV"/"LOO"
+                  folds = "numeric",
+                  ridge = "numeric",
+                  class_weights = "numeric",
+                  results = "numeric",
+                  batch = "integer",
+                  time_exec = "numeric",
+                  bigdata = "logical"),
+          prototype = list(inputs = 0,  # Initialize the elm
+                           outputs = 0,
+                           h_neurons = new("hiddenlayer"),
+                           w_out = matrix(),
+                           type = "reg",
+                           tune = "none",
+                           ranking = "random",
+                           validation = "none",
+                           folds = 10,
+                           ridge = 1E-9,
+#                          results = numeric(),
+#                          batch = integer(10),
+#                          class_weights = numeric(),
+#                          time_exec = 0 ,
+                           bigdata = FALSE),
 )
 
 # Accessors ====================================================================
+
+if(!isGeneric("inputs")) {
+  if (is.function("inputs"))
+    fun <- inputs
+  else fun <- function(object) standardGeneric("inputs")
+  setGeneric("inputs", fun)
+}
+setMethod("inputs", "elm", function(object) return(object@inputs))
+setGeneric("inputs<-", function(object, value) standardGeneric("inputs<-"))
+setMethod("inputs<-", "elm", function(object, value) {object@inputs <- value; object})
+
+if(!isGeneric("outputs")) {
+  if (is.function("outputs"))
+    fun <- outputs
+  else fun <- function(object) standardGeneric("outputs")
+  setGeneric("outputs", fun)
+}
+setMethod("outputs","elm",function(object) return(object@outputs))
+setGeneric("outputs<-", function(object, value) standardGeneric("outputs<-"))
+setMethod("outputs<-", "elm", function(object, value) {object@outputs <- value; object})
+
+if(!isGeneric("h_neurons")){
+  if (is.function("h_neurons"))
+    fun <- h_neurons
+  else fun <- function(object) standardGeneric("h_neurons")
+  setGeneric("h_neurons", fun)
+}
+setMethod("h_neurons","elm",function(object) return(object@h_neurons))
+setGeneric("h_neurons<-", function(object, value) standardGeneric("h_neurons<-"))
+setMethod("h_neurons<-", "elm", function(object, value) {object@h_neurons <- value; object})
+
+if(!isGeneric("w_out")){
+  if (is.function("w_out"))
+    fun <- w_out
+  else fun <- function(object) standardGeneric("w_out")
+  setGeneric("w_out", fun)
+}
+setMethod("w_out", "elm", function(object) return(object@w_out))
+setGeneric("w_out<-", function(object, value) standardGeneric("w_out<-"))
+setMethod("w_out<-", "elm", function(object, value) {object@w_out <- value; object})
 
 if(!isGeneric("results")){
   if (is.function("results"))
@@ -189,10 +238,11 @@ setMethod("bigdata<-", "elm", function(object, value) {object@bigdata <- value; 
 #' @describeIn elm initalize an object of class \code{elm}
 setMethod(f = "initialize",
   signature = "elm",
-  def = function(.Object, inputs = 0, outputs = 0) {
-    print("ELM initialize")
-    .Object <- callNextMethod(.Object, inputs, outputs)
-
+  def = function(.Object = object, inputs = 0, outputs = 0) {
+    cat(" ==> elm initialize \n")
+    inputs(.Object) <- inputs
+    outputs(.Object) <- outputs
+    h_neurons(.Object) <- new("hiddenlayer", inputs = inputs)
     # call validity function
     return(.Object)
   }
@@ -202,10 +252,16 @@ setMethod(f = "initialize",
 
 #' @export
 #' @describeIn elm display an object of class \code{elm}
-setMethod("show", "elm",
+setMethod(f = "show",
+  signature = "elm",
   function(object) {
     cat("\n")
-    callNextMethod(object)
+    cat("\n")
+    cat("ELM structure: \n")
+    cat("    +", inputs(object), " inputs \n")
+    show(h_neurons(object))
+    cat("    +", outputs(object), " outputs \n")
+    cat("\n")
     cat("ELM training scheme: \n")
     cat("    + Type =", type(object), "\n")
     cat("    + Model structure selection =", tune(object), " \n")
@@ -220,6 +276,63 @@ setMethod("show", "elm",
     }
   })
 
+#' Checking data
+#'
+#' \code{checking_xy} checks that inputs, outputs and dataset dimensions are correct.
+#' Only checks the data if the variables is not NULL.
+#' @param object elm object to compare the matrices X and Y
+#' @param X a input matrix of dimensions [Nxd]
+#' @param Y a output matrix of dimensions [Nxc]
+#' @return boolean value that is TRUE if everything is correct
+#' @export
+setGeneric("checking_xy", function(object, ...) standardGeneric("checking_xy"))
+setMethod("checking_xy", "elm",
+  function(object, x, y,...) {
+
+
+    # Checking the input matrix x
+    if (!is.null(x)) {
+      if (bigdata(object)) {
+        print("BIGDATA checking")
+        stop("No bigdata implementation for X")
+      }else {
+        if (is.matrix(x)) {
+          if(length(dim(x)) == 1) {
+            stop("Input matrix 'X' must have 2 dimensions")
+          } else if(dim(x)[2] != inputs(object)) {
+            stop("Input matrix 'X' must have num_cols = num_inputs.")
+          }
+        }else {
+          stop("Input 'X' must be a matrix")
+        }
+      }
+    }
+
+    # Checking the output matrix Y
+    if (!is.null(y)) {
+      if (bigdata(object)) {
+        print("BIGDATA checking")
+        stop("No bigdata implementation for Y")
+      }else {
+        if (is.matrix(y)) {
+          if(length(dim(y)) == 1) {
+            stop("Input matrix 'Y' must have 2 dimensions")
+          } else if(dim(y)[2] != outputs(object)) {
+            stop("Input matrix 'Y' must have num_cols = num_outputs.")
+          }
+        }else {
+          stop("Input 'Y' must be a matrix")
+        }
+      }
+    }
+
+    # Checking both the output and input matrices X,Y
+    if (!is.null(x) & !is.null(y)) {
+      if (nrow(x) != nrow(y))
+        stop("Input matrix 'X' and output matrix 'Y' must have the same number of samples")
+    }
+    return (TRUE)
+  })
 
 
 
