@@ -5,7 +5,7 @@
 #'
 #'  \code{computeError} calculate the error of a ELM model.
 #'
-#' @param object An instance to the SLFN class.
+#' @param object An instance to the ELM class.
 #' @param n_sel The number of hidden neurons to be used.
 #' @param h The transformed matrix H of dimensions [NxL].
 #' @param y The output matrix of dimensions [Nxc].
@@ -15,9 +15,9 @@
 #' @param cv_rows The vector containing the selection of the data.
 #' @return The error of the ELM model
 setGeneric("get_error", function(object, ...) standardGeneric("get_error"))
-#' @describeIn SLFN implement a validation procedure
+#' @describeIn elm implement a validation procedure
 setMethod(f = "get_error",
-          signature = "SLFN",
+          signature = "elm",
           def = function (object, n_sel, h, y, h_val = NULL, y_val = NULL, cv_rows = NULL) {
             if (validation(object) == "cv") {
               error <- 0
@@ -74,7 +74,7 @@ setMethod(f = "get_error",
 #'
 #' If LOO option is activated, the MSE Allen's PRESS formula is used and the data matrix X must be supplied.
 #'
-#' @param object The instance to SLFN class.
+#' @param object The instance to ELM class.
 #' @param y The output matrix of dimensions [N x c] with number of columns
 #'  equivalent to the number of variables or classes.
 #' @param yp The predicted output matrix of dimensions [N x c]; output matrix
@@ -85,9 +85,9 @@ setMethod(f = "get_error",
 #' If LOO is activated, the Allen's PRESS estimation is returned
 #' @export
 setGeneric("mse", function(object, ...) standardGeneric("mse"))
-#' @describeIn SLFN MSE error
+#' @describeIn elm MSE error
 setMethod(f = "mse",
-          signature = "SLFN",
+          signature = "elm",
           def = function(object, y, yp, x){
 
             if (validation(object) == "loo") {

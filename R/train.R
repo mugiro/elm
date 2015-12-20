@@ -1,9 +1,9 @@
-#' Train a SLFN
+#' Train a ELM
 #'
-#' \code{train} fits all the parameters that include a SLFN given a set of
+#' \code{train} fits all the parameters that include a ELM given a set of
 #'  input data (X, Y) and a training scheme
 #'
-#' @param object SLFN object to serialize
+#' @param object ELM object to serialize
 #' @param x a data matrix of dimensions [Nxd] with input data
 #' @param y vector/matrix of outputs [Nx1c]
 #' @param modelStrSel logical Select the pruning for reduce model's size.
@@ -22,9 +22,10 @@
 #' @param ... None to use until now
 #' @export
 setGeneric("train", function(object, ...) standardGeneric("train"))
-#' @describeIn SLFN train the SLFN
+#' @describeIn elm train the elm
+#' @export
 setMethod(f = "train",
-          signature = 'SLFN',
+          signature = 'elm',
           def = function (object, x, y, x_val = NULL, y_val = NULL, type = "reg", tune = "none",
                           ranking = "random", validation = "none", folds = 10,
                           class_weights = NULL,...) {
@@ -91,15 +92,15 @@ setMethod(f = "train",
 #' Compute the projection of the matrix H for a particular X.
 #'
 #' \code{project} returns the projection of the matrix H.
-#' @param object The instance to SLFN class.
+#' @param object The instance to elm class.
 #' @param X The input matrix of dimensions [Nxd].
 #' @param typeDist The method to compute the distance. Default \code{euclidean}.
 #' @return A matrix H after transformation of dimensions [NxL].
 #' @export
 setGeneric("project", function(object, ...) standardGeneric("project"))
-#' @describeIn SLFN project form input-space to neuron-space. Compute H
+#' @describeIn elm project form input-space to neuron-space. Compute H
 setMethod("project",
-          signature = "SLFN",
+          signature = "elm",
           def = function(object, x, rbf_dist = "euclidean") {
 
             h = matrix(nrow = dim(x)[1], ncol = 0) # empty matrix without columns/neurons
@@ -152,9 +153,9 @@ setMethod("project",
 #' @return w_out a \code{matrix} of dimensions [l x c] with the output weights
 #' @export
 setGeneric("solve_system", function(object, ...) standardGeneric("solve_system"))
-#' @describeIn SLFN solve linear system H x Wout = Y
+#' @describeIn elm solve linear system H x Wout = Y
 setMethod(f = "solve_system",
-          signature = "SLFN",
+          signature = "elm",
           def = function (object, h, y, solve = TRUE){
 
             diag_ridge <- diag(dim(h)[2]) * ridge(object) # diagonal matrix (ridge penalty)

@@ -5,16 +5,16 @@
 #'
 #' Return ranking of hidden neurons: random or OP.
 #' L1 regularization
-#' @param object the instance to SLFN class
+#' @param object the instance to ELM class
 #' @param H a matrix of dimensions [NxL] after transformation
 #' @param Y a matrix of dimensions [Nxc] - output matrix (columns = nº variables or classes)
 #' @return rank an array with the order of the neurons
 #' @import lars
 #' @export
 setGeneric("rank_neurons", function(object, ...) standardGeneric("rank_neurons"))
-#' @describeIn SLFN rank neurons of a SLFN
+#' @describeIn elm rank neurons of a ELM
 setMethod(f = "rank_neurons",
-          signature = "SLFN",
+          signature = "elm",
           def = function (object, nn_max, h = NULL, y = NULL){
             if (ranking(object) == "lars") { # Use lars {lars} package
 #=========== QUE PASA SI HAY MENOS neuronas o se quieres dejar menos. Falta el nn ?? ========
@@ -36,7 +36,7 @@ setMethod(f = "rank_neurons",
 #
 # #' Return ranking of hidden neurons: random or OP.
 # #' L1 regularization
-# #' @param object The instance to SLFN class
+# #' @param object The instance to ELM class
 # #' @param H The transformated matrix of dimensions [NxL].
 # #' @param Y The output matrix of dimensions [Nxc]. Columns = nº variables or classes.
 # #' @param nn An integer with a specific number of neurons.
@@ -45,7 +45,7 @@ setMethod(f = "rank_neurons",
 # #' @export
 # setGeneric("rankNeurons", function(object, ...) standardGeneric("rankNeurons"))
 # setMethod(f = "rankNeurons",
-#           signature = "SLFN",
+#           signature = "ELM",
 #           def = function (object, H = NULL, Y = NULL, nn = 0){
 #
 #             if (ranking(object) == "lars") { # Use lars {lars} package

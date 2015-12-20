@@ -24,10 +24,9 @@ Suggests:
     rmarkdown
 Collate:
     'AllGenerics.R'
-    'hiddenlayer-class.R'
-    'SLFN-class.R'
-    'ELMclass.R'
     'RcppExports.R'
+    'hiddenlayer-class.R'
+    'elm-class.R'
     'add_neurons.R'
     'elm-package.R'
     'errors.R'

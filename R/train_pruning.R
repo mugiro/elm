@@ -1,23 +1,23 @@
 # File that contains methods for pruning strategy
 # Urraca, Ruben & Sanz-Garcia, Andres (21-11-2015)
 
-#' train a SLFN with pruning
+#' train a ELM with pruning
 #'
-#' train a SLFN with pruning. The function implements an optimization algorithm for determine the optimium
+#' train a ELM with pruning. The function implements an optimization algorithm for determine the optimium
 #' number of neurons
 #'
-#' @param object An instance to the SLFN class.
+#' @param object An instance to the ELM class.
 #' @param h a \code{matrix} of dimensions [n x l], with the outputs of the hidden layer.
 #' @param y a \code{matrix} of dimensions [n x c] or a \code{vector} if c = 1, with the output values.
 #' @param h_val a \code{matrix} of dimensions [n x l], with the outputs of the hidden layer for the validation data.
 #' @param y_val a \code{matrix} of dimensions [n x c] or a \code{vector} if c = 1, with the output values.
 #' @param cv_rows The vector containing the selection of the data.
-#' @return A trained SLFN object
+#' @return A trained ELM object
 #' @export
 setGeneric("train_pruning", function(object, ...) standardGeneric("train_pruning"))
-#' @describeIn SLFN Optimization procedure for obtaining the optimial number of neurons for pruning.
+#' @describeIn elm Optimization procedure for obtaining the optimial number of neurons for pruning.
 setMethod(f = "train_pruning",
-          signature = "SLFN",
+          signature = "elm",
           def = function (object, h, y, h_val = NULL, y_val = NULL, cv_rows = NULL) {
 
             # ranking of neurons - with all available training data.
@@ -89,18 +89,18 @@ setMethod(f = "train_pruning",
             return (object)
           })
 
-#' SLFN pruning
+#' ELM pruning
 #'
-#' Prune a SLFN, given the index of neurons selected
+#' Prune a ELM, given the index of neurons selected
 #'
-#' @param object An instance to the SLFN class.
+#' @param object An instance to the ELM class.
 #' @param n_sel a vector, with the indexes of neurons kept after pruning
-#' @return A SLFN object
+#' @return A ELM object
 #' @export
 setGeneric("prune", function(object, ...) standardGeneric("prune"))
-#' @describeIn SLFN Prune the hidden layer of a SLFN
+#' @describeIn elm Prune the hidden layer of a elm
 setMethod(f = "prune",
-          signature = "SLFN",
+          signature = "elm",
           def = function (object, n_sel) {
             # call method for hiddenlayer-class
             h_neurons(object) <- prune(h_neurons(object), n_sel = n_sel)

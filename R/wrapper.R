@@ -3,7 +3,7 @@
 
 #' wrapper
 #'
-#' \code{wrapper} creates and trains an object of class SLFN for given X and Y.
+#' \code{wrapper} creates and trains an object of class ELM for given X and Y.
 #'
 #' This function is a wrapper for summarizing several actions requiered when
 #' creating and adjusting an ELM model. The particular steps are listed below.
@@ -52,7 +52,7 @@ wrapper <- function(x, y, x_val = NULL, y_val = NULL,
   }
 
   # Create the object with the minimum information
-  object <- new("SLFN", inputs = dim(X)[2], outputs = dim(Y)[2])
+  object <- new("elm", inputs = dim(X)[2], outputs = dim(Y)[2])
 
   # read neuron arguments
   if (length(nn) != length(neur_type)) { # check the length of neuron arguments

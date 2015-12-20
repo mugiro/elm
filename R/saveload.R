@@ -9,7 +9,7 @@
 #' @param path A character string with the path name to a directory.
 #' @export
 setGeneric("saveSLFN", function(object, ...) standardGeneric("saveSLFN"))
-setMethod("saveSLFN", "SLFN",
+setMethod("saveSLFN", "elm",
           function(object, filename, path="") {
             print("function saveSLFN")
             if(path)
@@ -31,7 +31,7 @@ setMethod("saveSLFN", "SLFN",
 #' @param path A character string with the path name to a directory.
 #' @export
 setGeneric("loadSLFN", function(object, ...) standardGeneric("loadSLFN"))
-setMethod("loadSLFN", "SLFN",
+setMethod("loadSLFN", "elm",
           function(object, filename="", path="") {
             res <- tryCatch({object=readRDS(file=paste0(path,filename,".rda"))},
                             error=function(e) return(e))
